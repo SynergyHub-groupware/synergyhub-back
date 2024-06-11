@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/groupware
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  servlet:
+    multipart:
+      location: C:/SynergyHub
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# image upload dir
+image:
+  profile-image-dir: C:/SynergyHub/profile
+  approval-image-dir: C:/SynergyHub/approval
+  post-image-dir: C:/SynergyHub/post
+  message-image-dir: C:/SynergyHub/message
+
+
+server:
+  port: 8080
+
+jwt:
+  secret: asdfjk12938fu08bh3rhq2387qfe8hjvweh2w93ur9djvhw983o3uew23rfgeiv8hewsor2hjdhxmzqw83o832 #??? ???
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 604800000
+
