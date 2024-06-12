@@ -17,12 +17,13 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-# image upload dir
-image:
-  profile-image-dir: C:/SynergyHub/profile
-  approval-image-dir: C:/SynergyHub/approval
-  post-image-dir: C:/SynergyHub/post
-  message-image-dir: C:/SynergyHub/message
+# file upload dir
+file:
+  base-dir: C:/SynergyHub/uploads
+  profile-dir: C:/SynergyHub/uploads/profile
+  approval-dir: C:/SynergyHub/uploads/approval
+  post-dir: C:/SynergyHub/uploads/post
+  message-dir: C:/SynergyHub/uploads/message
 
 
 server:
