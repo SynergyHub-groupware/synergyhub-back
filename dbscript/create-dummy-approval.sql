@@ -70,7 +70,8 @@ INSERT INTO APPROVAL_FORM VALUES
 (8, '사직신청서', NULL, 4),
 (9, '시말서', NULL, 4),
 (10, '교육비신청서', NULL, 5),
-(11, '지출결의서', '법인카드 사용 후 증빙과 함께 제출', 5);
+(11, '지출결의서', '법인카드 사용 후 증빙과 함께 제출', 5),
+(12, '기타', '등록된 양식이 없을 경우, 일회성 결재양식', 1);
 
 INSERT INTO APPROVAL_DOC (AD_TITLE, EMP_CODE, AD_REPORT_DATE, AD_STATUS, AF_CODE, AD_DETAIL) VALUES
 ('[정보보안팀] 01/03-02/28 휴직신청서_박하늘', '2021048', '2021-12-01', '완료', 7, 'AP1'),
