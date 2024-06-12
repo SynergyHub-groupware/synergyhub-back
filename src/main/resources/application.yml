@@ -17,13 +17,16 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-# image upload dir
+# image upload dir, url
 image:
-  profile-image-dir: C:/SynergyHub/profile
-  approval-image-dir: C:/SynergyHub/approval
-  post-image-dir: C:/SynergyHub/post
-  message-image-dir: C:/SynergyHub/message
-
+  profile-image-dir: C:/SynergyHub/profileimgs
+  approval-image-dir: C:/SynergyHub/approvalimgs
+  post-image-dir: C:/SynergyHub/postimgs
+  message-image-dir: C:/SynergyHub/messageimgs
+  profile-image-url: http://localhost:8080/profileimgs
+  approval-image-url: http://localhost:8080/approvalimgs
+  post-image-url: http://localhost:8080/postimgs
+  message-image-url: http://localhost:8080/messageimgs
 
 server:
   port: 8080

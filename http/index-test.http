@@ -1,0 +1,8 @@
+### 로그인 테스트
+POST http://localhost:8080/emp/auth/login
+Content-Type: application/json
+
+{
+  "emp_code" : "2020011",
+  "emp_pass" : "2020011"
+}
