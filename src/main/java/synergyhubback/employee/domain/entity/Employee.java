@@ -67,7 +67,7 @@ public class Employee {
         );
     }
 
-    // 생성함
+    // 이재현 로그인 관련 employee entity 로직 생성
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
         System.out.println("updateRefreshToken");

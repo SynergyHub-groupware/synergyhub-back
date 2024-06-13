@@ -23,6 +23,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 이재현 로그인 관련 service 로직 생성
     @Transactional(readOnly = true)
     public LoginDto findByEmpCode(int emp_code) {
 
@@ -32,6 +33,7 @@ public class EmployeeService {
         return LoginDto.from(employee);
     }
 
+    // 이재현 로그인 관련 service 로직 생성
     public void updateRefreshToken(int emp_code, String refreshToken) {
         Employee employee = employeeRepository.findByEmpCode(emp_code)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
@@ -40,6 +42,7 @@ public class EmployeeService {
         employee.updateRefreshToken(refreshToken);
     }
 
+    // 이재현 로그인 관련 service 로직 생성
     @Transactional(readOnly = true)
     public LoginDto findByRefreshToken(String refreshToken) {
 
