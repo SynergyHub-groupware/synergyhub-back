@@ -35,7 +35,7 @@ public class EmployeeController {
         return ResponseEntity.ok(myInfoResponse);
     }
 
-    /* 인사기록카드 조회 */
+    /* 인사기록카드 조회 하고 싶어요 */
     @GetMapping("/recordCard/{emp_code}")
     public ResponseEntity<RecordCardResponse> getRecordCard(@PathVariable int emp_code) {
 
