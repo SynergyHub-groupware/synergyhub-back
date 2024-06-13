@@ -1,12 +1,24 @@
 package synergyhubback.employee.domain.entity;
 
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
-import java.util.Date;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "employee_info")
 @Getter
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Employee {
 
+    @Id
     private int emp_code;
     private String emp_name;
     private int emp_pass;
@@ -16,32 +28,40 @@ public class Employee {
     private String address;
     private int direct_line;
     private String account_num;
-    private Date hire_date;
-    private Date end_date;
+    private LocalDate hire_date;
+    private LocalDate end_date;
     private String emp_status;
+    private String emp_sign;
     private String emp_img;
     private String dept_code;
     private String title_code;
     private String position_code;
-    private String bank_code;
+    private int bank_code;
 
-    public Employee(int emp_code, String emp_name, int emp_pass, String social_security_no, String email, String phone, String address, int direct_line, String account_num, Date hire_date, Date end_date, String emp_status, String emp_img, String dept_code, String title_code, String position_code, String bank_code) {
+    public Employee(int emp_code, String emp_name, int emp_pass, String social_security_no, LocalDate hire_date, String emp_status, String dept_code, String title_code, String position_code) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
         this.emp_pass = emp_pass;
         this.social_security_no = social_security_no;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.direct_line = direct_line;
-        this.account_num = account_num;
         this.hire_date = hire_date;
-        this.end_date = end_date;
         this.emp_status = emp_status;
-        this.emp_img = emp_img;
         this.dept_code = dept_code;
         this.title_code = title_code;
         this.position_code = position_code;
-        this.bank_code = bank_code;
+    }
+
+    public static Employee regist(int emp_code, String emp_name, int emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date, String emp_status) {
+
+        return new Employee(
+                emp_code,
+                emp_name,
+                emp_pass,
+                social_security_no,
+                hire_date,
+                emp_status,
+                dept_code,
+                title_code,
+                position_code
+        );
     }
 }
