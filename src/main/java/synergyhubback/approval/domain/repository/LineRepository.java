@@ -6,5 +6,5 @@ import synergyhubback.approval.domain.entity.Line;
 import java.util.List;
 
 public interface LineRepository extends JpaRepository<Line, Integer> {
-    List<Line> findByLineSort_LsCode(int lsCode);
+    List<Line> findByLineSortLsCodeOrderByAlOrderAsc(int lsCode);
 }

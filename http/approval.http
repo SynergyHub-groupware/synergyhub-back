@@ -1,5 +1,13 @@
 ### 결재양식리스트 조회
 GET http://localhost:8080/approval/formList
 
-### 결재양식상세 조회
-GET http://localhost:8080/approval/form/2
+### 결재라인 전체 조회
+GET http://localhost:8080/approval/formLine
+
+### 결재라인 특정 조회
+GET http://localhost:8080/approval/formLine?lsCode=3
+
+### 보낸 결재함 전체 조회 (작성자 기준)
+GET http://localhost:8080/approval/document?empCode=2021048
+
+### 받은 결재함 전체 조회 ()

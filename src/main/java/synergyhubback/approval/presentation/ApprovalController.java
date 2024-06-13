@@ -2,10 +2,8 @@ package synergyhubback.approval.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import synergyhubback.approval.dto.response.DocumentResponse;
 import synergyhubback.approval.dto.response.FormLineResponse;
 import synergyhubback.approval.dto.response.FormListResponse;
 import synergyhubback.approval.service.ApprovalService;
@@ -24,9 +22,29 @@ public class ApprovalController {
         return ResponseEntity.ok(formList);
     }
 
-    @GetMapping("/form/{lsCode}")
-    public ResponseEntity<List<FormLineResponse>> findFormLine(@PathVariable final int lsCode){
+    @GetMapping("/formLine")
+    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam(required = false) final Integer lsCode){
         final List<FormLineResponse> formLine = approvalService.findFormLine(lsCode);
         return ResponseEntity.ok(formLine);
     }
+
+//    @GetMapping("/formLine")
+//    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam(required = false) final Integer lsCode) {
+//        List<FormLineResponse> formLine;
+//
+//        if (lsCode != null && lsCode > 0) {
+//            formLine = approvalService.findFormLine(lsCode);
+//        } else {
+//            formLine = approvalService.findAllFormLines();
+//        }
+//
+//        return ResponseEntity.ok(formLine);
+//    }
+
+    @GetMapping("/document")
+    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
+        final List<DocumentResponse> docList = approvalService.findDocList(empCode);
+        return ResponseEntity.ok(docList);
+    }
+
 }
