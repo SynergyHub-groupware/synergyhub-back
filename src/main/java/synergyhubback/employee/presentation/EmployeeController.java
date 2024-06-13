@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
+import synergyhubback.employee.dto.response.EmployeeListResponse;
 import synergyhubback.employee.dto.response.MyInfoResponse;
 import synergyhubback.employee.dto.response.RecordCardResponse;
 import synergyhubback.employee.service.EmployeeService;
@@ -45,4 +46,12 @@ public class EmployeeController {
 
     }
 
+    /* 팀원 정보 조회 */
+    @GetMapping("/employeeList/{emp_code}")
+    public ResponseEntity<EmployeeListResponse> getEmployeeList(@PathVariable int emp_code) {
+
+        EmployeeListResponse employeeListResponse = employeeService.getEmployeeList(emp_code);
+
+        return ResponseEntity.ok(employeeListResponse);
+    }
 }

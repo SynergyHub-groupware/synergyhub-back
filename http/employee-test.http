@@ -19,3 +19,10 @@ GET http://localhost:8080/employee/2021032
 
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard/2021032
+
+### 팀원 정보 조회
+GET http://localhost:8080/employee/employeeList/2021032
+
+
+
+

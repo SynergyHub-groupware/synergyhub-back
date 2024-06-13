@@ -11,11 +11,12 @@ import synergyhubback.employee.domain.repository.CertificateRepository;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.employee.domain.repository.SchoolInfoRepository;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
+import synergyhubback.employee.dto.response.EmployeeListResponse;
 import synergyhubback.employee.dto.response.MyInfoResponse;
 import synergyhubback.employee.dto.response.RecordCardResponse;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -61,13 +62,23 @@ public class EmployeeService {
 
     public RecordCardResponse getRecordCard(int emp_code) {
 
-        Employee employee = employeeRepository.findById(emp_code);
+        Employee employee = employeeRepository.findByEmpCode(emp_code);
 
-        SchoolInfo schoolInfo = schoolInfoRepository.findById(emp_code);
+        List<SchoolInfo> schoolInfos = schoolInfoRepository.findAllByEmpCode(emp_code);
 
-        Certificate certificate = certificateRepository.findById(emp_code);
+        List<Certificate> certificates = certificateRepository.findAllByEmpCode(emp_code);
 
 
-        return RecordCardResponse.getRecordCard(employee, schoolInfo, certificate);
+        return RecordCardResponse.getRecordCard(employee, schoolInfos, certificates);
+    }
+
+    public EmployeeListResponse getEmployeeList(int emp_code) {
+
+        String dept_code = employeeRepository.findDeptCodeByEmpCode(emp_code);
+
+        List<Employee> employees = employeeRepository.findAllByDeptCode(dept_code);
+
+
+        return EmployeeListResponse.getEmployeeList(employees);
     }
 }
