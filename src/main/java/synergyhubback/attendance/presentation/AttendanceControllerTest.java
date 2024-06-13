@@ -27,7 +27,6 @@ public class AttendanceControllerTest {
 
     public AttendanceControllerTest(AttendanceService attendanceService) {
         this.attendanceService = attendanceService;
-        attendances = new ArrayList<>();
     }
 
     @Operation(summary = "출근 등록", description = "출근을 등록한다.")
@@ -46,6 +45,7 @@ public class AttendanceControllerTest {
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
     @GetMapping("/all")
     public ResponseEntity<ResponseMessage> findAllAttendances() {
+        List<Attendance> attendances = attendanceService.findAllAttendances();
 
         /* 응답 헤더 설정 */
         HttpHeaders headers = new HttpHeaders();

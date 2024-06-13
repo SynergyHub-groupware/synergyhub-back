@@ -17,6 +17,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     @Query("SELECT a FROM Attendance a WHERE a.atdDate BETWEEN :startDate AND :endDate")
     List<Attendance> findAttendanceInDateRange(@Param("startDate") LocalDate startDate, @Param("endDate")LocalDate endDate);
 
+    /* 가장 최신 근태 기록 조회 */
+    Attendance findTopByOrderByAtdCodeDesc();
+
     /* 상세 근태 기록 조회 : 직급에 따라 조회할 수 있는 범위 제한 */
 
     /* 나의 초과근무 기록 조회 */
