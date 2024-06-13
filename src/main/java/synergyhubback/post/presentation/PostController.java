@@ -3,14 +3,11 @@ package synergyhubback.post.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import synergyhubback.post.domain.entity.AttachmentEntity;
+import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.post.domain.entity.PostEntity;
-import synergyhubback.post.dto.request.PostFileDTO;
+import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.service.PostService;
 
@@ -21,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("/post")
 public class PostController {
@@ -31,20 +29,25 @@ public class PostController {
 
 
     @PostMapping("/add")
-    public String addProduct(@RequestParam List<MultipartFile> attachFile,
-                             PostEntity Post, Model model) {
+    public String addProduct(@RequestParam("attachFile") List<MultipartFile> attachFile,
+                             @RequestParam("postName") String postName,
+                             @RequestParam("postCon") String postCon,
+                             @RequestParam(value = "postCommSet", defaultValue = "false") PostCommSet postCommSet,
+                             @RequestParam(value = "fixStatus", defaultValue = "false") char fixStatus,
+                             @RequestParam(value = "noticeStatus", defaultValue = "false") char noticeStatus,
+                             Model model) {
         // 상품 정보 저장
-
+        System.out.println("게시글 등록 메소드 작동시작");
 
 
         /* 상품 등록하기 */
         PostRequest newPost = new PostRequest();
         newPost.setPostCode("Pst-"+postService.LastPost().getPostCode()+1);
-        newPost.setPostName(Post.getPostName());
-        newPost.setPostCon(Post.getPostCon());
-        newPost.setPostCommSet(Post.getPostCommSet());
-        newPost.setFixStatus(Post.getFixStatus());
-        newPost.setNoticeStatus(Post.getNoticeStatus());
+        newPost.setPostName(postName);
+        newPost.setPostCon(postCon);
+        newPost.setPostCommSet(postCommSet);
+        newPost.setFixStatus(fixStatus);
+        newPost.setNoticeStatus(noticeStatus);
 
         PostEntity post= postService.insertPost(newPost);
 

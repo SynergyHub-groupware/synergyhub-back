@@ -1,4 +1,4 @@
-package synergyhubback.post.domain.entity;
+package synergyhubback.common.attachment;
 
 import jakarta.persistence.*;
 import lombok.Getter;

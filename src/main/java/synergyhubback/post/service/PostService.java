@@ -3,11 +3,10 @@ package synergyhubback.post.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import synergyhubback.post.domain.entity.AttachmentEntity;
+import synergyhubback.common.attachment.AttachmentEntity;
+import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.post.domain.entity.PostEntity;
-import synergyhubback.post.domain.repository.AttachmentRepository;
 import synergyhubback.post.domain.repository.PostRepository;
-import synergyhubback.post.dto.request.PostFileDTO;
 import synergyhubback.post.dto.request.PostRequest;
 
 import java.util.List;
