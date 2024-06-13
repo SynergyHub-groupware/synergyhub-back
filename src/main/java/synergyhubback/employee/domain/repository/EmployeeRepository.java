@@ -14,4 +14,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Optional<Employee> findByEmpCode(int empCode);
 
     Optional<Employee> findByRefreshToken(String refreshToken);
+
+    /* 입사년월로 사원코드 생성 */
+    @Query("SELECT COUNT(e) FROM Employee e WHERE FUNCTION('DATE_FORMAT', e.hire_date, '%Y%m') = :hireYearMonth")
+    long countByHireYearMonth(String hireYearMonth);
+
 }

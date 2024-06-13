@@ -46,8 +46,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+        Integer empCode = Integer.parseInt(userDetails.getUsername());
+
         return Map.of(
-                "emp_code", userDetails.getUsername()
+                "emp_code", empCode
         );
     }
 

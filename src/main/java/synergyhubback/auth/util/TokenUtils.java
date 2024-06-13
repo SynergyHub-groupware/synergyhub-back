@@ -66,7 +66,7 @@ public class TokenUtils {
                 .setHeader(createHeader())
                 .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
-                .signWith(createSignature(), SignatureAlgorithm.ES512)
+                .signWith(createSignature(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -76,7 +76,7 @@ public class TokenUtils {
                 .setHeader(createHeader())
                 .setSubject("RefreshToken")
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-                .signWith(createSignature(), SignatureAlgorithm.ES512)
+                .signWith(createSignature(), SignatureAlgorithm.HS512)
                 .compact();
     }
 

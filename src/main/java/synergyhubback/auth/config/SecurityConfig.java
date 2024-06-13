@@ -53,8 +53,9 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET, "/approvalimgs/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/postimgs/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/messageimgs/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/employee/empRegist").permitAll();
                     auth.requestMatchers("/emp/auth/login").permitAll();
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 })
                 // 로그인 필터 이전 커스텀 로그인 필터 설정
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

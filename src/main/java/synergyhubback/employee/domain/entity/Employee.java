@@ -22,7 +22,7 @@ public class Employee {
     @Id
     private int emp_code;
     private String emp_name;
-    private int emp_pass;
+    private String emp_pass;
     private String social_security_no;
     private String email;
     private String phone;
@@ -40,7 +40,7 @@ public class Employee {
     private int bank_code;
     private String refreshToken;    // 생성함
 
-    public Employee(int emp_code, String emp_name, int emp_pass, String social_security_no, LocalDate hire_date, String dept_code, String title_code, String position_code) {
+    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String dept_code, String title_code, String position_code, String emp_status) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
         this.emp_pass = emp_pass;
@@ -49,9 +49,10 @@ public class Employee {
         this.dept_code = dept_code;
         this.title_code = title_code;
         this.position_code = position_code;
+        this.emp_status = emp_status;
     }
 
-    public static Employee regist(int emp_code, String emp_name, int emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date) {
+    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date, String emp_status) {
 
         return new Employee(
                 emp_code,
@@ -61,12 +62,14 @@ public class Employee {
                 hire_date,
                 dept_code,
                 title_code,
-                position_code
+                position_code,
+                emp_status
         );
     }
 
     // 생성함
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+        System.out.println("updateRefreshToken");
     }
 }

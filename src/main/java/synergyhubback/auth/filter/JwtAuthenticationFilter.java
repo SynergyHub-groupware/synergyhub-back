@@ -43,6 +43,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // token 없이 요청 발생한 경우 다음 필터로 진행
         filterChain.doFilter(request, response);
 
-
     }
 }

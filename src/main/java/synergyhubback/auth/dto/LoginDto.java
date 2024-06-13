@@ -11,7 +11,7 @@ public class LoginDto {
 
     private final int emp_code;
     private final String emp_name;
-    private final int emp_pass;
+    private final String emp_pass;
 
     public static LoginDto from(Employee employee) {
         return new LoginDto(
