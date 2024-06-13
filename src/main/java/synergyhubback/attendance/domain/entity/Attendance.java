@@ -2,6 +2,7 @@ package synergyhubback.attendance.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -24,18 +25,35 @@ public class Attendance {
     private LocalTime atdEndTime;       //지정퇴근시간
     private LocalTime startTime;        //출근시간
     private LocalTime endTime;          //퇴근시간
-    private int empCode;                //사원코드 (추후 fk)
+    private int empCode;                //사원코드
     private int atsCode;                //근무상태코드 (추후 fk)
 
 
-    public Attendance(int newAtdCode, LocalTime startTime) {
-        this.atdCode = newAtdCode;
-        this.atdDate = LocalDate.now();
+    @Builder
+    public Attendance(int atdCode, LocalDate atdDate, LocalTime atdStartTime, LocalTime atdEndTime, LocalTime startTime, LocalTime endTime, int empCode, int atsCode) {
+        this.atdCode = atdCode;
+        this.atdDate = atdDate;
+        this.atdStartTime = atdStartTime;
+        this.atdEndTime = atdEndTime;
         this.startTime = startTime;
-        this.atdStartTime = LocalTime.of(9, 0);
-        this.atdEndTime = LocalTime.of(18, 0);
-        this.empCode = 2024031;
-        this.atsCode = 1;
+        this.endTime = endTime;
+        this.empCode = empCode;
+        this.atsCode = atsCode;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Attendance{");
+        sb.append("atdCode=").append(atdCode);
+        sb.append(", atdDate=").append(atdDate);
+        sb.append(", atdStartTime=").append(atdStartTime);
+        sb.append(", atdEndTime=").append(atdEndTime);
+        sb.append(", startTime=").append(startTime);
+        sb.append(", endTime=").append(endTime);
+        sb.append(", empCode=").append(empCode);
+        sb.append(", atsCode=").append(atsCode);
+        sb.append('}');
+        return sb.toString();
     }
 
 }

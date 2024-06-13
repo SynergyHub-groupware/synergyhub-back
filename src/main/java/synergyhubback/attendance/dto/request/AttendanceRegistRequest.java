@@ -19,4 +19,18 @@ public class AttendanceRegistRequest {
     private int empCode;                //사원코드 (추후 fk)
     private int atsCode;                //근무상태코드 (추후 fk)
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AttendanceRegistRequest{");
+        sb.append("atdCode=").append(atdCode);
+        sb.append(", atdDate=").append(atdDate);
+        sb.append(", atdStartTime=").append(atdStartTime);
+        sb.append(", atdEndTime=").append(atdEndTime);
+        sb.append(", startTime=").append(startTime);
+        sb.append(", endTime=").append(endTime);
+        sb.append(", empCode=").append(empCode);
+        sb.append(", atsCode=").append(atsCode);
+        sb.append('}');
+        return sb.toString();
+    }
 }

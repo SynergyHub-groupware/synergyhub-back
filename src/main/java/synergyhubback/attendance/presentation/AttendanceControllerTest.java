@@ -29,18 +29,18 @@ public class AttendanceControllerTest {
         this.attendanceService = attendanceService;
     }
 
-    @Operation(summary = "출근 등록", description = "출근을 등록한다.")
-    @PostMapping("/regist")
-    public ResponseEntity<Void> registAttendance(@Valid @RequestBody AttendanceRegistStartTimeRequest attendanceRegistStartTimeRequest) {
-
-        /* 근태 기록에 등록 */
-        int newAtdCode = attendances.isEmpty() ? 1 : attendances.get(attendances.size() - 1).getAtdCode() + 1;
-        attendances.add(new Attendance(newAtdCode, attendanceRegistStartTimeRequest.getStartTime()));
-
-        return ResponseEntity
-                .created(URI.create("/api/attendance/regist/" + attendances.get(attendances.size() - 1).getAtdCode()))
-                .build();
-    }
+//    @Operation(summary = "출근 등록", description = "출근을 등록한다.")
+//    @PostMapping("/regist")
+//    public ResponseEntity<Void> registAttendance(@Valid @RequestBody AttendanceRegistStartTimeRequest attendanceRegistStartTimeRequest) {
+//
+//        /* 근태 기록에 등록 */
+//        int newAtdCode = attendances.isEmpty() ? 1 : attendances.get(attendances.size() - 1).getAtdCode() + 1;
+//        attendances.add(new Attendance(newAtdCode, attendanceRegistStartTimeRequest.getStartTime()));
+//
+//        return ResponseEntity
+//                .created(URI.create("/api/attendance/regist/" + attendances.get(attendances.size() - 1).getAtdCode()))
+//                .build();
+//    }
 
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
     @GetMapping("/all")

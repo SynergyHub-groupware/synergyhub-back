@@ -9,6 +9,8 @@ import synergyhubback.attendance.domain.entity.Attendance;
 import synergyhubback.attendance.domain.repository.AttendanceRepository;
 import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
 import synergyhubback.common.util.DateUtils;
+import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.repository.EmployeeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,30 +21,51 @@ public class AttendanceService {
 
     private final ModelMapper modelMapper;
     private final AttendanceRepository attendanceRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository) {
+    public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository, EmployeeRepository employeeRepository) {
         this.modelMapper = modelMapper;
         this.attendanceRepository = attendanceRepository;
+        this.employeeRepository = employeeRepository;
     }
 
-    @Scheduled(cron = "30 17 13 * * *") // 매일 오후 1시 00분에 실행
+    /* 근무 일지 생성 */
+    @Scheduled(cron = "00 00 04 * * *") // 매일 오전 4시 00분에 실행
+    @Transactional
     public void createDailyAttendanceRecord() {
 
-        // 새로운 근무기록 생성
-        AttendanceRegistRequest newAttendanceRequest = new AttendanceRegistRequest();
-        newAttendanceRequest.setAtdDate(LocalDate.now()); // 현재 날짜로 설정
-        newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));   // 오전 09:00 으로 설정
-        newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
-        newAttendanceRequest.setEmpCode(2024031);                                // 사원 코드
-        newAttendanceRequest.setAtsCode(1);                                      // 근무 상태, 디폴트는 미출근?
+        //모든 사원 목록 조회
+        List<Employee> employees = employeeRepository.findAll();
 
-        System.out.println(newAttendanceRequest);
+        for (Employee employee : employees) {
+            int empCode = employee.getEmp_code();
 
-        Attendance newAttendance = modelMapper.map(newAttendanceRequest, Attendance.class);
+            // 사원의 최신 근무기록 조회
+            Attendance lastestAttendance = attendanceRepository.findTopByOrderByAtdCodeDesc();
 
-        System.out.println(newAttendance);
+            // 새로운 근무기록 생성
+            AttendanceRegistRequest newAttendanceRequest = new AttendanceRegistRequest();
 
-        attendanceRepository.save(newAttendance);
+            if (lastestAttendance != null) {
+                newAttendanceRequest.setAtdCode(lastestAttendance.getAtdCode() + 1);
+            } else {
+                newAttendanceRequest.setAtsCode(1);
+            }
+
+            newAttendanceRequest.setAtdDate(LocalDate.now()); // 현재 날짜로 설정
+            newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));   // 오전 09:00 으로 설정
+            newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
+            newAttendanceRequest.setEmpCode(empCode);                   // 사원 코드 설정
+            newAttendanceRequest.setAtsCode(1);                         // 근무 상태, 디폴트는 미출근?
+
+            System.out.println(newAttendanceRequest);
+
+            Attendance newAttendance = modelMapper.map(newAttendanceRequest, Attendance.class);
+
+            System.out.println(newAttendance);
+
+            attendanceRepository.save(newAttendance);
+        }
     }
 
     /* 근무일지 기록 */
