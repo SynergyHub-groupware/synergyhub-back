@@ -15,5 +15,7 @@ public class Form {
     private int afCode;
     private String afName;
     private String afExplain;
-    private int lsCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lsCode")
+    private LineSort lineSort;
 }
