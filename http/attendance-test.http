@@ -1,0 +1,9 @@
+### 전체 근태 기록 조회
+GET http://localhost:8080/api/attendance/all
+
+### 금주의 근태 기록 조회
+GET http://localhost:8080/api/attendance/current-week
+
+### 출근시간 등록
+PUT http://localhost:8080/api/attendance/registStartTime/2020011
+Content-Type: application/json
