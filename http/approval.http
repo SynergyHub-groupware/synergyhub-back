@@ -1,0 +1,2 @@
+### 결재양식리스트 조회
+GET http://localhost:8080/approval/formList
