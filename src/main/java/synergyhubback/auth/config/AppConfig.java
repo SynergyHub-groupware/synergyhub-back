@@ -22,7 +22,7 @@ public class AppConfig {
                         .atdEndTime(((AttendanceRegistRequest) request.getSource()).getAtdEndTime())
                         .startTime(((AttendanceRegistRequest) request.getSource()).getStartTime())
                         .endTime(((AttendanceRegistRequest) request.getSource()).getEndTime())
-                        .empCode(((AttendanceRegistRequest) request.getSource()).getEmpCode())
+                        .employee(((AttendanceRegistRequest) request.getSource()).getEmployee())
                         .atsCode(((AttendanceRegistRequest) request.getSource()).getAtsCode())
                         .build());
         return modelMapper;

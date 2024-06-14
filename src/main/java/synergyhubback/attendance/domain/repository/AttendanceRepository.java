@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import synergyhubback.attendance.domain.entity.Attendance;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     /* 가장 최신 근태 기록 조회 */
     Attendance findTopByOrderByAtdCodeDesc();
+
+    Attendance findByEmployeeAndAtdDate(Employee employee, LocalDate currentDate);
+
 
     /* 상세 근태 기록 조회 : 직급에 따라 조회할 수 있는 범위 제한 */
 

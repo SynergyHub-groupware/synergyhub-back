@@ -5,9 +5,5 @@ GET http://localhost:8080/api/attendance/all
 GET http://localhost:8080/api/attendance/current-week
 
 ### 출근시간 등록
-POST http://localhost:8080/api/attendance/regist
+PUT http://localhost:8080/api/attendance/registStartTime/2020011
 Content-Type: application/json
-
-{
-  "startTime" : "08:58:59"
-}

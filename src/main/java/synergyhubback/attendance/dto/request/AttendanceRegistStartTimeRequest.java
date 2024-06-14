@@ -9,6 +9,10 @@ import java.time.LocalTime;
 @Setter
 public class AttendanceRegistStartTimeRequest {
 
-    private LocalTime startTime;        //출근시간
+    private LocalTime startTime;
+
+    public AttendanceRegistStartTimeRequest() {
+        this.startTime = LocalTime.now();
+    }
 
 }

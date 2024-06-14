@@ -1,13 +1,16 @@
 package synergyhubback.attendance.service;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.attendance.domain.entity.Attendance;
 import synergyhubback.attendance.domain.repository.AttendanceRepository;
 import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
+import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
 import synergyhubback.common.util.DateUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
@@ -15,9 +18,12 @@ import synergyhubback.employee.domain.repository.EmployeeRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AttendanceService {
+
+    private List<Attendance> attendances;
 
     private final ModelMapper modelMapper;
     private final AttendanceRepository attendanceRepository;
@@ -30,7 +36,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "00 00 04 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "00 05 13 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -55,7 +61,7 @@ public class AttendanceService {
             newAttendanceRequest.setAtdDate(LocalDate.now()); // 현재 날짜로 설정
             newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));   // 오전 09:00 으로 설정
             newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
-            newAttendanceRequest.setEmpCode(empCode);                   // 사원 코드 설정
+            newAttendanceRequest.setEmployee(employee);                   // 사원 코드 설정
             newAttendanceRequest.setAtsCode(1);                         // 근무 상태, 디폴트는 미출근?
 
             System.out.println(newAttendanceRequest);
@@ -66,6 +72,33 @@ public class AttendanceService {
 
             attendanceRepository.save(newAttendance);
         }
+    }
+
+    /* 출근시간 등록 */
+    public Attendance registAttendanceStartTime(int empCode) {
+
+        // 사원 조회
+        Employee employee = employeeRepository.findById(empCode)
+                .orElseThrow(() -> new EntityNotFoundException("사원을 찾을 수 없습니다."));
+
+        // 현재 날짜 계산
+        LocalDate currentDate = LocalDate.now();
+
+        // 근태일지 조회
+        Attendance foundAttendance = attendanceRepository.findByEmployeeAndAtdDate(employee, currentDate);
+
+        if (foundAttendance == null) {
+            throw new EntityNotFoundException("근태 기록을 찾을 수 없습니다.");
+        }
+
+        // 현재 시간을 출근 시간으로 설정
+        LocalTime currentTime = LocalTime.now();
+        foundAttendance.updateStartTime(currentTime);
+
+        // 업데이트된 근태 기록 저장
+        attendanceRepository.save(foundAttendance);
+
+        return foundAttendance;
     }
 
     /* 근무일지 기록 */
@@ -104,4 +137,6 @@ public class AttendanceService {
     public Attendance getLatestAttendanceRecord() {
         return attendanceRepository.findTopByOrderByAtdCodeDesc();
     }
+
+
 }

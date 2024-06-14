@@ -1,15 +1,16 @@
 package synergyhubback.employee.domain.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import synergyhubback.attendance.domain.entity.Attendance;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "employee_info")
@@ -50,18 +51,4 @@ public class Employee {
         this.position_code = position_code;
     }
 
-    public static Employee regist(int emp_code, String emp_name, int emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date, String emp_status) {
-
-        return new Employee(
-                emp_code,
-                emp_name,
-                emp_pass,
-                social_security_no,
-                hire_date,
-                emp_status,
-                dept_code,
-                title_code,
-                position_code
-        );
-    }
 }
