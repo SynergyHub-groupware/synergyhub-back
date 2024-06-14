@@ -1,4 +1,4 @@
 package synergyhubback.attendance.dto.response;
 
-public class index {
+public class AttendancesResponse {
 }
