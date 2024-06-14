@@ -8,6 +8,7 @@ import synergyhubback.common.util.DateUtils;
 
 import java.time.LocalDate;
 
+@EnableJpaAuditing
 @SpringBootApplication
 @EnableScheduling
 public class SynergyHubBackApplication {
