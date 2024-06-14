@@ -30,9 +30,6 @@ public class Employee {
     private String emp_status;
     private String emp_sign;
     private String emp_img;
-//    private String dept_code;
-//    private String title_code;
-//    private String position_code;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,9 +53,7 @@ public class Employee {
         this.social_security_no = social_security_no;
         this.hire_date = hire_date;
         this.emp_status = emp_status;
-//        this.dept_code = dept_code;
-//        this.title_code = title_code;
-//        this.position_code = position_code;
+
     }
 
     public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date, String emp_status) {
