@@ -53,11 +53,11 @@ INSERT INTO APPROVAL_APPOINT VALUES
 ('AAPP1', 'APP-2024-05-0001', '2024-02-01', '2024 발령');
 
 INSERT INTO APPOINT_DETAIL (AAPP_CODE, AAPP_BEFORE, AAPP_AFTER, AAPP_TYPE, EMP_CODE) VALUES
-             ('AAPP1', 'T5', 'T4', '진급', '2021032'),
-             ('AAPP1', 'T6', 'T5', '진급', '2022041'),
-             ('AAPP1', 'T6', 'T5', '진급', '2022091'),
-             ('AAPP1', 'T6', 'T5', '진급', '2022073'),
-             ('AAPP1', 'D15', 'D14', '부서이동', '2023062');
+('AAPP1', 'T5', 'T4', '진급', '2021032'),
+('AAPP1', 'T6', 'T5', '진급', '2022041'),
+('AAPP1', 'T6', 'T5', '진급', '2022091'),
+('AAPP1', 'T6', 'T5', '진급', '2022073'),
+('AAPP1', 'D15', 'D14', '부서이동', '2023062');
 
 INSERT INTO APPROVAL_FORM VALUES
 (1, '인사발령', NULL, 1),

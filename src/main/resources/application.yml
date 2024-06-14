@@ -6,7 +6,7 @@ spring:
     password: root
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -16,6 +16,11 @@ spring:
       location: C:/SynergyHub
       max-file-size: 50MB
       max-request-size: 50MB
+
+mybatis:
+  mapper-locations: mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
 
 # image upload dir
 image:

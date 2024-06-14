@@ -6,5 +6,6 @@ import synergyhubback.approval.domain.entity.Document;
 import java.util.List;
 
 public interface DocRepository extends JpaRepository<Document, Integer> {
-    List<Document> findByEmpCode(Integer empCode);
+
+    List<Document> findByEmpCodeOrderByAdReportDateDesc(Integer empCode);
 }

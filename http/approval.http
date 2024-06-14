@@ -7,6 +7,16 @@ GET http://localhost:8080/approval/formLine
 ### 결재라인 특정 조회
 GET http://localhost:8080/approval/formLine?lsCode=3
 
+### 결재라인 회원 조회(본인 기준)
+GET http://localhost:8080/approval/formLineEmp?deptCode=D15&titleCode=T6
+
+
+
+
+
+
+
+
 ### 보낸 결재함 전체 조회 (작성자 기준)
 GET http://localhost:8080/approval/document?empCode=2021048
 

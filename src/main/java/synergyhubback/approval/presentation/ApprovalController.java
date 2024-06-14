@@ -3,9 +3,9 @@ package synergyhubback.approval.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import synergyhubback.approval.dto.response.DocumentResponse;
 import synergyhubback.approval.dto.response.FormLineResponse;
 import synergyhubback.approval.dto.response.FormListResponse;
+import synergyhubback.approval.dto.response.LineEmpDTO;
 import synergyhubback.approval.service.ApprovalService;
 
 import java.util.List;
@@ -28,23 +28,19 @@ public class ApprovalController {
         return ResponseEntity.ok(formLine);
     }
 
-//    @GetMapping("/formLine")
-//    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam(required = false) final Integer lsCode) {
-//        List<FormLineResponse> formLine;
-//
-//        if (lsCode != null && lsCode > 0) {
-//            formLine = approvalService.findFormLine(lsCode);
-//        } else {
-//            formLine = approvalService.findAllFormLines();
-//        }
-//
-//        return ResponseEntity.ok(formLine);
+    @GetMapping("/formLineEmp")
+    public ResponseEntity<List<LineEmpDTO>> findLineEmpList(@RequestParam final String deptCode, @RequestParam final String titleCode){
+        final List<LineEmpDTO> lineEmpList = approvalService.findLineEmpList(deptCode, titleCode);
+        return ResponseEntity.ok(lineEmpList);
+    }
+
+    
+
+//    @GetMapping("/document")
+//    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
+//        final List<DocumentResponse> docList = approvalService.findDocList(empCode);
+//        return ResponseEntity.ok(docList);
 //    }
 
-    @GetMapping("/document")
-    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
-        final List<DocumentResponse> docList = approvalService.findDocList(empCode);
-        return ResponseEntity.ok(docList);
-    }
 
 }
