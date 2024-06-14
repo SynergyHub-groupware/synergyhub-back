@@ -2,14 +2,15 @@ package synergyhubback.employee.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
-import synergyhubback.employee.dto.response.EmployeeListResponse;
-import synergyhubback.employee.dto.response.MyInfoResponse;
-import synergyhubback.employee.dto.response.RecordCardResponse;
+import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
@@ -53,5 +54,41 @@ public class EmployeeController {
         EmployeeListResponse employeeListResponse = employeeService.getEmployeeList(emp_code);
 
         return ResponseEntity.ok(employeeListResponse);
+    }
+
+    /* 부서 전체 조회 */
+    @GetMapping("/departments")
+    public ResponseEntity<List<GetDeptTitleResponse>> getDepartments() {
+
+        List<GetDeptTitleResponse> getDeptTitleResponse = employeeService.getDepartments();
+
+        return ResponseEntity.ok(getDeptTitleResponse);
+    }
+
+    /* 부서 상세 조회 */
+    @GetMapping("/departmentList/{dept_code}")
+    public ResponseEntity<DepartmentResponse> getDepartmentList(@PathVariable String dept_code) {
+
+        DepartmentResponse departmentResponse = employeeService.getDepartmentList(dept_code);
+
+        return ResponseEntity.ok(departmentResponse);
+    }
+
+    /* orgChart 조회 */
+    @GetMapping("/org")
+    public ResponseEntity<List<OrgResponse>> getOrg() {
+
+        List<OrgResponse> orgResponses = employeeService.getOrgEmps();
+
+        return ResponseEntity.ok(orgResponses);
+    }
+
+    /* 조직도 상세 조회 */
+    @GetMapping("/orgDetail/{emp_code}")
+    public ResponseEntity<OrgDetailResponse> getOrgDetail(@PathVariable int emp_code) {
+
+        OrgDetailResponse orgDetailResponse = employeeService.getOrgEmpDetail(emp_code);
+
+        return ResponseEntity.ok(orgDetailResponse);
     }
 }

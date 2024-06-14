@@ -3,6 +3,7 @@ package synergyhubback.employee.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import synergyhubback.employee.domain.entity.Employee;
 
 import java.util.List;
@@ -22,8 +23,8 @@ public class EmployeeListResponse {
                 .map(employee -> new EmployeeResponse(
                         employee.getEmp_code(),
                         employee.getEmp_name(),
-                        employee.getDept_code(),
-                        employee.getPosition_code(),
+                        employee.getDepartment().getDept_title(),
+                        employee.getPosition().getPosition_name(),
                         employee.getPhone(),
                         employee.getHire_date(),
                         employee.getSocial_security_no()
@@ -31,6 +32,7 @@ public class EmployeeListResponse {
                 .collect(Collectors.toList());
         return new EmployeeListResponse(employeeResponses);
     }
+
 
 }
 

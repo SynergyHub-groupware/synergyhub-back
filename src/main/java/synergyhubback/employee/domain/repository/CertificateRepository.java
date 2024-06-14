@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CertificateRepository extends JpaRepository<Certificate, Integer> {
 
-    /* 아이디로 내정보 조회 */
+    /* 사원코드로 자격증 정보 조회 */
     @Query("SELECT c FROM Certificate c WHERE c.emp_code = :empCode")
     List<Certificate> findAllByEmpCode(int empCode);
 

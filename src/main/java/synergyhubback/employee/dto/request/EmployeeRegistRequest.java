@@ -17,7 +17,7 @@ public class EmployeeRegistRequest {
     @NotBlank
     private final String emp_name;
 
-    private final int emp_pass;
+    private final String emp_pass;
 
     @NotBlank
     private final String social_security_no;
