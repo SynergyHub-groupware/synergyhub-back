@@ -1,6 +1,7 @@
 package synergyhubback.post.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.common.attachment.AttachmentEntity;
@@ -44,5 +45,9 @@ public class PostService {
 
         // PostEntity를 데이터베이스에 저장
         return postRepository.save(postEntity);
+    }
+
+    public List<PostEntity> getAllPostList(Pageable pageable) {
+      return   postRepository.findAll(pageable).getContent();
     }
 }

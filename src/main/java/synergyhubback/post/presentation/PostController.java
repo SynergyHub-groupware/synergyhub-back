@@ -2,6 +2,9 @@ package synergyhubback.post.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +29,13 @@ public class PostController {
     private String POST_FILE_DIR;
 
     private final PostService postService;
-
+    @GetMapping("/list")
+    public ResponseEntity<List<PostEntity>> findPostList( @PageableDefault Pageable pageable) {
+        System.out.println("getList stared");
+        List<PostEntity> posts= postService.getAllPostList(pageable);
+        System.out.println(posts);
+        return ResponseEntity.ok(posts);
+    }
 
     @PostMapping("/add")
     public String addProduct(@RequestParam("attachFile") List<MultipartFile> attachFile,
