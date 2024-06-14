@@ -5,14 +5,11 @@ import org.springframework.data.jpa.repository.Query;
 import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
 import java.util.List;
-
+import java.util.Optional;
 
 
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
-    // 이재현 로그인 관련 repository 로직 생성
-    @Query("SELECT e FROM Employee e WHERE e.emp_code = :empCode")
-    Optional<Employee> findByEmpCode(int empCode);
 
     // 이재현 로그인 관련 repository 로직 생성
     Optional<Employee> findByRefreshToken(String refreshToken);
