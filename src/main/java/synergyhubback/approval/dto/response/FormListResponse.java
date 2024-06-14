@@ -11,12 +11,14 @@ public class FormListResponse {
     private final int afCode;
     private final String afName;
     private final String afExplain;
+    private final int lsCode;
 
     public static FormListResponse from(Form form){
         return new FormListResponse(
             form.getAfCode(),
             form.getAfName(),
-            form.getAfExplain()
+            form.getAfExplain(),
+            form.getLineSort().getLsCode()
         );
     }
 }

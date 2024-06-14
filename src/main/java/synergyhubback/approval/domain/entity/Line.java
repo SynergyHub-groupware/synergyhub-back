@@ -6,16 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "APPROVAL_FORM")
+@Table(name = "APPROVAL_LINE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Form {
+public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int afCode;
-    private String afName;
-    private String afExplain;
-    @ManyToOne(fetch = FetchType.LAZY)
+    private int alCode;
+    private String alSort;
+    private int alOrder;
+    private String alRole;
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lsCode")
     private LineSort lineSort;
 }
