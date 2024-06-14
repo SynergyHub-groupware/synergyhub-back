@@ -1,7 +1,7 @@
 package synergyhubback.employee.service;
 
 import lombok.RequiredArgsConstructor;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.employee.domain.entity.*;
@@ -14,16 +14,53 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
     private final CertificateRepository certificateRepository;
     private final SchoolInfoRepository schoolInfoRepository;
     private final DepartmentRepository departmentRepository;
     private final DeptRelationsRepository deptRelationsRepository;
+
+    // 이재현 로그인 관련 service 로직 생성
+    @Transactional(readOnly = true)
+    public LoginDto findByEmpCode(int emp_code) {
+
+        Employee employee = employeeRepository.findByEmpCode(emp_code)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
+
+        return LoginDto.from(employee);
+    }
+
+    // 이재현 로그인 관련 service 로직 생성
+    public void updateRefreshToken(int emp_code, String refreshToken) {
+        Employee employee = employeeRepository.findByEmpCode(emp_code)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
+        System.out.println("refresh Token 발급");
+
+        employee.updateRefreshToken(refreshToken);
+    }
+
+    // 이재현 로그인 관련 service 로직 생성
+    @Transactional(readOnly = true)
+    public LoginDto findByRefreshToken(String refreshToken) {
+
+        Employee employee = employeeRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_REFRESH_TOKEN));
+
+        return LoginDto.from(employee);
+    }
+
+    public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
+
+        String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
+        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
+        String empCode = hireYearMonth + (count + 1);
 
 //    private final PasswordEncoder passwordEncoder;
 
@@ -33,12 +70,12 @@ public class EmployeeService {
 //        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
 //        int empCode = Integer.parseInt(hireYearMonth + (count + 1));
 
+
         final Employee newEmp = Employee.regist(
 
                 employeeRegistRequest.getEmp_code(),
                 employeeRegistRequest.getEmp_name(),
-//                Integer.parseInt(passwordEncoder.encode(String.valueOf(empCode))),        // 사원코드 비밀번호로 사용
-                employeeRegistRequest.getEmp_pass(),
+                passwordEncoder.encode(empCode),
                 employeeRegistRequest.getSocial_security_no(),
                 employeeRegistRequest.getDept_code(),
                 employeeRegistRequest.getPosition_code(),
@@ -184,6 +221,5 @@ public class EmployeeService {
 
         return OrgDetailResponse.getOrgDetail(employee);
     }
-
 
 }
