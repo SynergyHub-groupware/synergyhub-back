@@ -29,8 +29,8 @@ public class ApprovalController {
     }
 
     @GetMapping("/formLineEmp")
-    public ResponseEntity<List<LineEmpDTO>> findLineEmpList(@RequestParam final String deptCode, @RequestParam final String titleCode){
-        final List<LineEmpDTO> lineEmpList = approvalService.findLineEmpList(deptCode, titleCode);
+    public ResponseEntity<List<LineEmpDTO>> findLineEmpList(@RequestParam final String deptCode, @RequestParam final String titleCode, @RequestParam final Integer lsCode){
+        final List<LineEmpDTO> lineEmpList = approvalService.findLineEmpList(deptCode, titleCode, lsCode);
         return ResponseEntity.ok(lineEmpList);
     }
 

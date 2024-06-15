@@ -8,5 +8,5 @@ import java.util.List;
 
 @Mapper
 public interface LineEmpMapper {
-    List<LineEmpDTO> findLineEmpList(@Param("depCode") String deptCode, @Param("titleCode") String titleCode);
+    List<LineEmpDTO> findLineEmpList(@Param("depCode") String deptCode, @Param("titleCode") String titleCode, @Param("lsCode") Integer lsCode);
 }

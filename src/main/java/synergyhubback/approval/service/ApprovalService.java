@@ -43,8 +43,8 @@ public class ApprovalService {
         return formLine.stream().map(FormLineResponse::from).toList();
     }
 
-    public List<LineEmpDTO> findLineEmpList(final String deptCode, final String titleCode) {
-        return lineEmpMapper.findLineEmpList(deptCode, titleCode);
+    public List<LineEmpDTO> findLineEmpList(final String deptCode, final String titleCode, final Integer lsCode) {
+        return lineEmpMapper.findLineEmpList(deptCode, titleCode, lsCode);
     }
 
 

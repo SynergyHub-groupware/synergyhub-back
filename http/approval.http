@@ -8,7 +8,7 @@ GET http://localhost:8080/approval/formLine
 GET http://localhost:8080/approval/formLine?lsCode=3
 
 ### 결재라인 회원 조회(본인 기준)
-GET http://localhost:8080/approval/formLineEmp?deptCode=D15&titleCode=T6
+GET http://localhost:8080/approval/formLineEmp?deptCode=D15&titleCode=T6&lsCode=3
 
 
 
