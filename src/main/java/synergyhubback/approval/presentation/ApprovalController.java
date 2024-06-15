@@ -1,6 +1,11 @@
 package synergyhubback.approval.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.approval.dto.response.FormLineResponse;
@@ -8,6 +13,13 @@ import synergyhubback.approval.dto.response.FormListResponse;
 import synergyhubback.approval.dto.response.LineEmpDTO;
 import synergyhubback.approval.service.ApprovalService;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -34,7 +46,25 @@ public class ApprovalController {
         return ResponseEntity.ok(lineEmpList);
     }
 
-    
+    @GetMapping("/sign")
+    public ResponseEntity<Resource> getSign(@RequestParam Integer empCode) {
+        String signPath = "C:/SynergyHub/Signimgs/" + empCode + ".png";
+        Path filePath = Paths.get(signPath);
+        Resource resource = new FileSystemResource(filePath);
+
+        if (!resource.exists()) return ResponseEntity.notFound().build();
+
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+
 
 //    @GetMapping("/document")
 //    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
