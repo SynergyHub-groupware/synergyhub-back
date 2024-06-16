@@ -13,11 +13,47 @@ GET http://localhost:8080/approval/formLineEmp?deptCode=D15&titleCode=T6&lsCode=
 ### 결재서명 조회(본인 기준)
 GET http://localhost:8080/approval/sign?empCode=2021048
 
+### 결재 등록
+POST http://localhost:8080/approval/regist?temporary=true
+Content-Type: application/json
 
-
+{
+  "adTitle": "테스트",
+  "empCode": "0000",
+  "adReportDate": "2023-04-15",
+  "adStatus": "대기",
+  "form": {
+    "afCode": 1
+  },
+  "approvalAppoint": {
+    "aappNo": "APP-2024-05-0001",
+    "aappDate": "2024-02-01",
+    "aappTitle": "2024 발령"
+  },
+  "appointDetailList": [
+    {
+      "adetBefore": "T5",
+      "adetAfter": "T4",
+      "adetType": "진급",
+      "empCode": "2021032"
+    },
+    {
+      "adetBefore": "T6",
+      "adetAfter": "T5",
+      "adetType": "진급",
+      "empCode": "2022041"
+    },
+    {
+      "adetBefore": "D15",
+      "adetAfter": "D14",
+      "adetType": "부서이동",
+      "empCode": "2023062"
+    }
+  ]
+}
 
 
 ### 보낸 결재함 전체 조회 (작성자 기준)
-GET http://localhost:8080/approval/document?empCode=2021048
+GET http://localhost:8080/approval/send/document?empCode=2021048
 
 ### 받은 결재함 전체 조회 ()

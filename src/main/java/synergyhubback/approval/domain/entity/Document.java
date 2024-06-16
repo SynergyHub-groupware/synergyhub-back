@@ -18,8 +18,24 @@ public class Document {
     private String adTitle;
     private int empCode;
     private LocalDate adReportDate;
-    private String adDetail;
-    @ManyToOne(fetch = FetchType.LAZY)
+    private String adStatus;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "afCode")
     private Form form;
+
+    private String adDetail;
+
+    private Document(String adTitle, int empCode, LocalDate adReportDate, String adStatus, Form form, String adDetail) {
+        this.adTitle = adTitle;
+        this.empCode = empCode;
+        this.adReportDate = adReportDate;
+        this.adStatus = adStatus;
+        this.form = form;
+        this.adDetail = adDetail;
+    }
+
+    public static Document of(String adTitle, int empCode, LocalDate adReportDate, String adStatus, Form form, String adDetail) {
+        return new Document(adTitle, empCode, adReportDate, adStatus, form, adDetail);
+    }
 }

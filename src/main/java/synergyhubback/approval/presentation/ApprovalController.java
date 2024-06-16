@@ -1,22 +1,19 @@
 package synergyhubback.approval.presentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.FormLineResponse;
 import synergyhubback.approval.dto.response.FormListResponse;
 import synergyhubback.approval.dto.response.LineEmpDTO;
 import synergyhubback.approval.service.ApprovalService;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,7 +61,11 @@ public class ApprovalController {
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
-
+    @PostMapping("/regist")
+    public ResponseEntity<Void> regist(@RequestBody @Valid final DocRegistRequest docRegistRequest, @RequestParam boolean temporary){
+        approvalService.regist(docRegistRequest, temporary);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
 //    @GetMapping("/document")
 //    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
