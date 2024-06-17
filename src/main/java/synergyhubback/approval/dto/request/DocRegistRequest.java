@@ -25,7 +25,8 @@ public class DocRegistRequest {
     private Etc etc;
     private Personal personal;
     private ApprovalAttendance approvalAttendance;
-
     private ApprovalAppoint approvalAppoint;
     private List<AppointDetail> appointDetailList;
+
+    private List<TrueLine> trueLineList;
 }

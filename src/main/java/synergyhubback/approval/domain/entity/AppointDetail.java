@@ -23,7 +23,7 @@ public class AppointDetail {
     private String adetType;
     private int empCode;
 
-    public AppointDetail(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, int empCode){
+    private AppointDetail(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, int empCode){
         this.approvalAppoint = approvalAppoint;
         this.adetBefore = adetBefore;
         this.adetAfter = adetAfter;

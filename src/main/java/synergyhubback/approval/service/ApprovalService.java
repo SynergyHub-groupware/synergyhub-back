@@ -28,6 +28,9 @@ public class ApprovalService {
     private final ApprovalAttendanceRepository approvalAttendanceRepository;
     private final ApprovalAppointRepository approvalAppointRepository;
     private final AppointDetailRepository appointDetailRepository;
+    private final ApprovalBoxRepository approvalBoxRepository;
+    private final ApprovalStorageRepository approvalStorageRepository;
+    private final TrueLineRepository trueLineRepository;
 
     @Transactional(readOnly = true)
     public List<FormListResponse> findFormList() {
@@ -55,15 +58,14 @@ public class ApprovalService {
     @Transactional
     public void regist(DocRegistRequest docRegistRequest, @RequestParam boolean temporary) {
         int afCode = docRegistRequest.getForm().getAfCode();
-        System.out.println("afCode = " + afCode);
-
         String code = "";
 
+        // 결재양식별 결재상세내용 해당 테이블에 저장
         if (afCode == 2 || afCode == 3 || afCode == 4 || afCode == 5) {
             code = generateAttendanceCode();
             ApprovalAttendance newAttendance = null;
 
-            if(afCode == 2){
+            if(afCode == 2){            // 예외근무신청서
                  newAttendance = ApprovalAttendance.of( code,
                         docRegistRequest.getApprovalAttendance().getAattSort(),
                         docRegistRequest.getApprovalAttendance().getAattStart(),
@@ -71,7 +73,7 @@ public class ApprovalService {
                         docRegistRequest.getApprovalAttendance().getAattPlace(),
                         docRegistRequest.getApprovalAttendance().getAattCon()
                 );
-            }else if(afCode == 3){
+            }else if(afCode == 3){      // 초과근무신청서
                 newAttendance = ApprovalAttendance.of( code,
                         docRegistRequest.getApprovalAttendance().getAattReason(),
                         docRegistRequest.getApprovalAttendance().getAattSort(),
@@ -80,13 +82,13 @@ public class ApprovalService {
                         docRegistRequest.getApprovalAttendance().getAattPlace(),
                         docRegistRequest.getApprovalAttendance().getAattCon()
                 );
-            }else if(afCode == 4){
+            }else if(afCode == 4){      // 지각사유서
                 newAttendance = ApprovalAttendance.of( code,
                         docRegistRequest.getApprovalAttendance().getAattSort(),
                         docRegistRequest.getApprovalAttendance().getAattOccur(),
                         docRegistRequest.getApprovalAttendance().getAattReason()
                 );
-            }else if(afCode == 5){
+            }else if(afCode == 5){      // 휴가신청서
                 newAttendance = ApprovalAttendance.of( code,
                         docRegistRequest.getApprovalAttendance().getAattSort(),
                         docRegistRequest.getApprovalAttendance().getAattStart(),
@@ -95,7 +97,7 @@ public class ApprovalService {
             }
 
             approvalAttendanceRepository.save(newAttendance);
-        } else if (afCode == 7 || afCode == 8 || afCode == 9) {
+        } else if (afCode == 7 || afCode == 8) {        // 휴직신청서 & 사직신청서
             code = generatePersonalCode();
             Personal newPersonal = Personal.of( code,
                     docRegistRequest.getPersonal().getApStart(),
@@ -104,7 +106,7 @@ public class ApprovalService {
                     docRegistRequest.getPersonal().getApReason()
             );
             personalRepository.save(newPersonal);
-        } else if (afCode == 1) {
+        } else if (afCode == 1) {   // 인사발령
             code = generateAppointCode();
             ApprovalAppoint newAppoint = ApprovalAppoint.of( code,
                     docRegistRequest.getApprovalAppoint().getAappNo(),
@@ -115,7 +117,7 @@ public class ApprovalService {
 
             List<AppointDetail> AppointDetailList = docRegistRequest.getAppointDetailList();
             for(AppointDetail detail: AppointDetailList){
-                AppointDetail newDetail = new AppointDetail(
+                AppointDetail newDetail = AppointDetail.of(
                         newAppoint,
                         detail.getAdetBefore(),
                         detail.getAdetAfter(),
@@ -124,13 +126,15 @@ public class ApprovalService {
                 );
                 appointDetailRepository.save(newDetail);
             }
-        } else {
+        } else {    // 기타결재
             code = generateEtcCode();
             Etc newEtc = Etc.of(code, docRegistRequest.getEtc().getAeCon());
             etcRepository.save(newEtc);
         }
 
+        // 결재문서 저장
         Document newDoc = Document.of(
+                generateDocumentCode(),
                 docRegistRequest.getAdTitle(),
                 docRegistRequest.getEmpCode(),
                 docRegistRequest.getAdReportDate(),
@@ -138,34 +142,56 @@ public class ApprovalService {
                 docRegistRequest.getForm(),
                 code
         );
-
         docRepository.save(newDoc);
 
-        int adCode = newDoc.getAdCode();
-        System.out.println("adCode = " + adCode);
-        if(temporary){
-            // 임시저장 해야돼
+        // 방금 저장한 결재문서 조회해오기
+        Document findDoc = docRepository.findByAdDetail(code);
+
+        // 실결재라인 저장
+        List<TrueLine> TrueLineList = docRegistRequest.getTrueLineList();
+        for(TrueLine line: TrueLineList){
+            TrueLine newLine = TrueLine.of(
+                    findDoc,
+                    line.getTalOrder(),
+                    line.getTalRole(),
+                    "미결재",
+                    line.getEmpCode()
+            );
+            trueLineRepository.save(newLine);
+        }
+
+        if(temporary){  // 임시저장
+            String finalCode = code;
+            ApprovalBox findBox = approvalBoxRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Invalid ApprovalBox code:" + finalCode));
+
+            ApprovalStorage newStorage = ApprovalStorage.of(findDoc, findBox);
+            approvalStorageRepository.save(newStorage);
         }
     }
 
     private String generatePersonalCode() {
-        Optional<Personal> lastOptional = personalRepository.findTopByOrderByApCodeDesc();
+        Optional<Personal> lastOptional = personalRepository.findTopOrderByApCodeDesc();
         return generateCode(lastOptional, "AP");
     }
 
     private String generateEtcCode() {
-        Optional<Etc> lastOptional = etcRepository.findTopByOrderByAeCodeDesc();
+        Optional<Etc> lastOptional = etcRepository.findTopOrderByAeCodeDesc();
         return generateCode(lastOptional, "AE");
     }
 
     private String generateAttendanceCode(){
-        Optional<ApprovalAttendance> lastOptional = approvalAttendanceRepository.findTopByOrderByAattCodeDesc();
+        Optional<ApprovalAttendance> lastOptional = approvalAttendanceRepository.findTopOrderByAattCodeDesc();
         return generateCode(lastOptional, "AATT");
     }
 
     private String generateAppointCode(){
-        Optional<ApprovalAppoint> lastOptional = approvalAppointRepository.findTopByOrderByAappCodeDesc();
+        Optional<ApprovalAppoint> lastOptional = approvalAppointRepository.findTopOrderByAappCodeDesc();
         return generateCode(lastOptional, "AAPP");
+    }
+
+    private String generateDocumentCode(){
+        Optional<Document> lastOptional = docRepository.findTopOrderByAdCodeDesc();
+        return generateCode(lastOptional, "AD");
     }
 
     private String generateCode(Optional<?> lastOptional, String prefix) {
@@ -181,6 +207,10 @@ public class ApprovalService {
                 lastCodeStr = ((ApprovalAttendance) lastCodeObject).getAattCode();
             } else if (lastCodeObject instanceof ApprovalAppoint) {
                 lastCodeStr = ((ApprovalAppoint) lastCodeObject).getAappCode();
+            } else if (lastCodeObject instanceof Document) {
+                lastCodeStr = ((Document) lastCodeObject).getAdCode();
+            } else if (lastCodeObject instanceof String) {
+                lastCodeStr = (String) lastCodeObject;
             } else {
                 throw new IllegalArgumentException("Unsupported entity type");
             }
