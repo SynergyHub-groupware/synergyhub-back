@@ -49,7 +49,7 @@ public class Employee {
 
     private int bank_code;
 
-    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status, String dept_code, String title_code, String position_code) {
+    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
         this.emp_pass = emp_pass;
@@ -58,7 +58,7 @@ public class Employee {
         this.emp_status = emp_status;
     }
 
-    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date, String emp_status) {
+    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
 
         return new Employee(
                 emp_code,
@@ -66,10 +66,7 @@ public class Employee {
                 emp_pass,
                 social_security_no,
                 hire_date,
-                emp_status,
-                dept_code,
-                title_code,
-                position_code
+                emp_status
         );
     }
 
