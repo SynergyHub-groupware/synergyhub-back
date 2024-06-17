@@ -23,3 +23,6 @@ Content-Type:application/json
   "hire_date": "2024-06-12",
   "emp_status": "Y"
 }
+
+### 회원 주소록 전체 조회
+GET http://localhost:8080/address/select
