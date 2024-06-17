@@ -48,7 +48,7 @@ public class Task {
     @Column(name = "TASK_DISPLAY")
     private boolean display;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EMP_CODE")
-    private Employee employee;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "EMP_CODE")
+//    private Employee employee;
 }

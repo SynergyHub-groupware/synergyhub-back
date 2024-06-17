@@ -14,6 +14,7 @@ public class EventCreateRequest {
     @NotBlank
     private final String title;
 
+    @NotBlank
     private final String eventCon;
 
     @NotNull
@@ -26,9 +27,8 @@ public class EventCreateRequest {
     private final String eventGuests;
 
     @NotNull
-    private final Long empCode;
+    private final Integer empCode; // 사원 코드
 
     @NotNull
-    private final Long labelCode;
+    private final Long labelCode; // 라벨 코드
 }
-
