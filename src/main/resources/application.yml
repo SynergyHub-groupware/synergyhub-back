@@ -1,7 +1,8 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/groupware?allowPublicKeyRetrieval=true&useSSL=true
+#    url: jdbc:mysql://localhost:3306/groupware?allowPublicKeyRetrieval=true&useSSL=true
+    url: jdbc:mysql://localhost:3306/groupware
     username: root
     password: root
   jpa:
@@ -18,13 +19,21 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
+mybatis:
+  mapper-locations: mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
 # image upload dir
 image:
-  profile-image-dir: C:/SynergyHub/profile
-  approval-image-dir: C:/SynergyHub/approval
-  post-image-dir: C:/SynergyHub/post
-  message-image-dir: C:/SynergyHub/message
-
+  profile-image-dir: C:/SynergyHub/profileimgs
+  approval-image-dir: C:/SynergyHub/approvalimgs
+  post-image-dir: C:/SynergyHub/postimgs
+  message-image-dir: C:/SynergyHub/messageimgs
+  profile-image-url: http://localhost:8080/profileimgs
+  approval-image-url: http://localhost:8080/approvalimgs
+  post-image-url: http://localhost:8080/postimgs
+  message-image-url: http://localhost:8080/messageimgs
 
 server:
   port: 8080
