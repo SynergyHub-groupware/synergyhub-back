@@ -1,48 +1,98 @@
 package synergyhubback.employee.service;
 
 import lombok.RequiredArgsConstructor;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import synergyhubback.auth.dto.LoginDto;
+import synergyhubback.common.exception.NotFoundException;
 import synergyhubback.employee.domain.entity.*;
 import synergyhubback.employee.domain.repository.*;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
 import synergyhubback.employee.dto.response.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static synergyhubback.common.exception.type.ExceptionCode.NOT_FOUND_REFRESH_TOKEN;
 
-@Service
+
+@Service("employeeService")
 @Transactional
 @RequiredArgsConstructor
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
     private final CertificateRepository certificateRepository;
     private final SchoolInfoRepository schoolInfoRepository;
     private final DepartmentRepository departmentRepository;
     private final DeptRelationsRepository deptRelationsRepository;
 
-//    private final PasswordEncoder passwordEncoder;
+    // 이재현 로그인 관련 service 로직 생성
+//    @Transactional(readOnly = true)
+//    public LoginDto findByEmpCode(int emp_code) {
+//
+//        Employee employee = employeeRepository.findByEmpCode(emp_code)
+//                .orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
+//
+//        return LoginDto.from(employee);
+//    }
+    @Transactional(readOnly = true)
+    public LoginDto findByEmpCode(int emp_code) {
+
+        try {
+
+            Employee employee = employeeRepository.findByEmpCode(emp_code);
+            return LoginDto.from(employee);
+
+        } catch (UsernameNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("해당 아이디가 존재하지 않습니다.");
+        }
+
+        return null;
+    }
+
+    // 이재현 로그인 관련 service 로직 생성
+    public void updateRefreshToken(int emp_code, String refreshToken) {
+        try {
+
+            Employee employee = employeeRepository.findByEmpCode(emp_code);
+            employee.updateRefreshToken(refreshToken);
+        } catch ( Exception e) {
+            System.out.println(e);
+        }
+
+        System.out.println("refresh Token 발급");
+
+    }
+
+    // 이재현 로그인 관련 service 로직 생성
+    @Transactional(readOnly = true)
+    public LoginDto findByRefreshToken(String refreshToken) {
+
+        Employee employee = employeeRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_REFRESH_TOKEN));
+
+        return LoginDto.from(employee);
+    }
 
     public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
 
-//        String hireYearMonth = new SimpleDateFormat("yyyyMM").format(employeeRegistRequest.getHire_date());
-//        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
-//        int empCode = Integer.parseInt(hireYearMonth + (count + 1));
+        String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
+        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
+        String empCode = hireYearMonth + (count + 1);
 
         final Employee newEmp = Employee.regist(
 
                 employeeRegistRequest.getEmp_code(),
                 employeeRegistRequest.getEmp_name(),
-//                Integer.parseInt(passwordEncoder.encode(String.valueOf(empCode))),        // 사원코드 비밀번호로 사용
-                employeeRegistRequest.getEmp_pass(),
+                passwordEncoder.encode(empCode),
                 employeeRegistRequest.getSocial_security_no(),
-                employeeRegistRequest.getDept_code(),
-                employeeRegistRequest.getPosition_code(),
-                employeeRegistRequest.getTitle_code(),
                 employeeRegistRequest.getHire_date(),
                 employeeRegistRequest.getEmp_status()
         );
@@ -169,7 +219,10 @@ public class EmployeeService {
 
     }
 
-    public List<OrgResponse> getOrgEmps() {
+    public List<OrgResponse> getOrgEmps(
+
+
+    ) {
 
         List<Employee> getOrgEmps = employeeRepository.findAll();
 
@@ -184,6 +237,5 @@ public class EmployeeService {
 
         return OrgDetailResponse.getOrgDetail(employee);
     }
-
 
 }

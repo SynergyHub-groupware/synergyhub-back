@@ -1,8 +1,8 @@
 package synergyhubback.calendar.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @RequiredArgsConstructor
