@@ -8,22 +8,23 @@ import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.entity.Position;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Slf4j
 @AllArgsConstructor
 public class AddressSelect {
 
+    private int emp_code;
     private String emp_name;
+    private String email;
+    private String phone;
+    private String address;
+    private String account_num;
+    private LocalDate hire_date;
+    private String emp_status;
     private String dept_title;
     private String position_name;
 
-
-    public static AddressSelect getAddressSelect(Employee employee, Department department, Position position) {
-
-        String deptTitle = (department != null) ? department.getDept_title() : "";
-        String positionName = (position != null) ? position.getPosition_name() : "";
-
-        return new AddressSelect(employee.getEmp_name(), deptTitle, positionName);
-    }
 }
