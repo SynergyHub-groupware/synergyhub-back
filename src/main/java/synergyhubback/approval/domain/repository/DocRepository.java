@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface DocRepository extends JpaRepository<Document, Integer> {
 
-    List<Document> findByEmpCodeOrderByAdReportDateDesc(Integer empCode);
-
     Document findByAdDetail(String code);
 
     @Query(value = "SELECT * FROM APPROVAL_DOC " +

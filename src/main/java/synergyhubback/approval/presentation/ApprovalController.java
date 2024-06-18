@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.approval.dto.request.DocRegistRequest;
+import synergyhubback.approval.dto.response.DocumentResponse;
 import synergyhubback.approval.dto.response.FormLineResponse;
 import synergyhubback.approval.dto.response.FormListResponse;
 import synergyhubback.approval.dto.response.LineEmpDTO;
@@ -68,8 +69,8 @@ public class ApprovalController {
     }
 
 //    @GetMapping("/document")
-//    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
-//        final List<DocumentResponse> docList = approvalService.findDocList(empCode);
+//    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
+//        final List<DocumentResponse> docList = approvalService.findDocList(empCode, status);
 //        return ResponseEntity.ok(docList);
 //    }
 

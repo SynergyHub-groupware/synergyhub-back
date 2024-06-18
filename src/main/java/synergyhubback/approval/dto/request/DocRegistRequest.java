@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import synergyhubback.approval.domain.entity.*;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,8 +15,9 @@ import java.util.List;
 public class DocRegistRequest {
     @NotBlank
     private String adTitle;
-    @NotNull
-    private int empCode;
+
+    private Employee employee;
+
     @NotNull
     private LocalDate adReportDate;
     @NotBlank

@@ -76,7 +76,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "DELETE"));
         corsConfiguration.setAllowedHeaders(Arrays.asList(
-                "Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
+                "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "headers",
                 "Content-Type", "Authorization", "X-Requested-With", "Access-Token", "Refresh-Token"));
         corsConfiguration.setExposedHeaders(Arrays.asList("Access-Token", "Refresh-Token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

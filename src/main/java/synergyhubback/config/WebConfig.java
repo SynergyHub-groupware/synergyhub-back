@@ -16,6 +16,17 @@ import javax.sql.DataSource;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("http://localhost:3000")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE")
+//                .allowedHeaders("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers","Access-Token")
+//                .exposedHeaders("Access-Token", "Refresh-Token")
+//                .allowedOriginPatterns("/**")
+//                .allowCredentials(true)
+//                .maxAge(3600);
+//    }
 
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 

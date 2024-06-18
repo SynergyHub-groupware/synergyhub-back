@@ -8,6 +8,7 @@ import synergyhubback.approval.dao.LineEmpMapper;
 import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
 import synergyhubback.approval.dto.request.DocRegistRequest;
+import synergyhubback.approval.dto.response.DocumentResponse;
 import synergyhubback.approval.dto.response.FormLineResponse;
 import synergyhubback.approval.dto.response.FormListResponse;
 import synergyhubback.approval.dto.response.LineEmpDTO;
@@ -136,7 +137,7 @@ public class ApprovalService {
         Document newDoc = Document.of(
                 generateDocumentCode(),
                 docRegistRequest.getAdTitle(),
-                docRegistRequest.getEmpCode(),
+                docRegistRequest.getEmployee(),
                 docRegistRequest.getAdReportDate(),
                 docRegistRequest.getAdStatus(),
                 docRegistRequest.getForm(),
@@ -229,8 +230,8 @@ public class ApprovalService {
 
 
 //    @Transactional(readOnly = true)
-//    public List<DocumentResponse> findDocList(Integer empCode) {
-//        List<Document> docList = docRepository.findByEmpCodeOrderByAdReportDateDesc(empCode);
+//    public List<DocumentResponse> findDocList(Integer empCode, String status) {
+//        List<Document> docList = docRepository.findByEmpCodeOrderByAdReportDateDesc(empCode, status);
 //
 //        return docList.stream().map(DocumentResponse::from).toList();
 //    }

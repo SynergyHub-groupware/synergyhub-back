@@ -19,7 +19,9 @@ Content-Type: application/json
 
 {
   "adTitle": "테스트",
-  "empCode": "0000",
+  "employee": {
+    "emp_code": 2021048
+  },
   "adReportDate": "2023-04-15",
   "adStatus": "대기",
   "form": {
@@ -51,6 +53,9 @@ Content-Type: application/json
     }
   ]
 }
+
+### 임시저장함 조회 (작성자 기준)
+GET http://localhost:8080/approval/send/document?empCode=2021048&status=temporary
 
 
 ### 보낸 결재함 전체 조회 (작성자 기준)

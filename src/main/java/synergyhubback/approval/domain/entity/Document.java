@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 
@@ -17,7 +18,12 @@ public class Document {
     @Id
     private String adCode;
     private String adTitle;
-    private int empCode;
+
+//    private int empCode;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "emp_code")
+    private Employee employee;
+
     private LocalDate adReportDate;
     private String adStatus;
 
@@ -27,7 +33,7 @@ public class Document {
 
     private String adDetail;
 
-    public static Document of(String adCode, String adTitle, int empCode, LocalDate adReportDate, String adStatus, Form form, String adDetail) {
-        return new Document(adCode, adTitle, empCode, adReportDate, adStatus, form, adDetail);
+    public static Document of(String adCode, String adTitle, Employee employee, LocalDate adReportDate, String adStatus, Form form, String adDetail) {
+        return new Document(adCode, adTitle, employee, adReportDate, adStatus, form, adDetail);
     }
 }
