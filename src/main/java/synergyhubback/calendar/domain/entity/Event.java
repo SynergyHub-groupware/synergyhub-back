@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +19,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long id;
+    private String id;
 
     @Column(name = "TITLE")
     private String title;

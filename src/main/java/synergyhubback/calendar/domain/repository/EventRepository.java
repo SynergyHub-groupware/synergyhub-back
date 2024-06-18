@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import synergyhubback.calendar.domain.entity.Event;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, String> {
 }
