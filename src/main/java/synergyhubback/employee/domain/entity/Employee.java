@@ -1,13 +1,12 @@
 package synergyhubback.employee.domain.entity;
 
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.time.LocalDate;
 
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "employee_info")
@@ -31,8 +30,6 @@ public class Employee {
     private String emp_status;
     private String emp_sign;
     private String emp_img;
-    private String refreshToken;    // 생성함
-
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,16 +46,17 @@ public class Employee {
 
     private int bank_code;
 
-    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
+    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status, String dept_code, String title_code, String position_code) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
         this.emp_pass = emp_pass;
         this.social_security_no = social_security_no;
         this.hire_date = hire_date;
         this.emp_status = emp_status;
+
     }
 
-    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
+    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, String dept_code, String position_code, String title_code, LocalDate hire_date, String emp_status) {
 
         return new Employee(
                 emp_code,
@@ -66,13 +64,10 @@ public class Employee {
                 emp_pass,
                 social_security_no,
                 hire_date,
-                emp_status
+                emp_status,
+                dept_code,
+                title_code,
+                position_code
         );
-    }
-
-    // 이재현 로그인 관련 employee entity 로직 생성
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-        System.out.println("updateRefreshToken");
     }
 }

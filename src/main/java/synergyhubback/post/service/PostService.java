@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.post.domain.entity.BoardEntity;
+import synergyhubback.post.domain.entity.LowBoardEntity;
 import synergyhubback.post.domain.entity.PostEntity;
 import synergyhubback.post.domain.repository.PostRepository;
 import synergyhubback.post.dto.request.PostRequest;
@@ -49,5 +51,13 @@ public class PostService {
 
     public List<PostEntity> getAllPostList(Pageable pageable) {
       return   postRepository.findAll(pageable).getContent();
+    }
+
+    public List<BoardEntity> getAllBoard() {
+        return postRepository.getAllBoard();
+    }
+
+    public List<LowBoardEntity> getLowBoard(int boardCode) {
+        return postRepository.getLowBoard(boardCode);
     }
 }
