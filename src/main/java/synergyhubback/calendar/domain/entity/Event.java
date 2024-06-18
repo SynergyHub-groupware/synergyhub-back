@@ -1,26 +1,27 @@
 package synergyhubback.calendar.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "EVENT")
 @Getter
 @Setter
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "EVENT")
 public class Event {
 
     @Id
-    @Column(name = "EVENT_CODE")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private String id;
 
-    @Column(name = "EVENT_TITLE")
+    @Column(name = "TITLE")
     private String title;
 
     @Column(name = "EVENT_CON")
@@ -38,34 +39,25 @@ public class Event {
     @Column(name = "EVENT_GUESTS")
     private String eventGuests;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "EMP_CODE")
-//    private Employee employee;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EMP_CODE")
+    private Employee employee;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "LABEL_CODE")
-//    private Label label;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LABEL_CODE")
+    private Label label;
 
-//    public static Event createEvent(
-//            String title,
-//            String eventCon,
-//            LocalDateTime startDate,
-//            LocalDateTime endDate,
-//            boolean allDay,
-//            String eventGuests,
-//            Employee employee,
-//            Label label
-//    ) {
-//        Event event = new Event();
-//        event.setId("CA" + System.currentTimeMillis()); // 임시 ID 생성 로직
-//        event.setTitle(title);
-//        event.setEventCon(eventCon);
-//        event.setStartDate(startDate);
-//        event.setEndDate(endDate);
-//        event.setAllDay(allDay);
-//        event.setEventGuests(eventGuests);
-//        event.setEmployee(employee);
-//        event.setLabel(label);
-//        return event;
-//    }
+    // 정적 팩토리 메서드
+    public static Event createEvent(String title, String eventCon, LocalDateTime startDate, LocalDateTime endDate, boolean allDay, String eventGuests, Employee employee, Label label) {
+        Event event = new Event();
+        event.setTitle(title);
+        event.setEventCon(eventCon);
+        event.setStartDate(startDate);
+        event.setEndDate(endDate);
+        event.setAllDay(allDay);
+        event.setEventGuests(eventGuests);
+        event.setEmployee(employee);
+        event.setLabel(label);
+        return event;
+    }
 }
