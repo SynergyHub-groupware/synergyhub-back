@@ -3,12 +3,12 @@ package synergyhubback.calendar.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.calendar.domain.entity.Event;
-import synergyhubback.calendar.domain.entity.Label;
+//import synergyhubback.calendar.domain.entity.Label;
 import synergyhubback.calendar.dto.request.EventCreateRequest;
 import synergyhubback.calendar.dto.request.EventUpdateRequest;
 import synergyhubback.calendar.dto.response.EventResponse;
 import synergyhubback.calendar.service.EventService;
-import synergyhubback.calendar.service.LabelService;
+//import synergyhubback.calendar.service.LabelService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ public class EventController {
 
     private final EventService eventService;
 //    private final EmployeeService employeeService;
-    private final LabelService labelService;
+//    private final LabelService labelService;
 
 //    @PostMapping("/event/regist")
 //    public EventResponse createEvent(@RequestBody EventCreateRequest eventRequest) {
