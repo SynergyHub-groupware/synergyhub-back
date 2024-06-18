@@ -42,9 +42,9 @@ public class Event {
 //    @JoinColumn(name = "EMP_CODE")
 //    private Employee employee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "LABEL_CODE")
-    private Label label;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "LABEL_CODE")
+//    private Label label;
 
 //    public static Event createEvent(
 //            String title,
