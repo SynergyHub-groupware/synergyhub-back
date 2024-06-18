@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
 import synergyhubback.employee.dto.response.*;
@@ -90,5 +92,14 @@ public class EmployeeController {
         OrgDetailResponse orgDetailResponse = employeeService.getOrgEmpDetail(emp_code);
 
         return ResponseEntity.ok(orgDetailResponse);
+    }
+
+    /* 로그아웃 시 토큰 무효화 */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails userDetails) {
+
+        employeeService.updateRefreshToken(Integer.parseInt(userDetails.getUsername()), null);
+
+        return ResponseEntity.ok().build();
     }
 }
