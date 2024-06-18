@@ -9,6 +9,7 @@ import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.post.domain.entity.BoardEntity;
 import synergyhubback.post.domain.entity.LowBoardEntity;
 import synergyhubback.post.domain.entity.PostEntity;
+import synergyhubback.post.domain.entity.PostSortEntity;
 import synergyhubback.post.domain.repository.PostRepository;
 import synergyhubback.post.dto.request.PostRequest;
 
@@ -57,7 +58,11 @@ public class PostService {
         return postRepository.getAllBoard();
     }
 
-    public List<LowBoardEntity> getLowBoard(int boardCode) {
+    public List<LowBoardEntity> getLowBoard(Integer boardCode) {
         return postRepository.getLowBoard(boardCode);
+    }
+
+    public List<PostSortEntity> getAllPostSortList() {
+        return postRepository.getAllPostSortList();
     }
 }

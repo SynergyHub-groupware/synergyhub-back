@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.post.domain.entity.BoardEntity;
 import synergyhubback.post.domain.entity.LowBoardEntity;
 import synergyhubback.post.domain.entity.PostEntity;
+import synergyhubback.post.domain.entity.PostSortEntity;
 import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.service.PostService;
@@ -39,6 +41,11 @@ public class PostController {
         System.out.println(posts);
         return ResponseEntity.ok(posts);
     }
+    @GetMapping("/sortList")
+    public ResponseEntity<List<PostSortEntity>> findPostSortList() {
+        List<PostSortEntity> postSortEntities = postService.getAllPostSortList();
+        return ResponseEntity.ok(postSortEntities);
+    }
     @GetMapping("/getAllBoard")
     public ResponseEntity<List<BoardEntity>> getAllBoard() {
         System.out.println("getAllBoard stared");
@@ -46,33 +53,43 @@ public class PostController {
         System.out.println("getAllBoard"+boardList);
         return ResponseEntity.ok(boardList);
     }
-    @GetMapping("/getLowBoard/{BoardCode}")
-    public ResponseEntity<List<LowBoardEntity>> getLowBoard(int BoardCode) {
-        System.out.println("getLowBoard stared");
-        List<LowBoardEntity> lowBoardList = postService.getLowBoard(BoardCode);
-        System.out.println(lowBoardList);
-        return ResponseEntity.ok(lowBoardList);
+    @GetMapping("/getLowBoard/{boardCode}")
+    public ResponseEntity<List<LowBoardEntity>> getLowBoard(@PathVariable("boardCode") Integer boardCode) {
+            List<LowBoardEntity> lowBoardList = postService.getLowBoard(boardCode);
+            return ResponseEntity.ok(lowBoardList);
     }
     @PostMapping("/add")
-    public String addProduct(@RequestParam("attachFile") List<MultipartFile> attachFile,
+    public ResponseEntity<?> addProduct(@RequestParam("attachFile") List<MultipartFile> attachFile,
                              @RequestParam("postName") String postName,
                              @RequestParam("postCon") String postCon,
-                             @RequestParam(value = "postCommSet", defaultValue = "false") PostCommSet postCommSet,
-                             @RequestParam(value = "fixStatus", defaultValue = "false") char fixStatus,
-                             @RequestParam(value = "noticeStatus", defaultValue = "false") char noticeStatus,
+                             @RequestParam("lowCode") int lowBoardCode,
+                             @RequestParam(value = "postCommSet", defaultValue = "4") int postCommSet,
+                             @RequestParam(value = "fixStatus", defaultValue = "N") char fixStatus,
+                             @RequestParam(value = "noticeStatus", defaultValue = "N") char noticeStatus,
+                             @RequestParam("psCode") int psCode,
                              Model model) {
         // 상품 정보 저장
         System.out.println("게시글 등록 메소드 작동시작");
+        PostCommSet commSet = PostCommSet.fromValue(postCommSet);
 
 
         /* 상품 등록하기 */
         PostRequest newPost = new PostRequest();
-        newPost.setPostCode("Pst-"+postService.LastPost().getPostCode()+1);
+        newPost.setPostCode("PO" + (postService.LastPost().getPostCode() + 1));
         newPost.setPostName(postName);
         newPost.setPostCon(postCon);
-        newPost.setPostCommSet(postCommSet);
+        newPost.setPostCommSet(commSet);
         newPost.setFixStatus(fixStatus);
         newPost.setNoticeStatus(noticeStatus);
+        LowBoardEntity lowBoardEntity = new LowBoardEntity();
+        lowBoardEntity.setLowBoardCode(lowBoardCode); // lowBoardCode는 클라이언트에서 전송된 값이어야 합니다.
+        newPost.setLowBoardCode(lowBoardEntity);
+
+
+        PostSortEntity postSortEntity = new PostSortEntity();
+        postSortEntity.setPsCode(psCode); // 예제 코드로 설정
+        postSortEntity.setPsName(postName);
+        newPost.setPsCode(postSortEntity);
 
         PostEntity post= postService.insertPost(newPost);
 
@@ -126,7 +143,7 @@ public class PostController {
 
             model.addAttribute("message", "파일 업로드에 실패하였습니다.");
         }
-        return "redirect:/admin/post/postList";
+        return ResponseEntity.ok(post);
 
     }
 
