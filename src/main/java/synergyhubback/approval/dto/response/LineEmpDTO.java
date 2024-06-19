@@ -6,7 +6,6 @@ import lombok.Getter;
 public class LineEmpDTO {
     private int empCode;
     private String empName;
-    private String empSign;
     private String titleCode;
     private String titleName;
     private String deptCode;

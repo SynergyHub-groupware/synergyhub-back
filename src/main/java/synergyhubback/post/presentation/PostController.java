@@ -105,15 +105,17 @@ public class PostController {
 
                     /* 가장 최신 게시글 코드 조회 */
                     PostEntity lastPost = postService.LastPost();
-
-                    /* DB에 저장할 파일의 정보 처리 */
-                    AttachmentEntity fileInfo = new AttachmentEntity();
-                    fileInfo.setAttachOriginal(originalFileName);
-                    fileInfo.setAttachUrl(fileUploadDir + "/" + saveFileName);
-                    fileInfo.setAttachSave(saveFileName);
-                    fileInfo.setAttachSort("POst-" + lastPost.getPostCode());
-                    /* 리스트에 파일 정보 저장 */
-                    FileList.add(fileInfo);
+                    
+                    
+                    // 이다정: AttachmentEntity에 setter 삭제해서 이 부분 오류남, 주석처리
+//                    /* DB에 저장할 파일의 정보 처리 */
+//                    AttachmentEntity fileInfo = new AttachmentEntity();
+//                    fileInfo.setAttachOriginal(originalFileName);
+//                    fileInfo.setAttachUrl(fileUploadDir + "/" + saveFileName);
+//                    fileInfo.setAttachSave(saveFileName);
+//                    fileInfo.setAttachSort("POst-" + lastPost.getPostCode());
+//                    /* 리스트에 파일 정보 저장 */
+//                    FileList.add(fileInfo);
                 }
             }
             /* 파일 리스트를 한 번에 DB에 저장 */
