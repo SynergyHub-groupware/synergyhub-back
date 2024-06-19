@@ -11,6 +11,5 @@ import java.util.List;
 @Getter
 public class ApprovalAttachRequest {
 
-    @NotBlank
     private List<AttachmentEntity> attachmentList;
 }

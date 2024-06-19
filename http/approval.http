@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 
 ### 첨부파일 저장
-POST http://localhost:8080/approval/saveAttachment
+POST http://localhost:8080/approval/attachment/regist
 Content-Type: application/json
 
 {

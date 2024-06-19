@@ -230,7 +230,6 @@ public class ApprovalService {
     }
 
     public void saveAttachment(ApprovalAttachRequest approvalAttachRequest) {
-        // 저장로직 짜기
     }
 
     @Transactional(readOnly = true)

@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.approval.dto.request.ApprovalAttachRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
@@ -66,11 +67,30 @@ public class ApprovalController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/saveAttachment")
-    public ResponseEntity<Void> saveAttachment(@RequestBody @Valid final ApprovalAttachRequest approvalAttachRequest){
-        approvalService.saveAttachment(approvalAttachRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping("/attachment/regist")
+    public ResponseEntity<Void> saveAttachment(@RequestParam("files") MultipartFile[] files) {
+        try {
+            // 파일 처리 로직 예시
+            for (MultipartFile file : files) {
+                // 파일 저장 로직 예시
+                // file.getInputStream()을 이용해 파일의 InputStream을 얻어 처리할 수 있습니다.
+                // 예를 들어 파일을 특정 경로에 저장하거나 데이터베이스에 저장하는 작업을 수행할 수 있습니다.
+                // 여기서는 간단히 로그로 파일 정보를 출력합니다.
+                System.out.println("Received file: " + file.getOriginalFilename());
+            }
+
+            // 파일 저장 완료 후, 클라이언트에 성공 응답을 보냅니다.
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            // 파일 처리 중 오류가 발생한 경우
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+//    public ResponseEntity<Void> saveAttachment(@RequestBody @Valid final ApprovalAttachRequest approvalAttachRequest){
+//        approvalService.saveAttachment(approvalAttachRequest);
+//        return ResponseEntity.status(HttpStatus.CREATED).build();
+//    }
 
     @GetMapping("/send/document")
     public ResponseEntity<List<DocListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
