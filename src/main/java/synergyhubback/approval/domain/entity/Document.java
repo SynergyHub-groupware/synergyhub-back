@@ -19,7 +19,6 @@ public class Document {
     private String adCode;
     private String adTitle;
 
-//    private int empCode;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "emp_code")
     private Employee employee;

@@ -34,31 +34,53 @@ Content-Type: application/json
     {
       "talOrder": 1,
       "talRole": "결재",
-      "empCode": 2023091
+      "employee": {
+        "emp_code": 2023091
+      }
     },
     {
       "talOrder": 2,
       "talRole": "전결",
-      "empCode": 2024011
+      "employee": {
+        "emp_code": 2024011
+      }
     },
     {
       "talOrder": 3,
       "talRole": "결재",
-      "empCode": 2020021
+      "employee": {
+        "emp_code": 2020021
+      }
     },
     {
       "talOrder": 4,
       "talRole": "결재",
-      "empCode": 2020011
+      "employee": {
+        "emp_code": 2020011
+      }
     }
   ]
 }
 
-### 임시저장함 조회 (작성자 기준)
-GET http://localhost:8080/approval/send/document?empCode=2021048&status=temporary
+### 첨부파일 저장
+POST http://localhost:8080/approval/saveAttachment
+Content-Type: application/json
+
+{
+  "attachmentList": [
+    {
+      "attachOriginal": "그룹웨어 더미.xlsx"
+    },
+    {
+      "attachOriginal": "그룹웨어 더미 - 시트1.pdf"
+    },
+    {
+      "attachOriginal": "그룹웨어 더미.zip"
+    }
+  ]
+}
 
 
-### 보낸 결재함 전체 조회 (작성자 기준)
-GET http://localhost:8080/approval/send/document?empCode=2021048
+### 보낸결재함[대기] 조회
+GET http://localhost:8080/approval/send/document?empCode=2021048&status=process
 
-### 받은 결재함 전체 조회 ()

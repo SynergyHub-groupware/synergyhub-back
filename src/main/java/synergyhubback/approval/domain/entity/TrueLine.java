@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 
@@ -23,43 +24,47 @@ public class TrueLine {
     private int talOrder;
     private String talRole;
     private String talStatus;
-    private int empCode;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "emp_code")
+    private Employee employee;
+    
     private String talReason;
     private LocalDate talDate;
 
-    private TrueLine(Document document, int talOrder, String talRole, String talStatus, int empCode){
+    private TrueLine(Document document, int talOrder, String talRole, String talStatus, Employee employee){
         this.document = document;
         this.talOrder = talOrder;
         this.talRole = talRole;
         this.talStatus = talStatus;
-        this.empCode = empCode;
+        this.employee = employee;
     }
-    public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, int empCode){
-        return new TrueLine(document, talOrder, talRole, talStatus, empCode);
+    public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, Employee employee){
+        return new TrueLine(document, talOrder, talRole, talStatus, employee);
     }
 
-    private TrueLine(Document document, int talOrder, String talRole, String talStatus, int empCode, LocalDate talDate){
+    private TrueLine(Document document, int talOrder, String talRole, String talStatus, Employee employee, LocalDate talDate){
         this.document = document;
         this.talOrder = talOrder;
         this.talRole = talRole;
         this.talStatus = talStatus;
-        this.empCode = empCode;
+        this.employee = employee;
         this.talDate = talDate;
     }
-    public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, int empCode, LocalDate talDate){
-        return new TrueLine(document, talOrder, talRole, talStatus, empCode, talDate);
+    public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, Employee employee, LocalDate talDate){
+        return new TrueLine(document, talOrder, talRole, talStatus, employee, talDate);
     }
 
-    private TrueLine(Document document, int talOrder, String talRole, String talStatus, int empCode, String talReason, LocalDate talDate){
+    private TrueLine(Document document, int talOrder, String talRole, String talStatus, Employee employee, String talReason, LocalDate talDate){
         this.document = document;
         this.talOrder = talOrder;
         this.talRole = talRole;
         this.talStatus = talStatus;
-        this.empCode = empCode;
+        this.employee = employee;
         this.talReason = talReason;
         this.talDate = talDate;
     }
-    public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, int empCode, String talReason, LocalDate talDate){
-        return new TrueLine(document, talOrder, talRole, talStatus, empCode, talReason, talDate);
+    public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, Employee employee, String talReason, LocalDate talDate){
+        return new TrueLine(document, talOrder, talRole, talStatus, employee, talReason, talDate);
     }
 }

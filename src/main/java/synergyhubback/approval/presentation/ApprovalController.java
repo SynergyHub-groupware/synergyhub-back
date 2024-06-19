@@ -8,11 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.approval.dto.request.ApprovalAttachRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
-import synergyhubback.approval.dto.response.DocumentResponse;
-import synergyhubback.approval.dto.response.FormLineResponse;
-import synergyhubback.approval.dto.response.FormListResponse;
-import synergyhubback.approval.dto.response.LineEmpDTO;
+import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
 
 import java.nio.file.Files;
@@ -68,11 +66,17 @@ public class ApprovalController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-//    @GetMapping("/document")
-//    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
-//        final List<DocumentResponse> docList = approvalService.findDocList(empCode, status);
-//        return ResponseEntity.ok(docList);
-//    }
+    @PostMapping("/saveAttachment")
+    public ResponseEntity<Void> saveAttachment(@RequestBody @Valid final ApprovalAttachRequest approvalAttachRequest){
+        approvalService.saveAttachment(approvalAttachRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/send/document")
+    public ResponseEntity<List<DocListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
+        final List<DocListResponse> docList = approvalService.findDocList(empCode, status);
+        return ResponseEntity.ok(docList);
+    }
 
 
 }

@@ -1,17 +1,17 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import synergyhubback.approval.dao.LineEmpMapper;
 import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
+import synergyhubback.approval.dto.request.ApprovalAttachRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
-import synergyhubback.approval.dto.response.DocumentResponse;
-import synergyhubback.approval.dto.response.FormLineResponse;
-import synergyhubback.approval.dto.response.FormListResponse;
-import synergyhubback.approval.dto.response.LineEmpDTO;
+import synergyhubback.approval.dto.response.*;
+import synergyhubback.common.attachment.AttachmentRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +32,7 @@ public class ApprovalService {
     private final ApprovalBoxRepository approvalBoxRepository;
     private final ApprovalStorageRepository approvalStorageRepository;
     private final TrueLineRepository trueLineRepository;
+    private final AttachmentRepository attachmentRepository;
 
     @Transactional(readOnly = true)
     public List<FormListResponse> findFormList() {
@@ -156,7 +157,8 @@ public class ApprovalService {
                     line.getTalOrder(),
                     line.getTalRole(),
                     "미결재",
-                    line.getEmpCode()
+//                    line.getEmpCode()
+                    line.getEmployee()
             );
             trueLineRepository.save(newLine);
         }
@@ -227,13 +229,20 @@ public class ApprovalService {
         }
     }
 
+    public void saveAttachment(ApprovalAttachRequest approvalAttachRequest) {
+        // 저장로직 짜기
+    }
 
+    @Transactional(readOnly = true)
+    public List<DocListResponse> findDocList(Integer empCode, String status) {
+        switch (status){
+            case "waiting" : status = "대기"; break;
+            case "process" : status = "진행중"; break;
+            case "return" : status  = "반려"; break;
+            case "complete" : status = "완료"; break;
+        }
+        List<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(empCode, status);
 
-//    @Transactional(readOnly = true)
-//    public List<DocumentResponse> findDocList(Integer empCode, String status) {
-//        List<Document> docList = docRepository.findByEmpCodeOrderByAdReportDateDesc(empCode, status);
-//
-//        return docList.stream().map(DocumentResponse::from).toList();
-//    }
-
+        return docList.stream().map(DocListResponse::from).toList();
+    }
 }

@@ -27,7 +27,7 @@ mybatis:
 # image upload dir
 image:
   profile-image-dir: C:/SynergyHub/profileimgs
-  approval-image-dir: C:/SynergyHub/approvalimgs
+  approval-attach-dir: C:/SynergyHub/approval
   post-image-dir: C:/SynergyHub/postimgs
   message-image-dir: C:/SynergyHub/messageimgs
   profile-image-url: http://localhost:8080/profileimgs

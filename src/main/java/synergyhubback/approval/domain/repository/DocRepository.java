@@ -15,5 +15,4 @@ public interface DocRepository extends JpaRepository<Document, Integer> {
             "ORDER BY SUBSTRING(AD_CODE, 1, 2), CAST(SUBSTRING(AD_CODE, 3) AS UNSIGNED) DESC " +
             "LIMIT 1", nativeQuery = true)
     Optional<Document> findTopOrderByAdCodeDesc();
-
 }
