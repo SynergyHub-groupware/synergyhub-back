@@ -1,5 +1,6 @@
 package synergyhubback.common.address.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class AddressSelect {
     private String phone;
     private String address;
     private String account_num;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hire_date;
     private String emp_status;
     private String dept_title;
