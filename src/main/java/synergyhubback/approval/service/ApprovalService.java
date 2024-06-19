@@ -1,6 +1,7 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +12,11 @@ import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
+import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.repository.EmployeeRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -305,5 +309,34 @@ public class ApprovalService {
         if (dotIndex > 0) extension = originalFileName.substring(dotIndex);
 
         return uuid + extension;
+    }
+
+    private final TokenUtils tokenUtils;
+    private final EmployeeRepository employeeRepository;
+
+    public Employee getEmployeeFromAccessToken(String accessToken) {
+        // 토큰 유효성 검사 및 파싱
+        if (!tokenUtils.isValidToken(accessToken)) {
+            System.out.println("토큰이 유효하지 않음");
+            return null; // 토큰이 유효하지 않으면 null 반환 혹은 예외 처리
+        }
+
+        // 토큰에서 사용자 ID 추출
+        String employeeCode  = tokenUtils.getEmp_Code(accessToken);
+        if (employeeCode  == null || employeeCode .isEmpty()) {
+            System.out.println("해당 사용자가 없음");
+            return null; // 사용자 ID가 없으면 null 반환 혹은 예외 처리
+        }
+
+        try {
+            Integer empCode = Integer.parseInt(employeeCode );
+            // 데이터베이스에서 사용자 정보 조회
+            Optional<Employee> optionalEmployee = employeeRepository.findById(empCode);
+            return optionalEmployee.orElse(null); // 조회된 사용자 정보 반환, 없으면 null 반환
+        } catch (NumberFormatException e) {
+            // 사용자 ID가 올바르지 않은 형식일 경우 예외 처리
+            e.printStackTrace();
+            return null;
+        }
     }
 }
