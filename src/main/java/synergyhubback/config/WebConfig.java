@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+  
 //    @Override
 //    public void addCorsMappings(CorsRegistry registry) {
 //        registry.addMapping("/**")
@@ -26,6 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
         // 상품 이미지 경로 추가
         registry.addResourceHandler("/post/**")
                 .addResourceLocations("file:///C:/Synergy/original/productUpload/");
+
+
+
 
     }
 

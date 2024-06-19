@@ -1,8 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/groupware?allowPublicKeyRetrieval=true&useSSL=true
-    url: jdbc:mysql://localhost:3306/groupware
+    url: jdbc:mysql://localhost:3306/groupware?allowPublicKeyRetrieval=true&useSSL=true
     username: root
     password: root
   jpa:
@@ -26,14 +25,11 @@ mybatis:
 
 # image upload dir
 image:
-  profile-image-dir: C:/SynergyHub/profileimgs
+  profile-image-dir: C:/SynergyHub/profile
   approval-attach-dir: C:/SynergyHub/approval
-  post-image-dir: C:/SynergyHub/postimgs
-  message-image-dir: C:/SynergyHub/messageimgs
-  profile-image-url: http://localhost:8080/profileimgs
-  approval-image-url: http://localhost:8080/approvalimgs
-  post-image-url: http://localhost:8080/postimgs
-  message-image-url: http://localhost:8080/messageimgs
+  post-image-dir: C:/SynergyHub/post
+  message-image-dir: C:/SynergyHub/message
+
 
 server:
   port: 8080
