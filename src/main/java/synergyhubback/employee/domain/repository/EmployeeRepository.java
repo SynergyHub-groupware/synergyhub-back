@@ -2,12 +2,13 @@ package synergyhubback.employee.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Service;
 import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
 import java.util.List;
 import java.util.Optional;
 
-
+@Service
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
 

@@ -10,8 +10,11 @@ import java.util.List;
 
 public interface DepartmentRepository extends JpaRepository<Department, String> {
 
+    @Query("SELECT d FROM Department d WHERE d.dept_code = :deptCode")
+    Department findByDeptCode(String deptCode);
+
     /* 전체 부서 조회 */
-//    @Query("SELECT d FROM Department d WHERE d.dept_code = :deptCode")
+
     List<Department> findAll();
 
 }

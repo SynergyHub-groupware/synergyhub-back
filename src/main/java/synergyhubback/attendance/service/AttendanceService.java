@@ -3,14 +3,17 @@ package synergyhubback.attendance.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.attendance.domain.entity.Attendance;
 import synergyhubback.attendance.domain.repository.AttendanceRepository;
+import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
+import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.common.util.DateUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
@@ -19,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AttendanceService {
@@ -36,7 +40,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "00 05 13 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "00 50 10 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -75,7 +79,8 @@ public class AttendanceService {
     }
 
     /* 출근시간 등록 */
-    public Attendance registAttendanceStartTime(int empCode) {
+    @Transactional
+    public AttendanceRegistStartTimeRequest registAttendanceStartTime(int empCode) {
 
         // 사원 조회
         Employee employee = employeeRepository.findById(empCode)
@@ -91,6 +96,11 @@ public class AttendanceService {
             throw new EntityNotFoundException("근태 기록을 찾을 수 없습니다.");
         }
 
+        // 이미 출근 시간이 등록된 경우 예외 처리
+        if (foundAttendance.getAtdStartTime() != null) {
+            throw new RuntimeException("출근시간이 이미 등록되었습니다.");
+        }
+
         // 현재 시간을 출근 시간으로 설정
         LocalTime currentTime = LocalTime.now();
         foundAttendance.updateStartTime(currentTime);
@@ -98,26 +108,66 @@ public class AttendanceService {
         // 업데이트된 근태 기록 저장
         attendanceRepository.save(foundAttendance);
 
-        return foundAttendance;
+        AttendanceRegistStartTimeRequest response = new AttendanceRegistStartTimeRequest();
+        response.setStartTime(currentTime);
+
+        return response;
     }
 
-    /* 근무일지 기록 */
+    /* 퇴근시간 등록 */
     @Transactional
-    public List<Attendance> registAttendance() {
+    public AttendanceRegistEndTimeRequest registAttendanceEndTime(int empCode) {
 
-        //앞단에서 출근 <-> 퇴근 버튼 활성화
+        // 사원 조회
+        Employee employee = employeeRepository.findById(empCode)
+                .orElseThrow(() -> new EntityNotFoundException("사원을 찾을 수 없습니다."));
 
-        // 1. 출근시간 등록 : 출근시간이 null 이라면 등록, null이 아니라면 "이미 출근시간을 등록하였습니다."
+        // 현재 날짜 계산
+        LocalDate currentDate = LocalDate.now();
 
-        // 2. 퇴근시간 등록 : 출근시간이 현재 시간보다 이전이라면 등록
+        // 근태일지 조회
+        Attendance foundAttendance = attendanceRepository.findByEmployeeAndAtdDate(employee, currentDate);
 
-        return null;
+        // 근태 기록이 없는 경우
+        if (foundAttendance == null) {
+            throw new EntityNotFoundException("근태 기록을 찾을 수 없습니다.");
+        }
+
+        // 출근 시간이 등록되지 않은 경우 처리
+        if (foundAttendance.getAtdStartTime() == null) {
+            throw new EntityNotFoundException("출근 시간이 등록되지 않았습니다.");
+        }
+
+        // 이미 퇴근 시간이 등록된 경우 예외 처리
+        if (foundAttendance.getAtdEndTime() != null) {
+            throw new RuntimeException("퇴근시간이 이미 등록되었습니다.");
+        }
+
+        // 현재 시간을 퇴근 시간으로 설정
+        LocalTime endTime = LocalTime.now();
+
+        // 현재 퇴근 시간과 출근 시간을 비교하여 1분 이내인지 확인
+        if (endTime.isBefore(foundAttendance.getAtdStartTime().plusMinutes(1))) {
+            throw new EntityNotFoundException("총 근무시간이 1분 이하일 수 없습니다.");
+        }
+
+        // 퇴근시간 업데이트
+        foundAttendance.updateEndTime(endTime);
+
+        // 업데이트된 근태 기록 저장
+        attendanceRepository.save(foundAttendance);
+
+        // 응답 객체 생성 및 설정
+        AttendanceRegistEndTimeRequest response = new AttendanceRegistEndTimeRequest();
+        response.setEndTime(endTime);
+
+        return response;
     }
 
 
     /* 금주의 근태 기록 */
     @Transactional(readOnly = true)
-    public List<Attendance> getAttendancesForCurrentWeek() {
+    public List<AttendancesResponse> getAttendancesForCurrentWeek() {
         LocalDate[] dateRange = DateUtils.getCurrentWeek();
         LocalDate startDate = dateRange[0];
         LocalDate endDate = dateRange[1];
@@ -128,8 +178,12 @@ public class AttendanceService {
         return attendanceRepository.findAttendanceInDateRange(startDate, endDate);
     }
 
-    public List<Attendance> findAllAttendances() {
-        return attendanceRepository.findAll();
+    public List<AttendancesResponse> findAllAttendances() {
+        List<Attendance> attendances = attendanceRepository.findAll();
+
+        return attendances.stream()
+                .map(AttendancesResponse::new)
+                .collect(Collectors.toList());
     }
 
     /* 가장 최신 근태 기록 조회 */
@@ -137,6 +191,5 @@ public class AttendanceService {
     public Attendance getLatestAttendanceRecord() {
         return attendanceRepository.findTopByOrderByAtdCodeDesc();
     }
-
 
 }
