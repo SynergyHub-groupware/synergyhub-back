@@ -1,34 +1,59 @@
 package synergyhubback.calendar.dto.request;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
 public class EventUpdateRequest {
 
     @NotBlank
-    private final String title;
+    private String title;
 
     @NotBlank
-    private final String eventCon;
+    private String eventCon;
 
     @NotNull
-    private final LocalDateTime startDate;
+    private LocalDateTime startDate;
 
-    private final LocalDateTime endDate;
+    private LocalDateTime endDate;
 
-    private final boolean allDay;
+    private boolean allDay;
 
-    private final String eventGuests;
-
-    @NotNull
-    private final Integer empCode; // 사원 코드
+    private String eventGuests;
 
     @NotNull
-    private final Long labelCode; // 라벨 코드
+    private int empCode; // 사원 코드
+
+    @NotNull
+    private Long labelCode; // 라벨 코드
+
+    @JsonCreator
+    public EventUpdateRequest(
+            @JsonProperty("title") String title,
+            @JsonProperty("eventCon") String eventCon,
+            @JsonProperty("startDate") LocalDateTime startDate,
+            @JsonProperty("endDate") LocalDateTime endDate,
+            @JsonProperty("allDay") boolean allDay,
+            @JsonProperty("eventGuests") String eventGuests,
+            @JsonProperty("empCode") int empCode,
+            @JsonProperty("labelCode") Long labelCode
+    ) {
+        this.title = title;
+        this.eventCon = eventCon;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.allDay = allDay;
+        this.eventGuests = eventGuests;
+        this.empCode = empCode;
+        this.labelCode = labelCode;
+    }
 }

@@ -1,10 +1,12 @@
 package synergyhubback.calendar.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDateTime;
@@ -17,19 +19,20 @@ import java.time.LocalDateTime;
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "EVENT_CODE")
     private String id;
 
-    @Column(name = "TITLE")
+    @Column(name = "EVENT_TITLE")
     private String title;
 
     @Column(name = "EVENT_CON")
     private String eventCon;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "START_DATE")
     private LocalDateTime startDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "END_DATE")
     private LocalDateTime endDate;
 
@@ -39,25 +42,33 @@ public class Event {
     @Column(name = "EVENT_GUESTS")
     private String eventGuests;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "EMP_CODE")
     private Employee employee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "LABEL_CODE")
     private Label label;
 
-    // 정적 팩토리 메서드
-    public static Event createEvent(String title, String eventCon, LocalDateTime startDate, LocalDateTime endDate, boolean allDay, String eventGuests, Employee employee, Label label) {
+    public static Event createEvent(
+            String title,
+            String eventCon,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            boolean allDay,
+            String eventGuests,
+            Employee employee,
+            Label label
+    ) {
         Event event = new Event();
-        event.setTitle(title);
-        event.setEventCon(eventCon);
-        event.setStartDate(startDate);
-        event.setEndDate(endDate);
-        event.setAllDay(allDay);
-        event.setEventGuests(eventGuests);
-        event.setEmployee(employee);
-        event.setLabel(label);
+        event.title = title;
+        event.eventCon = eventCon;
+        event.startDate = startDate;
+        event.endDate = endDate;
+        event.allDay = allDay;
+        event.eventGuests = eventGuests;
+        event.employee = employee;
+        event.label = label;
         return event;
     }
 }
