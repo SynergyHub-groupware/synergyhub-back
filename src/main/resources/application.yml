@@ -26,7 +26,7 @@ mybatis:
 # image upload dir
 image:
   profile-image-dir: C:/SynergyHub/profile
-  approval-image-dir: C:/SynergyHub/approval
+  approval-attach-dir: C:/SynergyHub/approval
   post-image-dir: C:/SynergyHub/post
   message-image-dir: C:/SynergyHub/message
 
@@ -40,4 +40,3 @@ jwt:
     expiration: 3600000
   refresh:
     expiration: 604800000
-

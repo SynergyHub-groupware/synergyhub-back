@@ -1,13 +1,21 @@
 package synergyhubback.approval.presentation;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import synergyhubback.approval.dto.response.FormLineResponse;
-import synergyhubback.approval.dto.response.FormListResponse;
-import synergyhubback.approval.dto.response.LineEmpDTO;
+import synergyhubback.approval.dto.request.ApprovalAttachRequest;
+import synergyhubback.approval.dto.request.DocRegistRequest;
+import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -29,18 +37,46 @@ public class ApprovalController {
     }
 
     @GetMapping("/formLineEmp")
-    public ResponseEntity<List<LineEmpDTO>> findLineEmpList(@RequestParam final String deptCode, @RequestParam final String titleCode){
-        final List<LineEmpDTO> lineEmpList = approvalService.findLineEmpList(deptCode, titleCode);
+    public ResponseEntity<List<LineEmpDTO>> findLineEmpList(@RequestParam final String deptCode, @RequestParam final String titleCode, @RequestParam final Integer lsCode){
+        final List<LineEmpDTO> lineEmpList = approvalService.findLineEmpList(deptCode, titleCode, lsCode);
         return ResponseEntity.ok(lineEmpList);
     }
 
-    
+    @GetMapping("/sign")
+    public ResponseEntity<Resource> getSign(@RequestParam Integer empCode) {
+        String signPath = "C:/SynergyHub/Signimgs/" + empCode + ".png";
+        Path filePath = Paths.get(signPath);
+        Resource resource = new FileSystemResource(filePath);
 
-//    @GetMapping("/document")
-//    public ResponseEntity<List<DocumentResponse>> findDocList(@RequestParam(required = false) final Integer empCode){
-//        final List<DocumentResponse> docList = approvalService.findDocList(empCode);
-//        return ResponseEntity.ok(docList);
-//    }
+        if (!resource.exists()) return ResponseEntity.notFound().build();
+
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/regist")
+    public ResponseEntity<Void> regist(@RequestBody @Valid final DocRegistRequest docRegistRequest, @RequestParam boolean temporary){
+        approvalService.regist(docRegistRequest, temporary);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/saveAttachment")
+    public ResponseEntity<Void> saveAttachment(@RequestBody @Valid final ApprovalAttachRequest approvalAttachRequest){
+        approvalService.saveAttachment(approvalAttachRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/send/document")
+    public ResponseEntity<List<DocListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
+        final List<DocListResponse> docList = approvalService.findDocList(empCode, status);
+        return ResponseEntity.ok(docList);
+    }
 
 
 }
