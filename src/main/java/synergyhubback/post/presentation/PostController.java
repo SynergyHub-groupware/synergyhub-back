@@ -62,7 +62,7 @@ public class PostController {
     public ResponseEntity<?> addProduct(@RequestParam("attachFile") List<MultipartFile> attachFile,
                              @RequestParam("postName") String postName,
                              @RequestParam("postCon") String postCon,
-                             @RequestParam("lowCode") int lowBoardCode,
+                             @RequestParam("lowBoardCode") int lowBoardCode,
                              @RequestParam(value = "postCommSet", defaultValue = "4") int postCommSet,
                              @RequestParam(value = "fixStatus", defaultValue = "N") char fixStatus,
                              @RequestParam(value = "noticeStatus", defaultValue = "N") char noticeStatus,
@@ -70,6 +70,8 @@ public class PostController {
                              Model model) {
         // 상품 정보 저장
         System.out.println("게시글 등록 메소드 작동시작");
+        System.out.println(lowBoardCode);
+
         PostCommSet commSet = PostCommSet.fromValue(postCommSet);
 
 
@@ -81,15 +83,9 @@ public class PostController {
         newPost.setPostCommSet(commSet);
         newPost.setFixStatus(fixStatus);
         newPost.setNoticeStatus(noticeStatus);
-        LowBoardEntity lowBoardEntity = new LowBoardEntity();
-        lowBoardEntity.setLowBoardCode(lowBoardCode); // lowBoardCode는 클라이언트에서 전송된 값이어야 합니다.
-        newPost.setLowBoardCode(lowBoardEntity);
-
-
-        PostSortEntity postSortEntity = new PostSortEntity();
-        postSortEntity.setPsCode(psCode); // 예제 코드로 설정
-        postSortEntity.setPsName(postName);
-        newPost.setPsCode(postSortEntity);
+        newPost.setLowBoardCode(lowBoardCode);
+        newPost.setPsCode(psCode);
+        System.out.println(lowBoardCode);
 
         PostEntity post= postService.insertPost(newPost);
 

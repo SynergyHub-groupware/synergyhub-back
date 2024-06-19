@@ -29,4 +29,15 @@ public class PostRequest {
     private LowBoardEntity LowBoardCode;
     private PostSortEntity PsCode;
 
+    public void setLowBoardCode(int lowBoardCode) {
+        LowBoardEntity lowBoardEntity = new LowBoardEntity();
+        lowBoardEntity.setLowBoardCode(lowBoardCode);
+        this.LowBoardCode = lowBoardEntity;
+    }
+
+    public void setPsCode(int psCode) {
+        PostSortEntity postSortEntity = new PostSortEntity();
+        postSortEntity.setPsCode(psCode);
+        this.PsCode = postSortEntity;
+    }
 }

@@ -13,6 +13,7 @@ import synergyhubback.post.domain.entity.PostSortEntity;
 import synergyhubback.post.domain.repository.PostRepository;
 import synergyhubback.post.dto.request.PostRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -36,7 +37,7 @@ public class PostService {
 
     @Transactional
     public PostEntity insertPost(PostRequest newPost) {
-        // PostRequest에서 필요한 필드를 추출하여 PostEntity 객체를 생성
+        // PostRequest 에서 필요한 필드를 추출하여 PostEntity 객체를 생성
         PostEntity postEntity = new PostEntity();
         postEntity.setPostCode(newPost.getPostCode());
         postEntity.setPostName(newPost.getPostName());
@@ -44,6 +45,10 @@ public class PostService {
         postEntity.setPostCommSet(newPost.getPostCommSet());
         postEntity.setFixStatus(newPost.getFixStatus());
         postEntity.setNoticeStatus(newPost.getNoticeStatus());
+        postEntity.setLowBoardCode(newPost.getLowBoardCode());
+        postEntity.setPsCode(newPost.getPsCode());
+        LocalDate now = LocalDate.now();
+        postEntity.setPostDate(now);
         // 나머지 필드들도 동일한 방식으로 설정
 
         // PostEntity를 데이터베이스에 저장
