@@ -1,25 +1,33 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.approval.dao.LineEmpMapper;
 import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
-import synergyhubback.approval.dto.request.ApprovalAttachRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
+import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ApprovalService {
+
+    @Value("${file.approval-dir}")
+    private String approvalDir;
+
     private final FormRepository formRepository;
     private final LineRepository lineRepository;
     private final LineEmpMapper lineEmpMapper;
@@ -58,7 +66,7 @@ public class ApprovalService {
     }
 
     @Transactional
-    public void regist(DocRegistRequest docRegistRequest, @RequestParam boolean temporary) {
+    public void regist(DocRegistRequest docRegistRequest, MultipartFile[] files, @RequestParam boolean temporary) {
         int afCode = docRegistRequest.getForm().getAfCode();
         String code = "";
 
@@ -157,10 +165,37 @@ public class ApprovalService {
                     line.getTalOrder(),
                     line.getTalRole(),
                     "미결재",
-//                    line.getEmpCode()
                     line.getEmployee()
             );
             trueLineRepository.save(newLine);
+        }
+
+        // 첨부파일 저장
+        File uploadDirectory = new File(approvalDir);   // 업로드 디렉토리가 존재하지 않으면 생성합니다.
+        if (!uploadDirectory.exists()) uploadDirectory.mkdirs();
+
+        for (MultipartFile file : files) {
+            String originalFileName = file.getOriginalFilename();
+            String saveFileName = generateSaveFileName(originalFileName);
+
+            // 파일 저장 경로 생성
+            File destFile = new File(approvalDir + File.separator + saveFileName);
+
+            // 파일을 로컬에 저장
+            try {
+                file.transferTo(destFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 첨부파일 테이블에 정보 저장
+            AttachmentEntity newAttachment = AttachmentEntity.of(
+                    originalFileName,
+                    saveFileName,
+                    approvalDir,
+                    findDoc.getAdCode()
+            );
+            attachmentRepository.save(newAttachment);
         }
 
         if(temporary){  // 임시저장
@@ -229,9 +264,6 @@ public class ApprovalService {
         }
     }
 
-    public void saveAttachment(ApprovalAttachRequest approvalAttachRequest) {
-    }
-
     @Transactional(readOnly = true)
     public List<DocListResponse> findDocList(Integer empCode, String status) {
         switch (status){
@@ -243,5 +275,35 @@ public class ApprovalService {
         List<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(empCode, status);
 
         return docList.stream().map(DocListResponse::from).toList();
+    }
+
+//    public void registAttachment(MultipartFile[] files) {
+//        for (MultipartFile file : files) {
+//            System.out.println("Received file: " + file.getOriginalFilename());
+//
+//            String originalFileName = file.getOriginalFilename();
+//            String saveFileName = generateSaveFileName(originalFileName);
+//
+//            AttachmentEntity newAttachment = AttachmentEntity.of(
+//                    originalFileName,
+//                    saveFileName,
+//                    approvalDir,
+//                    "TEST01"
+//            );
+//
+//            attachmentRepository.save(newAttachment);
+//        }
+//    }
+
+    private String generateSaveFileName(String originalFileName) {
+        // UUID를 사용하여 고유한 파일명 생성
+        String uuid = UUID.randomUUID().toString();
+        String extension = "";
+
+        // 확장자가 있으면 분리했다가 다시 합쳐서 반환
+        int dotIndex = originalFileName.lastIndexOf('.');
+        if (dotIndex > 0) extension = originalFileName.substring(dotIndex);
+
+        return uuid + extension;
     }
 }

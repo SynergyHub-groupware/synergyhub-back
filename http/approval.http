@@ -62,25 +62,6 @@ Content-Type: application/json
   ]
 }
 
-### 첨부파일 저장
-POST http://localhost:8080/approval/attachment/regist
-Content-Type: application/json
-
-{
-  "attachmentList": [
-    {
-      "attachOriginal": "그룹웨어 더미.xlsx"
-    },
-    {
-      "attachOriginal": "그룹웨어 더미 - 시트1.pdf"
-    },
-    {
-      "attachOriginal": "그룹웨어 더미.zip"
-    }
-  ]
-}
-
-
 ### 보낸결재함[대기] 조회
 GET http://localhost:8080/approval/send/document?empCode=2021048&status=process
 
