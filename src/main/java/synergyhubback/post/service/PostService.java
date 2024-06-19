@@ -70,4 +70,12 @@ public class PostService {
     public List<PostSortEntity> getAllPostSortList() {
         return postRepository.getAllPostSortList();
     }
+
+    public List<PostEntity> InboardList(Pageable pageable,Integer lowBoardCode) {
+        return postRepository.InboardList(pageable,lowBoardCode);
+    }
+
+    public List<PostEntity> InboardPinList(Pageable pageable, Integer lowBoardCode) {
+        return postRepository.InboardPinList(pageable,lowBoardCode);
+    }
 }

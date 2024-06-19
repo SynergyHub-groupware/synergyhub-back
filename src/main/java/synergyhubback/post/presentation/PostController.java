@@ -2,6 +2,7 @@ package synergyhubback.post.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,22 @@ public class PostController {
     private String POST_FILE_DIR;
 
     private final PostService postService;
+
+    @GetMapping("/callGETInboardList/{lowBoardCode}")
+    public ResponseEntity<List<PostEntity>> callGETInboardList(Pageable pageable,@PathVariable("lowBoardCode") Integer lowBoardCode) {
+        System.out.println("callGETInboardList stared");
+        List<PostEntity> posts = postService.InboardList( pageable,lowBoardCode);
+        System.out.println(posts);
+        return ResponseEntity.ok(posts);
+    }
+    @GetMapping("/callGETInboardPinList/{lowBoardCode}")
+    public ResponseEntity<List<PostEntity>> callGETInboardPinList(@PageableDefault Pageable pageable,@PathVariable("lowBoardCode") Integer boardCode) {
+        System.out.println("callGETInboardPinList stared");
+        List<PostEntity> posts = postService.InboardPinList(pageable,boardCode);
+        System.out.println(posts);
+        return ResponseEntity.ok(posts);
+    }
+
 
     @GetMapping("/list")
     public ResponseEntity<List<PostEntity>> findPostList(@PageableDefault Pageable pageable) {
@@ -76,7 +93,7 @@ public class PostController {
         // 상품 정보 저장
         System.out.println("게시글 등록 메소드 작동시작");
         System.out.println(lowBoardCode);
-
+        System.out.println(attachFile);
         PostCommSet commSet = PostCommSet.fromValue(postCommSet);
 
 
@@ -130,11 +147,8 @@ public class PostController {
                         PostEntity lastPost = postService.LastPost();
 
                         /* DB에 저장할 파일의 정보 처리 */
-                        AttachmentEntity fileInfo = new AttachmentEntity();
-                        fileInfo.setAttachOriginal(originalFileName);
-                        fileInfo.setAttachUrl(fileUploadDir + "/" + saveFileName);
-                        fileInfo.setAttachSave(saveFileName);
-                        fileInfo.setAttachSort(lastPost.getPostCode());
+                        AttachmentEntity fileInfo = new AttachmentEntity(originalFileName, saveFileName,fileUploadDir + "/" +saveFileName,lastPost.getPostCode());
+
                         /* 리스트에 파일 정보 저장 */
                         FileList.add(fileInfo);
                     }

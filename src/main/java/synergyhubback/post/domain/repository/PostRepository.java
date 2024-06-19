@@ -1,6 +1,7 @@
 package synergyhubback.post.domain.repository;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -8,8 +9,6 @@ import synergyhubback.post.domain.entity.BoardEntity;
 import synergyhubback.post.domain.entity.LowBoardEntity;
 import synergyhubback.post.domain.entity.PostEntity;
 import synergyhubback.post.domain.entity.PostSortEntity;
-import synergyhubback.post.dto.request.PostFileDTO;
-import synergyhubback.post.dto.request.PostRequest;
 
 import java.util.List;
 
@@ -27,4 +26,11 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     @Query("select p from PostSortEntity p ")
     List<PostSortEntity> getAllPostSortList();
+
+    @Query("select p from PostEntity p where p.LowBoardCode.LowBoardCode=:lowCode")
+    List<PostEntity> InboardList(Pageable pageable,@Param("lowCode") Integer lowCode);
+
+    @Query("SELECT p FROM PostEntity p WHERE p.FixStatus = 'Y' AND p.LowBoardCode.LowBoardCode = :lowCode ORDER BY p.PostCode DESC")
+    List<PostEntity> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
+
 }
