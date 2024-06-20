@@ -2,24 +2,37 @@ package synergyhubback.approval.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "APPROVAL_DOC")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 public class Document {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int adCode;
+    private String adCode;
     private String adTitle;
-    private int empCode;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "emp_code")
+    private Employee employee;
+
     private LocalDate adReportDate;
-    private String adDetail;
-    @ManyToOne(fetch = FetchType.LAZY)
+    private String adStatus;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "afCode")
     private Form form;
+
+    private String adDetail;
+
+    public static Document of(String adCode, String adTitle, Employee employee, LocalDate adReportDate, String adStatus, Form form, String adDetail) {
+        return new Document(adCode, adTitle, employee, adReportDate, adStatus, form, adDetail);
+    }
 }
