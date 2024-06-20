@@ -6,13 +6,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import synergyhubback.approval.domain.entity.TrueLine;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
+import synergyhubback.approval.page.Paging;
+import synergyhubback.approval.page.PagingButtonInfo;
+import synergyhubback.approval.page.PagingResponse;
 import synergyhubback.approval.service.ApprovalService;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.employee.dto.response.EmployeeListResponse;
@@ -22,7 +29,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Clob;
 import java.util.List;
 
 @RestController
@@ -100,14 +106,13 @@ public class ApprovalController {
         return ResponseEntity.ok(docList);
     }
 
-    @GetMapping("/usingToken")
-    public ResponseEntity<EmployeeListResponse>  usingToken(@RequestHeader("Authorization") String token) {
-        String jwtToken = TokenUtils.getToken(token);
-        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
-        int empCode = Integer.parseInt(tokenEmpCode);
-        EmployeeListResponse employeeListResponse = employeeService.getEmployeeList(empCode);
-
-        return ResponseEntity.ok(employeeListResponse);
-    }
+//    @GetMapping("/send/document")
+//    public ResponseEntity<PagingResponse> findDocList(@RequestParam(defaultValue = "1") final Integer page,@RequestParam final Integer empCode, @RequestParam final String status){
+//        final Page<DocListResponse> docList = approvalService.findDocList(page, empCode, status);
+//        final PagingButtonInfo pagingButtonInfo = Paging.getPagingButtonInfo(docList);
+//        final PagingResponse pagingResponse = PagingResponse.of(docList.getContent(), pagingButtonInfo);
+//
+//        return ResponseEntity.ok(pagingResponse);
+//    }
 
 }

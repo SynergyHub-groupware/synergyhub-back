@@ -1,8 +1,10 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,11 +14,8 @@ import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
-import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
-import synergyhubback.employee.domain.entity.Employee;
-import synergyhubback.employee.domain.repository.EmployeeRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -279,6 +278,22 @@ public class ApprovalService {
         }
     }
 
+    private String generateSaveFileName(String originalFileName) {
+        // UUID를 사용하여 고유한 파일명 생성
+        String uuid = UUID.randomUUID().toString();
+        String extension = "";
+
+        // 확장자가 있으면 분리했다가 다시 합쳐서 반환
+        int dotIndex = originalFileName.lastIndexOf('.');
+        if (dotIndex > 0) extension = originalFileName.substring(dotIndex);
+
+        return uuid + extension;
+    }
+
+    private Pageable getPageable(final Integer page){
+        return PageRequest.of(page - 1, 5);
+    }
+
     @Transactional(readOnly = true)
     public List<DocListResponse> findDocList(Integer empCode, String status) {
         switch (status){
@@ -292,16 +307,9 @@ public class ApprovalService {
         return docList.stream().map(DocListResponse::from).toList();
     }
 
-    private String generateSaveFileName(String originalFileName) {
-        // UUID를 사용하여 고유한 파일명 생성
-        String uuid = UUID.randomUUID().toString();
-        String extension = "";
-
-        // 확장자가 있으면 분리했다가 다시 합쳐서 반환
-        int dotIndex = originalFileName.lastIndexOf('.');
-        if (dotIndex > 0) extension = originalFileName.substring(dotIndex);
-
-        return uuid + extension;
-    }
+//    public Page<DocListResponse> findDocList(final Integer page, final Integer empCode, final String status) {
+//        Page<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(getPageable(page), empCode, status);
+//        return docList.map(DocListResponse::from);
+//    }
 
 }
