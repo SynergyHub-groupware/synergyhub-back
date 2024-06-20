@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
-import synergyhubback.post.domain.entity.BoardEntity;
-import synergyhubback.post.domain.entity.LowBoardEntity;
-import synergyhubback.post.domain.entity.PostEntity;
-import synergyhubback.post.domain.entity.PostSortEntity;
+import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.repository.PostRepository;
 import synergyhubback.post.dto.request.PostRequest;
 
@@ -77,5 +74,17 @@ public class PostService {
 
     public List<PostEntity> InboardPinList(Pageable pageable, Integer lowBoardCode) {
         return postRepository.InboardPinList(pageable,lowBoardCode);
+    }
+
+    public PostEntity getDetail(String postCode) {
+        return postRepository.getDetail(postCode);
+    }
+
+    public List<AttachmentEntity> getFile(String postCode) {
+        return attachmentRepository.getFile(postCode);
+    }
+
+    public List<CommentEntity> getCommentList(String postCode) {
+        return postRepository.getCommentList(postCode);
     }
 }

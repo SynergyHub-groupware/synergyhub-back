@@ -2,25 +2,28 @@ package synergyhubback.post.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.common.attachment.AttachmentEntity;
-import synergyhubback.post.domain.entity.BoardEntity;
-import synergyhubback.post.domain.entity.LowBoardEntity;
-import synergyhubback.post.domain.entity.PostEntity;
-import synergyhubback.post.domain.entity.PostSortEntity;
+import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.service.PostService;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +38,46 @@ public class PostController {
     private String POST_FILE_DIR;
 
     private final PostService postService;
+
+    @GetMapping("/commentList/{postCode}")
+    public ResponseEntity<List<CommentEntity>> getCommentList(@PathVariable String postCode) {
+        return ResponseEntity.ok(postService.getCommentList(postCode));
+    }
+
+    @GetMapping("/downloadFile/{fileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+        try {
+            Path filePath = Paths.get(POST_FILE_DIR).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                throw new RuntimeException("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException("File not found " + fileName, ex);
+        }
+    }
+
+
+    @GetMapping("/getDetail/{postCode}")
+    public ResponseEntity<PostEntity> callGETDetail(@PathVariable("postCode") String postCode) {
+        System.out.println("callGETDetail stared");
+        PostEntity post = postService.getDetail(postCode);
+        System.out.println(post);
+        post.setPostCommSet(PostCommSet.fromValue(post.getPostCommSet().getValue())); // 이 부분 확인
+        return ResponseEntity.ok(post);
+    }
+    @GetMapping("/callGETFile/{postCode}")
+    public ResponseEntity<List<AttachmentEntity>> callGETFile(@PathVariable("postCode") String postCode) {
+        System.out.println("callGETFile stared");
+        List<AttachmentEntity> fileList = postService.getFile(postCode);
+        System.out.println("callGETFile"+fileList);
+        return ResponseEntity.ok(fileList);
+    }
 
     @GetMapping("/callGETInboardList/{lowBoardCode}")
     public ResponseEntity<List<PostEntity>> callGETInboardList(Pageable pageable,@PathVariable("lowBoardCode") Integer lowBoardCode) {
@@ -95,7 +138,7 @@ public class PostController {
         System.out.println(lowBoardCode);
         System.out.println(attachFile);
         PostCommSet commSet = PostCommSet.fromValue(postCommSet);
-
+        System.out.println(commSet);
 
         /* 상품 등록하기 */
         PostRequest newPost = new PostRequest();
