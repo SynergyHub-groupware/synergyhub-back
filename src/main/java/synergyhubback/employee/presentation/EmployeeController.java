@@ -2,15 +2,19 @@ package synergyhubback.employee.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
+import synergyhubback.employee.dto.request.ResetEmpPassRequest;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/employee")
@@ -18,6 +22,16 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+
+
+    /* 로그아웃 시 토큰 무효화 */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails userDetails) {
+
+        employeeService.updateRefreshToken(Integer.parseInt(userDetails.getUsername()), null);
+
+        return ResponseEntity.ok().build();
+    }
 
     /* 사원 등록 */
     @PostMapping("/empRegist")
@@ -29,7 +43,7 @@ public class EmployeeController {
     }
 
     /* 내 정보 조회 */
-    @GetMapping("/{emp_code}")
+    @GetMapping("/pofile/{emp_code}")
     public ResponseEntity<MyInfoResponse> getMyInfo(@PathVariable int emp_code) {
 
         MyInfoResponse myInfoResponse = employeeService.getMyInfo(emp_code);
@@ -48,10 +62,17 @@ public class EmployeeController {
     }
 
     /* 팀원 정보 조회 */
-    @GetMapping("/employeeList/{emp_code}")
-    public ResponseEntity<EmployeeListResponse> getEmployeeList(@PathVariable int emp_code) {
+    @GetMapping("/employeeList")
+    public ResponseEntity<EmployeeListResponse> employeeList(@RequestHeader("Authorization") String token) {
 
-        EmployeeListResponse employeeListResponse = employeeService.getEmployeeList(emp_code);
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        System.out.println("token : " + token);
+        System.out.println("empCode : " + empCode);
+
+        EmployeeListResponse employeeListResponse = employeeService.employeeList(empCode);
 
         return ResponseEntity.ok(employeeListResponse);
     }
@@ -90,6 +111,28 @@ public class EmployeeController {
         OrgDetailResponse orgDetailResponse = employeeService.getOrgEmpDetail(emp_code);
 
         return ResponseEntity.ok(orgDetailResponse);
+    }
+
+    /* 비밀번호 초기화 */
+    @PatchMapping("/resetEmpPass/{emp_code}")
+    public ResponseEntity<ResetEmpPassRequest> patchEmpPass(@PathVariable int emp_code, @RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+
+        String tokenDeptCode = TokenUtils.getDeptCode(jwtToken);
+
+        List<String> allowedDeptCodes = List.of("D4", "D5", "D6");      // 인사부서(인사부, 채용팀, 교육개발팀) 인원만 비밀번호 초기화 가능
+
+//        System.out.println("allowedDeptCodes : " + allowedDeptCodes);
+//        System.out.println("tokenDeptCode : " + tokenDeptCode);
+
+//        if(tokenDeptCode == null || !allowedDeptCodes.contains(tokenDeptCode)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+
+        employeeService.resetEmpPass(emp_code);
+
+        return ResponseEntity.ok().build();
     }
 }
 

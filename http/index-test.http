@@ -3,7 +3,7 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2024061",
+  "emp_code" : "2024062",
   "emp_pass" : "2024062"
 }
 

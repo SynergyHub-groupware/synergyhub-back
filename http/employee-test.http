@@ -3,10 +3,10 @@ POST http://localhost:8080/employee/empRegist
 Content-Type:application/json
 
 {
-  "emp_code": "2024061",
-  "emp_name": "복구",
-  "emp_pass": "2024061",
-  "social_security_no": "111111-1111111",
+  "emp_code": "",
+  "emp_name": "이복구",
+  "emp_pass": "",
+  "social_security_no": "111111-2222222",
   "dept_code": "D5",
   "position_code": "P5",
   "title_code": "T6",
@@ -14,26 +14,42 @@ Content-Type:application/json
   "emp_status": "Y"
 }
 
+### 로그인 테스트
+POST http://localhost:8080/emp/auth/login
+Content-Type: application/json
+
+{
+  "emp_code" : "2024062",
+  "emp_pass" : "2024062"
+}
+
 ### 내정보 조회
-GET http://localhost:8080/employee/2021032
+#@emp_code = 2024062
+GET http://localhost:8080/employee/pofile/{{emp_code}}
 
 ### 인사기록카드 조회
-GET http://localhost:8080/employee/recordCard/2021032
+GET http://localhost:8080/employee/recordCard/{{emp_code}}
 
 ### 팀원 정보 조회
-GET http://localhost:8080/employee/employeeList/2021032
+GET http://localhost:8080/employee/employeeList
+Authorization: Bearer eyJkYXRlIjoxNzE4ODEyNjc0NjU3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTg4MTYyNzR9.VtwyIYOipD3NrgxYCC3ZiBaFRxdOv8RvZ3Y64ujW8VPpfNySWKJaUAdaXY22fFHwn3NZO-paK3JbN6E6NoyxlA
 
 ### 부서 전체 조회
-GET http://localhost:8080/employee/departments
+GET http://localhost:8080/employee/employeeList
 
 ### 부서 상세 조회
-GET http://localhost:8080/employee/departmentList/D4
+GET http://localhost:8080/employee/departmentList/{{dept_code}}
 
 ### 조직도 전체 조회
 GET http://localhost:8080/employee/org
 
 ### 조직도 상세 조회
-GET http://localhost:8080/employee/orgDetail/2021032
+GET http://localhost:8080/employee/orgDetail/{{emp_code}}
+
+### 비밀번호 사원코드로 초기화
+PATCH http://localhost:8080/employee/resetEmpPass/2020021
+Authorization: Bearer eyJkYXRlIjoxNzE4ODQ0NTI2NzYwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTg4NDgxMjZ9.y5XkxJaF8vigYZbEvQiOkSc_P0TXH1Ef3BOKV1luF3bciFBRAMb9wTsP-7JjJsX_t59Ld2xNIrtIEUiL4J4hQA
+
 
 
 

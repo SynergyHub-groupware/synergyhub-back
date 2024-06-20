@@ -49,6 +49,7 @@ public class Employee {
 
     private int bank_code;
 
+
     public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
@@ -69,6 +70,23 @@ public class Employee {
                 emp_status
         );
     }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public void setTitle(Title title) {
+        this.title = title;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public void resetPassword(String newEmpPass) {
+        this.emp_pass = newEmpPass;
+    }
+
 
     // 이재현 로그인 관련 employee entity 로직 생성
     public void updateRefreshToken(String refreshToken) {
