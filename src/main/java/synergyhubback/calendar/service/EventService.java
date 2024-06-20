@@ -13,6 +13,7 @@ import synergyhubback.employee.domain.repository.EmployeeRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -79,8 +80,15 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Label not found"));
     }
 
+
     private String generateEventId() {
-        long count = eventRepository.count();
-        return "CA" + (count + 1);
+        Optional<Event> lastEventOptional = eventRepository.findTopByOrderByIdDesc();
+        if (lastEventOptional.isPresent()) {
+            String lastCode = lastEventOptional.get().getId().replaceAll("[^0-9]", "");
+            int lastNumber = Integer.parseInt(lastCode);
+            return "CA" + (lastNumber + 1);
+        } else {
+            return "CA1";
+        }
     }
 }
