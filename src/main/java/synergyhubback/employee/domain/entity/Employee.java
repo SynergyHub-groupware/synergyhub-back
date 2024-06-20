@@ -47,8 +47,9 @@ public class Employee {
     @JoinColumn(name = "position_code", referencedColumnName = "position_code")
     private Position position;
 
-    private int bank_code;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_code", referencedColumnName = "bank_code")
+    private Bank bank;
 
     public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
@@ -83,11 +84,19 @@ public class Employee {
         this.position = position;
     }
 
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public void resetPassword(String newEmpPass) {
+        this.emp_pass = newEmpPass;
+    }
+
+
     // 이재현 로그인 관련 employee entity 로직 생성
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
         System.out.println("updateRefreshToken");
     }
-
 
 }

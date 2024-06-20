@@ -250,4 +250,16 @@ public class EmployeeService {
 
     }
 
+    public EmployeeListResponse employeeList(int empCode) {
+
+        System.out.println("findDeptCodeByEmpCode : " + empCode);
+        String dept_code = employeeRepository.findDeptCodeByEmpCode(empCode);
+
+        System.out.println("dept code : " + dept_code);
+        List<Employee> employees = employeeRepository.findAllByDeptCode(dept_code);
+
+        System.out.println("emp found : " + employees.size());
+
+        return EmployeeListResponse.getEmployeeList(employees);
+    }
 }

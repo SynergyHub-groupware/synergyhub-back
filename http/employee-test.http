@@ -15,7 +15,8 @@ Content-Type:application/json
 }
 
 ### 내정보 조회
-GET http://localhost:8080/employee/2021032
+GET http://localhost:8080/employee/myInfo
+Authorization: Bearer
 
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard/2021032

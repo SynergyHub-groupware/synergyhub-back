@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
 import synergyhubback.employee.dto.response.*;
@@ -106,5 +107,32 @@ public class EmployeeController {
         return ResponseEntity.ok().build();
     }
 
+    /* 내 정보 조회 */
+    @GetMapping("/myInfo")
+    public ResponseEntity<MyInfoResponse> getMyInfo(@RequestHeader("Authorization") String token) {
 
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        MyInfoResponse myInfoResponse = employeeService.getMyInfo(empCode);
+
+        return ResponseEntity.ok(myInfoResponse);
+    }
+
+    /* 팀원 정보 조회 */
+    @GetMapping("/employeeList")
+    public ResponseEntity<EmployeeListResponse> employeeList(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        System.out.println("token : " + token);
+        System.out.println("empCode : " + empCode);
+
+        EmployeeListResponse employeeListResponse = employeeService.employeeList(empCode);
+
+        return ResponseEntity.ok(employeeListResponse);
+    }
 }

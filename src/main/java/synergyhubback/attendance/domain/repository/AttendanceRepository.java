@@ -24,6 +24,12 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     Attendance findByEmployeeAndAtdDate(Employee employee, LocalDate currentDate);
 
+    /* 오늘의 근태 기록 조회 */
+    @Query("SELECT a FROM Attendance a WHERE DATE(a.startTime) = :date")
+    Attendance findByStartDate(@Param("date") LocalDate date);
+
+
+
 
     /* 상세 근태 기록 조회 : 직급에 따라 조회할 수 있는 범위 제한 */
 
