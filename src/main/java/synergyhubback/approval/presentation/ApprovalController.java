@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Clob;
 import java.util.List;
 
 @RestController
@@ -36,9 +37,15 @@ public class ApprovalController {
     private final EmployeeService employeeService;
 
     @GetMapping("/formList")
-    public ResponseEntity<List<FormListResponse>> findFormList() {
+    public ResponseEntity<List<FormListResponse>> findFormList(){
         List<FormListResponse> formList = approvalService.findFormList();
         return ResponseEntity.ok(formList);
+    }
+
+    @GetMapping("/formContent")
+    public ResponseEntity<FormContentResponse> findFormContent(@RequestParam final int afCode){
+        FormContentResponse formContent = approvalService.findFormContent(afCode);
+        return ResponseEntity.ok(formContent);
     }
 
     @GetMapping("/formLine")

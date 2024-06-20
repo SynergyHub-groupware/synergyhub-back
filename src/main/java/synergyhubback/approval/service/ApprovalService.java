@@ -53,6 +53,17 @@ public class ApprovalService {
     }
 
     @Transactional(readOnly = true)
+    public FormContentResponse findFormContent(final int afCode) {
+        Form formContent = formRepository.findById(afCode).orElse(null);
+
+        if (formContent == null) {
+            throw new RuntimeException("Form not found for afCode: " + afCode);
+        }
+
+        return FormContentResponse.from(formContent);
+    }
+
+    @Transactional(readOnly = true)
     public List<FormLineResponse> findFormLine(final Integer lsCode) {
         List<Line> formLine = null;
 
@@ -292,8 +303,5 @@ public class ApprovalService {
 
         return uuid + extension;
     }
-
-
-
 
 }

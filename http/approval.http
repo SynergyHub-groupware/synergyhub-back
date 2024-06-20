@@ -1,6 +1,9 @@
 ### 결재양식리스트 조회
 GET http://localhost:8080/approval/formList
 
+### 결재양식기본내용 조회
+GET http://localhost:8080/approval/formContent?afCode=6
+
 ### 결재라인 전체 조회
 GET http://localhost:8080/approval/formLine
 
