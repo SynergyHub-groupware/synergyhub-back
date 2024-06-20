@@ -47,7 +47,18 @@ public class Employee {
     @JoinColumn(name = "position_code", referencedColumnName = "position_code")
     private Position position;
 
-    private int bank_code;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_code", referencedColumnName = "bank_code")
+    private Bank bank;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sch_code", referencedColumnName = "sch_code")
+    private SchoolInfo schoolInfo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cer_code", referencedColumnName = "cer_code")
+    private Certificate certificate;
+
 
 
     public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
@@ -81,6 +92,18 @@ public class Employee {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public void setSchoolInfo(SchoolInfo schoolInfo) {
+        this.schoolInfo = schoolInfo;
+    }
+
+    public void setCertificate(Certificate certificate) {
+        this.certificate = certificate;
     }
 
     public void resetPassword(String newEmpPass) {

@@ -105,12 +105,11 @@ public class EmployeeService {
 
     }
 
-    public MyInfoResponse getMyInfo(int emp_code) {
+    public MyInfoResponse getMyInfo(int empCode) {
 
 
-        Employee employee = employeeRepository.findByEmpCode(emp_code);
+        Employee employee = employeeRepository.findByEmpCode(empCode);
 
-        System.out.println("emp_code : " + emp_code);
 
         return MyInfoResponse.getMyInfo(employee);
 

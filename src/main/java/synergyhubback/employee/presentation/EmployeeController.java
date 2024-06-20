@@ -43,10 +43,14 @@ public class EmployeeController {
     }
 
     /* 내 정보 조회 */
-    @GetMapping("/pofile/{emp_code}")
-    public ResponseEntity<MyInfoResponse> getMyInfo(@PathVariable int emp_code) {
+    @GetMapping("/myInfo")
+    public ResponseEntity<MyInfoResponse> getMyInfo(@RequestHeader("Authorization") String token) {
 
-        MyInfoResponse myInfoResponse = employeeService.getMyInfo(emp_code);
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        MyInfoResponse myInfoResponse = employeeService.getMyInfo(empCode);
 
         return ResponseEntity.ok(myInfoResponse);
     }

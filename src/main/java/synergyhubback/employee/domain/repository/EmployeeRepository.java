@@ -33,12 +33,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e.department.dept_code FROM Employee e WHERE e.emp_code = :empCode")
     String findDeptCodeByEmpCode(@Param("empCode") int empCode);
 
-//    /* 팀원 정보 조회 */
-//    @Query("SELECT e FROM Employee e WHERE e.department.dept_code = :deptCode")
-//    List<Employee> findAllByDeptCode(String deptCode);
-//
-//    /* 사원코드로 부서코드 조회 */
-//    @Query("SELECT e.department.dept_code FROM Employee e WHERE e.emp_code = :empCode")
-//    String findDeptCodeByEmpCode(int empCode);
-
 }

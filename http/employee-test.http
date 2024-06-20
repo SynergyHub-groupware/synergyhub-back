@@ -19,13 +19,14 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2024062",
-  "emp_pass" : "2024062"
+  "emp_code" : "2020021",
+  "emp_pass" : "2020021"
 }
 
+//@emp_code = 2024062
 ### 내정보 조회
-#@emp_code = 2024062
-GET http://localhost:8080/employee/pofile/{{emp_code}}
+GET http://localhost:8080/employee/myInfo
+Authorization: Bearer eyJkYXRlIjoxNzE4ODQ5NDM4NTI3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDIxLCJleHAiOjE3MTg4NTMwMzh9.AAGj1l8QyAptWBO78GAXH-bZsyNHGecJw6LevqS1y5tnPVipot6_j7ofGxxoRs5MW6GQ3h8JJ-zfhdzLNny8Sg
 
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard/{{emp_code}}
