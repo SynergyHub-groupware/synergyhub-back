@@ -281,24 +281,6 @@ public class ApprovalService {
         return docList.stream().map(DocListResponse::from).toList();
     }
 
-//    public void registAttachment(MultipartFile[] files) {
-//        for (MultipartFile file : files) {
-//            System.out.println("Received file: " + file.getOriginalFilename());
-//
-//            String originalFileName = file.getOriginalFilename();
-//            String saveFileName = generateSaveFileName(originalFileName);
-//
-//            AttachmentEntity newAttachment = AttachmentEntity.of(
-//                    originalFileName,
-//                    saveFileName,
-//                    approvalDir,
-//                    "TEST01"
-//            );
-//
-//            attachmentRepository.save(newAttachment);
-//        }
-//    }
-
     private String generateSaveFileName(String originalFileName) {
         // UUID를 사용하여 고유한 파일명 생성
         String uuid = UUID.randomUUID().toString();
@@ -311,32 +293,7 @@ public class ApprovalService {
         return uuid + extension;
     }
 
-    private final TokenUtils tokenUtils;
-    private final EmployeeRepository employeeRepository;
 
-    public Employee getEmployeeFromAccessToken(String accessToken) {
-        // 토큰 유효성 검사 및 파싱
-        if (!tokenUtils.isValidToken(accessToken)) {
-            System.out.println("토큰이 유효하지 않음");
-            return null; // 토큰이 유효하지 않으면 null 반환 혹은 예외 처리
-        }
 
-        // 토큰에서 사용자 ID 추출
-        String employeeCode  = tokenUtils.getEmp_Code(accessToken);
-        if (employeeCode  == null || employeeCode .isEmpty()) {
-            System.out.println("해당 사용자가 없음");
-            return null; // 사용자 ID가 없으면 null 반환 혹은 예외 처리
-        }
 
-        try {
-            Integer empCode = Integer.parseInt(employeeCode );
-            // 데이터베이스에서 사용자 정보 조회
-            Optional<Employee> optionalEmployee = employeeRepository.findById(empCode);
-            return optionalEmployee.orElse(null); // 조회된 사용자 정보 반환, 없으면 null 반환
-        } catch (NumberFormatException e) {
-            // 사용자 ID가 올바르지 않은 형식일 경우 예외 처리
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

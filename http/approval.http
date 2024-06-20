@@ -67,4 +67,5 @@ GET http://localhost:8080/approval/send/document?empCode=2021048&status=process
 
 ### 토큰 테스트
 GET http://localhost:8080/approval/usingToken
-refresh-Token: "eyJkYXRlIjoxNzE4ODAyODY0NjcwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJSZWZyZXNoVG9rZW4iLCJleHAiOjE3MTk0MDc2NjR9.PVwfEgDqHp-zZbGU18dKG1MaY-WxWF4iWHZpFa0ZYRIclMzjZv-2ABFm9YdcP-jugfXJc1Qc2Kelm2pz1otspg"
+Authorization: Bearer eyJkYXRlIjoxNzE4ODQ0Mjk4Nzg5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTg4NDc4OTh9.1hLTNV2aUdJvFcUJ6rDK1s22qttdjJuBT8QHFwWGJAgiRsS1Mow_BsHHowdjsezFKnXNuejkJndiBb7qLXy_SA
+
