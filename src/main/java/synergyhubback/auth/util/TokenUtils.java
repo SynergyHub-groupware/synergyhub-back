@@ -39,6 +39,16 @@ public class TokenUtils {
                 .get("emp_code").toString();
     }
 
+    // 액세스 토큰에서 emp_Name 값 추출
+    public static String getEmp_Name(String accessToken){
+        return Jwts.parserBuilder()
+                .setSigningKey(createSignature())
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .get("emp_Name").toString();
+    }
+
     // yml 파일에서 secretKey 값을 jwtSecretKey에 설정
     @Value("${jwt.secret}")
     public void setJwtSecretKey(String jwtSecretKey) {
@@ -112,5 +122,6 @@ public class TokenUtils {
             return false;
         }
     }
+
 
 }

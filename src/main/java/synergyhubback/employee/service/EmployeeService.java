@@ -1,6 +1,7 @@
 package synergyhubback.employee.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import synergyhubback.employee.dto.request.EmployeeRegistRequest;
 import synergyhubback.employee.dto.response.*;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +33,8 @@ public class EmployeeService {
     private final SchoolInfoRepository schoolInfoRepository;
     private final DepartmentRepository departmentRepository;
     private final DeptRelationsRepository deptRelationsRepository;
+    private final TitleRepository titleRepository;
+    private final PositionRepository positionRepository;
 
     // 이재현 로그인 관련 service 로직 생성
 //    @Transactional(readOnly = true)
@@ -79,26 +83,6 @@ public class EmployeeService {
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_REFRESH_TOKEN));
 
         return LoginDto.from(employee);
-    }
-
-    public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
-
-        String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
-        String empCode = hireYearMonth + (count + 1);
-
-        final Employee newEmp = Employee.regist(
-
-                employeeRegistRequest.getEmp_code(),
-                employeeRegistRequest.getEmp_name(),
-                passwordEncoder.encode(empCode),
-                employeeRegistRequest.getSocial_security_no(),
-                employeeRegistRequest.getHire_date(),
-                employeeRegistRequest.getEmp_status()
-        );
-
-        employeeRepository.save(newEmp);
-
     }
 
     public MyInfoResponse getMyInfo(int emp_code) {
@@ -238,4 +222,44 @@ public class EmployeeService {
         return OrgDetailResponse.getOrgDetail(employee);
     }
 
+    public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
+
+        String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
+        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
+        String empCode = hireYearMonth + (count + 1);
+
+        Department department = departmentRepository.findByDeptCode(employeeRegistRequest.getDept_code());
+        Title title = titleRepository.findByTitleCode(employeeRegistRequest.getTitle_code());
+        Position position = positionRepository.findByPositionCode(employeeRegistRequest.getPosition_code());
+
+        final Employee newEmp = Employee.regist(
+
+                Integer.parseInt(empCode),
+                employeeRegistRequest.getEmp_name(),
+                passwordEncoder.encode(empCode),
+                employeeRegistRequest.getSocial_security_no(),
+                employeeRegistRequest.getHire_date(),
+                employeeRegistRequest.getEmp_status()
+        );
+
+        newEmp.setDepartment(department);
+        newEmp.setTitle(title);
+        newEmp.setPosition(position);
+
+        employeeRepository.save(newEmp);
+
+    }
+
+    public EmployeeListResponse employeeList(int empCode) {
+
+        System.out.println("findDeptCodeByEmpCode : " + empCode);
+        String dept_code = employeeRepository.findDeptCodeByEmpCode(empCode);
+
+        System.out.println("dept code : " + dept_code);
+        List<Employee> employees = employeeRepository.findAllByDeptCode(dept_code);
+
+        System.out.println("emp found : " + employees.size());
+
+        return EmployeeListResponse.getEmployeeList(employees);
+    }
 }

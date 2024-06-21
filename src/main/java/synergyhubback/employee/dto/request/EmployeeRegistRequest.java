@@ -1,15 +1,16 @@
 package synergyhubback.employee.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
+@Builder
 public class EmployeeRegistRequest {
 
     private final int emp_code;
@@ -31,7 +32,7 @@ public class EmployeeRegistRequest {
     @NotBlank
     private final String title_code;
 
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private final LocalDate hire_date;
 
     private final String emp_status;

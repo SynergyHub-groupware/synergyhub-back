@@ -3,10 +3,10 @@ POST http://localhost:8080/employee/empRegist
 Content-Type:application/json
 
 {
-  "emp_code": "2024061",
-  "emp_name": "복구",
-  "emp_pass": "2024061",
-  "social_security_no": "111111-1111111",
+  "emp_code": "1",
+  "emp_name": "이복구2",
+  "emp_pass": "1",
+  "social_security_no": "111111-2222222",
   "dept_code": "D5",
   "position_code": "P5",
   "title_code": "T6",
@@ -15,7 +15,8 @@ Content-Type:application/json
 }
 
 ### 내정보 조회
-GET http://localhost:8080/employee/2021032
+GET http://localhost:8080/employee/myInfo
+Authorization: Bearer
 
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard/2021032
