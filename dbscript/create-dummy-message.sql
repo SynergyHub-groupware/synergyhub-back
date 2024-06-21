@@ -94,3 +94,7 @@ INSERT INTO MESSAGE_BLOCK (BLK_CODE, BLK_DATE, BLK_ID, BLK_NAME) VALUES
 (8, '2023-08-01', '2021081', '2021068'),
 (9, '2023-08-01', '2021081', '2023061'),
 (10, '2023-08-02', '2021081', '2022091');
+
+INSERT INTO MESSAGE(MSG_CODE, SEND_DATE, MSG_TITLE, MSG_CON, MSG_STATUS, EMER_STATUS, EMP_REV, EMP_SEND, STOR_CODE) VALUES
+                                                                                                                        ('MS71', '2023-07-11', '팀 회의', '팀 회의 일정입니다.', 'Y', 'N', '2024061', '2021067', 1),
+                                                                                                                        ('MS72', '2023-07-11', '팀 회식', '팀 회식 일정입니다.', 'Y', 'N', '2021067', '2024061', 1);
