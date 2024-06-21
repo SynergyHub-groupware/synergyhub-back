@@ -22,6 +22,6 @@ public class Form {
     @JoinColumn(name = "lsCode")
     private LineSort lineSort;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String afCon;
 }

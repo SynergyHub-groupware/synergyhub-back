@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -291,7 +292,7 @@ public class ApprovalService {
     }
 
     private Pageable getPageable(final Integer page){
-        return PageRequest.of(page - 1, 5);
+        return PageRequest.of(page - 1, 10);
     }
 
     @Transactional(readOnly = true)
@@ -307,8 +308,16 @@ public class ApprovalService {
         return docList.stream().map(DocListResponse::from).toList();
     }
 
-//    public Page<DocListResponse> findDocList(final Integer page, final Integer empCode, final String status) {
+//    public Page<DocListResponse> findDocList(final Integer page, final Integer empCode, String status) {
+//        switch (status){
+//            case "waiting" : status = "대기"; break;
+//            case "process" : status = "진행중"; break;
+//            case "return" : status  = "반려"; break;
+//            case "complete" : status = "완료"; break;
+//        }
 //        Page<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(getPageable(page), empCode, status);
+//        System.out.println("docList = " + docList);
+//
 //        return docList.map(DocListResponse::from);
 //    }
 
