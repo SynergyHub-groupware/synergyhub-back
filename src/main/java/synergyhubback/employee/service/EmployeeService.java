@@ -115,13 +115,13 @@ public class EmployeeService {
 
     }
 
-    public RecordCardResponse getRecordCard(int emp_code) {
+    public RecordCardResponse getRecordCard(int empCode) {
 
-        Employee employee = employeeRepository.findByEmpCode(emp_code);
+        Employee employee = employeeRepository.findByEmpCode(empCode);
 
-        List<SchoolInfo> schoolInfos = schoolInfoRepository.findAllByEmpCode(emp_code);
+        List<SchoolInfo> schoolInfos = schoolInfoRepository.findAllByEmpCode(empCode);
 
-        List<Certificate> certificates = certificateRepository.findAllByEmpCode(emp_code);
+        List<Certificate> certificates = certificateRepository.findAllByEmpCode(empCode);
 
 
         return RecordCardResponse.getRecordCard(employee, schoolInfos, certificates);

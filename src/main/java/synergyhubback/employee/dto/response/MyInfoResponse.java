@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import synergyhubback.employee.domain.entity.Certificate;
 import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.entity.SchoolInfo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,20 +39,8 @@ public class MyInfoResponse {
     private String position_name;
     private int bank_code;
     private String bank_name;
-    private int cer_code;
-    private String cer_name;
-    private String cer_score;
-    private LocalDate cer_date;
-    private String cer_num;
-    private String iss_origin;
-    private int sch_code;
-    private String sch_name;
-    private String grad_status;
-    private LocalDate enrole_date;
-    private LocalDate grad_date;
-    private String major;
-    private String day_n_night;
-    private String location;
+
+
 
 
     public static MyInfoResponse getMyInfo(Employee employee) {
@@ -76,21 +67,9 @@ public class MyInfoResponse {
                 employee.getPosition().getPosition_code(),
                 employee.getPosition().getPosition_name(),
                 employee.getBank().getBank_code(),
-                employee.getBank().getBank_name(),
-                employee.getCertificate().getCer_code(),
-                employee.getCertificate().getCer_name(),
-                employee.getCertificate().getCer_score(),
-                employee.getCertificate().getCer_date(),
-                employee.getCertificate().getCer_num(),
-                employee.getCertificate().getIss_organ(),
-                employee.getSchoolInfo().getSch_code(),
-                employee.getSchoolInfo().getSch_name(),
-                employee.getSchoolInfo().getGrad_status(),
-                employee.getSchoolInfo().getEnrole_date(),
-                employee.getSchoolInfo().getGrad_date(),
-                employee.getSchoolInfo().getMajor(),
-                employee.getSchoolInfo().getDay_n_night(),
-                employee.getSchoolInfo().getLocation()
+                employee.getBank().getBank_name()
         );
     }
+
+
 }

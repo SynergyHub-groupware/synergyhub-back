@@ -56,10 +56,14 @@ public class EmployeeController {
     }
 
     /* 인사기록카드 조회 하고 싶어요 */
-    @GetMapping("/recordCard/{emp_code}")
-    public ResponseEntity<RecordCardResponse> getRecordCard(@PathVariable int emp_code) {
+    @GetMapping("/recordCard")
+    public ResponseEntity<RecordCardResponse> getRecordCard(@RequestHeader("Authorization") String token) {
 
-        RecordCardResponse recordCardResponse = employeeService.getRecordCard(emp_code);
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        RecordCardResponse recordCardResponse = employeeService.getRecordCard(empCode);
 
         return ResponseEntity.ok(recordCardResponse);
 
