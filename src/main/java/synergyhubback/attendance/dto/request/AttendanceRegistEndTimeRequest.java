@@ -8,11 +8,12 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
-public class AttendanceRegistStartTimeRequest {
+public class AttendanceRegistEndTimeRequest {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-    private LocalTime startTime;
+    private LocalTime endTime;
 
-    public AttendanceRegistStartTimeRequest() {
+    public AttendanceRegistEndTimeRequest() {
     }
+
 }

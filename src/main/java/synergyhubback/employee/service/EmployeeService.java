@@ -1,6 +1,7 @@
 package synergyhubback.employee.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,10 @@ import synergyhubback.employee.domain.entity.*;
 import synergyhubback.employee.domain.repository.*;
 import synergyhubback.employee.dto.request.EmployeeRegistRequest;
 import synergyhubback.employee.dto.response.*;
+import synergyhubback.post.service.PostService;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,16 +34,9 @@ public class EmployeeService {
     private final SchoolInfoRepository schoolInfoRepository;
     private final DepartmentRepository departmentRepository;
     private final DeptRelationsRepository deptRelationsRepository;
+    private final TitleRepository titleRepository;
+    private final PositionRepository positionRepository;
 
-    // 이재현 로그인 관련 service 로직 생성
-//    @Transactional(readOnly = true)
-//    public LoginDto findByEmpCode(int emp_code) {
-//
-//        Employee employee = employeeRepository.findByEmpCode(emp_code)
-//                .orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
-//
-//        return LoginDto.from(employee);
-//    }
     @Transactional(readOnly = true)
     public LoginDto findByEmpCode(int emp_code) {
 
@@ -81,15 +77,20 @@ public class EmployeeService {
         return LoginDto.from(employee);
     }
 
+
     public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
 
         String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
         long count = employeeRepository.countByHireYearMonth(hireYearMonth);
         String empCode = hireYearMonth + (count + 1);
 
+        Department department = departmentRepository.findByDeptCode(employeeRegistRequest.getDept_code());
+        Title title = titleRepository.findByTitleCode(employeeRegistRequest.getTitle_code());
+        Position position = positionRepository.findByPositionCode(employeeRegistRequest.getPosition_code());
+
         final Employee newEmp = Employee.regist(
 
-                employeeRegistRequest.getEmp_code(),
+                Integer.parseInt(empCode),
                 employeeRegistRequest.getEmp_name(),
                 passwordEncoder.encode(empCode),
                 employeeRegistRequest.getSocial_security_no(),
@@ -97,52 +98,44 @@ public class EmployeeService {
                 employeeRegistRequest.getEmp_status()
         );
 
+        newEmp.setDepartment(department);
+        newEmp.setTitle(title);
+        newEmp.setPosition(position);
+
         employeeRepository.save(newEmp);
 
     }
 
-    public MyInfoResponse getMyInfo(int emp_code) {
+    public MyInfoResponse getMyInfo(int empCode) {
 
-        Employee employee = employeeRepository.findByEmpCode(emp_code);
+
+        Employee employee = employeeRepository.findByEmpCode(empCode);
 
         return MyInfoResponse.getMyInfo(employee);
 
     }
 
-    public RecordCardResponse getRecordCard(int emp_code) {
+    public RecordCardResponse getRecordCard(int empCode) {
 
-        Employee employee = employeeRepository.findByEmpCode(emp_code);
+        Employee employee = employeeRepository.findByEmpCode(empCode);
 
-        List<SchoolInfo> schoolInfos = schoolInfoRepository.findAllByEmpCode(emp_code);
+        List<SchoolInfo> schoolInfos = schoolInfoRepository.findAllByEmpCode(empCode);
 
-        List<Certificate> certificates = certificateRepository.findAllByEmpCode(emp_code);
+        List<Certificate> certificates = certificateRepository.findAllByEmpCode(empCode);
 
 
         return RecordCardResponse.getRecordCard(employee, schoolInfos, certificates);
     }
 
-    public EmployeeListResponse getEmployeeList(int emp_code) {
+    public EmployeeListResponse employeeList(int empCode) {
 
-        String dept_code = employeeRepository.findDeptCodeByEmpCode(emp_code);
+        System.out.println("findDeptCodeByEmpCode : " + empCode);
+        String dept_code = employeeRepository.findDeptCodeByEmpCode(empCode);
 
+        System.out.println("dept code : " + dept_code);
         List<Employee> employees = employeeRepository.findAllByDeptCode(dept_code);
 
-        List<EmployeeResponse> employeeResponses = employees.stream()
-                .map(employee -> {
-                    EmployeeResponse response = new EmployeeResponse(
-                            employee.getEmp_code(),
-                            employee.getEmp_name(),
-                            null,
-                            null,
-                            employee.getPhone(),
-                            employee.getHire_date(),
-                            employee.getSocial_security_no()
-                    );
-                    response.setDept_title(employee.getDepartment().getDept_title());
-                    response.setPosition_name(employee.getPosition().getPosition_name());
-                    return response;
-                })
-                .collect(Collectors.toList());
+        System.out.println("emp found : " + employees.size());
 
         return EmployeeListResponse.getEmployeeList(employees);
     }
@@ -236,6 +229,19 @@ public class EmployeeService {
         Employee employee = employeeRepository.findByEmpCode(emp_code);
 
         return OrgDetailResponse.getOrgDetail(employee);
+    }
+
+
+    public void resetEmpPass(int empCode) {
+
+        Employee employee = employeeRepository.findById(empCode)
+                .orElseThrow(() -> new IllegalArgumentException("사원번호 노 유효"));
+
+        String encodePassword = passwordEncoder.encode(String.valueOf(empCode));
+
+        employee.resetPassword(encodePassword);
+
+        employeeRepository.save(employee);
     }
 
 }

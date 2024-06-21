@@ -28,7 +28,7 @@ public class Attendance {
     private LocalTime endTime;          //퇴근시간
 
     @ManyToOne
-    @JoinColumn(name = "empCode")
+    @JoinColumn(name = "emp_Code")
     private Employee employee;                //사원코드
 
     private int atsCode;                //근무상태코드 (추후 fk)
@@ -51,4 +51,8 @@ public class Attendance {
         this.startTime = startTime;
     }
 
+    // 퇴근시간 업데이트
+    public void updateEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
 }
