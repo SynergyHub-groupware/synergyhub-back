@@ -19,7 +19,7 @@ public class AttachmentEntity {
     private String attachUrl;
     private String attachSort;
 
-    private AttachmentEntity(String attachOriginal, String attachSave, String attachUrl, String attachSort){
+    public AttachmentEntity(String attachOriginal, String attachSave, String attachUrl, String attachSort){
         this.attachOriginal = attachOriginal;
         this.attachSave = attachSave;
         this.attachUrl = attachUrl;
