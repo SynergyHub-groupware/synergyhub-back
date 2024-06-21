@@ -41,8 +41,6 @@ public class MyInfoResponse {
     private String bank_name;
 
 
-
-
     public static MyInfoResponse getMyInfo(Employee employee) {
 
         return new MyInfoResponse(

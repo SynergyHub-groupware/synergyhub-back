@@ -1,25 +1,37 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.approval.dao.LineEmpMapper;
 import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
-import synergyhubback.approval.dto.request.ApprovalAttachRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
+import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ApprovalService {
+
+    @Value("${file.approval-dir}")
+    private String approvalDir;
+
     private final FormRepository formRepository;
     private final LineRepository lineRepository;
     private final LineEmpMapper lineEmpMapper;
@@ -41,6 +53,17 @@ public class ApprovalService {
     }
 
     @Transactional(readOnly = true)
+    public FormContentResponse findFormContent(final int afCode) {
+        Form formContent = formRepository.findById(afCode).orElse(null);
+
+        if (formContent == null) {
+            throw new RuntimeException("Form not found for afCode: " + afCode);
+        }
+
+        return FormContentResponse.from(formContent);
+    }
+
+    @Transactional(readOnly = true)
     public List<FormLineResponse> findFormLine(final Integer lsCode) {
         List<Line> formLine = null;
 
@@ -58,7 +81,7 @@ public class ApprovalService {
     }
 
     @Transactional
-    public void regist(DocRegistRequest docRegistRequest, @RequestParam boolean temporary) {
+    public void regist(DocRegistRequest docRegistRequest, MultipartFile[] files, @RequestParam boolean temporary) {
         int afCode = docRegistRequest.getForm().getAfCode();
         String code = "";
 
@@ -157,10 +180,37 @@ public class ApprovalService {
                     line.getTalOrder(),
                     line.getTalRole(),
                     "미결재",
-//                    line.getEmpCode()
                     line.getEmployee()
             );
             trueLineRepository.save(newLine);
+        }
+
+        // 첨부파일 저장
+        File uploadDirectory = new File(approvalDir);   // 업로드 디렉토리가 존재하지 않으면 생성합니다.
+        if (!uploadDirectory.exists()) uploadDirectory.mkdirs();
+
+        for (MultipartFile file : files) {
+            String originalFileName = file.getOriginalFilename();
+            String saveFileName = generateSaveFileName(originalFileName);
+
+            // 파일 저장 경로 생성
+            File destFile = new File(approvalDir + File.separator + saveFileName);
+
+            // 파일을 로컬에 저장
+            try {
+                file.transferTo(destFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // 첨부파일 테이블에 정보 저장
+            AttachmentEntity newAttachment = AttachmentEntity.of(
+                    originalFileName,
+                    saveFileName,
+                    approvalDir,
+                    findDoc.getAdCode()
+            );
+            attachmentRepository.save(newAttachment);
         }
 
         if(temporary){  // 임시저장
@@ -229,8 +279,20 @@ public class ApprovalService {
         }
     }
 
-    public void saveAttachment(ApprovalAttachRequest approvalAttachRequest) {
-        // 저장로직 짜기
+    private String generateSaveFileName(String originalFileName) {
+        // UUID를 사용하여 고유한 파일명 생성
+        String uuid = UUID.randomUUID().toString();
+        String extension = "";
+
+        // 확장자가 있으면 분리했다가 다시 합쳐서 반환
+        int dotIndex = originalFileName.lastIndexOf('.');
+        if (dotIndex > 0) extension = originalFileName.substring(dotIndex);
+
+        return uuid + extension;
+    }
+
+    private Pageable getPageable(final Integer page){
+        return PageRequest.of(page - 1, 10);
     }
 
     @Transactional(readOnly = true)
@@ -245,4 +307,18 @@ public class ApprovalService {
 
         return docList.stream().map(DocListResponse::from).toList();
     }
+
+//    public Page<DocListResponse> findDocList(final Integer page, final Integer empCode, String status) {
+//        switch (status){
+//            case "waiting" : status = "대기"; break;
+//            case "process" : status = "진행중"; break;
+//            case "return" : status  = "반려"; break;
+//            case "complete" : status = "완료"; break;
+//        }
+//        Page<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(getPageable(page), empCode, status);
+//        System.out.println("docList = " + docList);
+//
+//        return docList.map(DocListResponse::from);
+//    }
+
 }

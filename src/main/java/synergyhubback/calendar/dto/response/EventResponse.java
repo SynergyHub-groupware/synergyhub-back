@@ -21,6 +21,8 @@ public class EventResponse {
     private final LocalDateTime endDate;
     private final boolean allDay;
     private final String eventGuests;
+    private final int empCode;
+    private final long labelCode;
 
     public static EventResponse from(Event event) {
         return new EventResponse(
@@ -30,7 +32,9 @@ public class EventResponse {
                 event.getStartDate(),
                 event.getEndDate(),
                 event.isAllDay(),
-                event.getEventGuests()
+                event.getEventGuests(),
+                event.getEmployee().getEmp_code(), // 사원 코드
+                event.getLabel().getId() // 라벨 코드
         );
     }
 }

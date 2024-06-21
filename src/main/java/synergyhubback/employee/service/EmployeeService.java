@@ -1,6 +1,7 @@
 package synergyhubback.employee.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import synergyhubback.employee.dto.response.*;
 import synergyhubback.post.service.PostService;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,8 +36,6 @@ public class EmployeeService {
     private final DeptRelationsRepository deptRelationsRepository;
     private final TitleRepository titleRepository;
     private final PositionRepository positionRepository;
-    private final PostService postService;
-
 
     @Transactional(readOnly = true)
     public LoginDto findByEmpCode(int emp_code) {
@@ -77,6 +77,7 @@ public class EmployeeService {
         return LoginDto.from(employee);
     }
 
+
     public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
 
         String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
@@ -109,7 +110,6 @@ public class EmployeeService {
 
 
         Employee employee = employeeRepository.findByEmpCode(empCode);
-
 
         return MyInfoResponse.getMyInfo(employee);
 
@@ -230,6 +230,7 @@ public class EmployeeService {
 
         return OrgDetailResponse.getOrgDetail(employee);
     }
+
 
     public void resetEmpPass(int empCode) {
 

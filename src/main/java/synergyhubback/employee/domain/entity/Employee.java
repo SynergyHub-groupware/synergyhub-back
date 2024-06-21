@@ -62,6 +62,7 @@ public class Employee {
         this.emp_status = emp_status;
     }
 
+
     public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
 
         return new Employee(
@@ -101,4 +102,5 @@ public class Employee {
         this.refreshToken = refreshToken;
         System.out.println("updateRefreshToken");
     }
+
 }
