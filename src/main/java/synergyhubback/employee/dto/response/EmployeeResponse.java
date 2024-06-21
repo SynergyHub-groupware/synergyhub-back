@@ -1,5 +1,6 @@
 package synergyhubback.employee.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class EmployeeResponse {
         private String dept_title;
         private String position_name;
         private String phone;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate hire_date;
         private String social_security_no;
 

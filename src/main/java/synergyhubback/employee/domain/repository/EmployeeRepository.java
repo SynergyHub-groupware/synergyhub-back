@@ -1,5 +1,6 @@
 package synergyhubback.employee.domain.repository;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import synergyhubback.employee.domain.entity.Department;
@@ -26,10 +27,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     /* 팀원 정보 조회 */
     @Query("SELECT e FROM Employee e WHERE e.department.dept_code = :deptCode")
-    List<Employee> findAllByDeptCode(String deptCode);
+    List<Employee> findAllByDeptCode(@Param("deptCode") String deptCode);
 
     /* 사원코드로 부서코드 조회 */
     @Query("SELECT e.department.dept_code FROM Employee e WHERE e.emp_code = :empCode")
-    String findDeptCodeByEmpCode(int empCode);
+    String findDeptCodeByEmpCode(@Param("empCode") int empCode);
 
 }

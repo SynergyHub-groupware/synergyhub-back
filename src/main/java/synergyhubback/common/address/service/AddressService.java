@@ -22,16 +22,27 @@ public class AddressService {
     private final AddressDeptRepository addressDeptRepository;
     private final AddressPositionRepository addressPositionRepository;
     private final AddressEmpRepository addressEmpRepository;
+    
+    /* 전체 회원 정보 조회*/
     public List<AddressSelect> getAllAddress() {
-
         List<Employee> employees = addressEmpRepository.findAll();
 
         return employees.stream().map(employee -> {
-
             Department department = addressDeptRepository.findById(employee.getDepartment().getDept_code()).orElse(null);
             Position position = addressPositionRepository.findById(employee.getPosition().getPosition_code()).orElse(null);
 
-            return AddressSelect.getAddressSelect(employee, department, position);
+            return new AddressSelect(
+                    employee.getEmp_code(),
+                    employee.getEmp_name(),
+                    employee.getEmail(),
+                    employee.getPhone(),
+                    employee.getAddress(),
+                    employee.getAccount_num(),
+                    employee.getHire_date(),
+                    employee.getEmp_status(),
+                    department != null ? department.getDept_title() : "",
+                    position != null ? position.getPosition_name() : ""
+            );
         }).collect(Collectors.toList());
     }
 }

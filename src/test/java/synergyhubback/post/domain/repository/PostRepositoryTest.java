@@ -75,6 +75,11 @@ public class PostRepositoryTest {
 //        assertNotNull(attachment);
 //        // 기대하는 값을 설정하고 확인합니다.
 //        // assertEquals(expectedValue, actualValue);
+
+// attachment가 null이 아닌지 확인
+//        assertNotNull(attachment);
+        // 기대하는 값을 설정하고 확인합니다.
+        // assertEquals(expectedValue, actualValue);
     }
 
 

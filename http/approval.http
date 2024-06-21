@@ -1,23 +1,71 @@
 ### 결재양식리스트 조회
 GET http://localhost:8080/approval/formList
 
-### 결재라인 전체 조회
-GET http://localhost:8080/approval/formLine
+### 결재양식기본내용 조회
+GET http://localhost:8080/approval/formContent?afCode=12
 
 ### 결재라인 특정 조회
 GET http://localhost:8080/approval/formLine?lsCode=3
 
 ### 결재라인 회원 조회(본인 기준)
-GET http://localhost:8080/approval/formLineEmp?deptCode=D15&titleCode=T6
+GET http://localhost:8080/approval/formLineEmp?deptCode=D15&titleCode=T6&lsCode=3
+
+### 결재서명 이미지 조회(본인 기준)
+GET http://localhost:8080/approval/sign?empCode=2021048
+
+### 결재 등록
+POST http://localhost:8080/approval/regist?temporary=true
+Content-Type: application/json
+
+{
+  "adTitle": "테스트",
+  "employee": {
+    "emp_code": 2021048
+  },
+  "adReportDate": "2023-04-15",
+  "adStatus": "대기",
+  "form": {
+    "afCode": 12
+  },
+  "etc": {
+    "aeCon": "테스트 입니다."
+  },
+  "trueLineList": [
+    {
+      "talOrder": 1,
+      "talRole": "결재",
+      "employee": {
+        "emp_code": 2023091
+      }
+    },
+    {
+      "talOrder": 2,
+      "talRole": "전결",
+      "employee": {
+        "emp_code": 2024011
+      }
+    },
+    {
+      "talOrder": 3,
+      "talRole": "결재",
+      "employee": {
+        "emp_code": 2020021
+      }
+    },
+    {
+      "talOrder": 4,
+      "talRole": "결재",
+      "employee": {
+        "emp_code": 2020011
+      }
+    }
+  ]
+}
+
+### 보낸결재함[대기] 조회
+GET http://localhost:8080/approval/send/document?empCode=2021048&status=progress
+
+### 보낸결재함[대기] 조회 + 페이지
+GET http://localhost:8080/approval/send/document?page=1&empCode=2021048&status=waiting
 
 
-
-
-
-
-
-
-### 보낸 결재함 전체 조회 (작성자 기준)
-GET http://localhost:8080/approval/document?empCode=2021048
-
-### 받은 결재함 전체 조회 ()

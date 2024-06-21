@@ -25,6 +25,4 @@ public class AddressController {
         return ResponseEntity.ok(addresses);
     }
 
-
-
 }

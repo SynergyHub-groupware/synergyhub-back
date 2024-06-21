@@ -206,6 +206,10 @@ public class PostController {
                         /* 리스트에 파일 정보 저장 */
                         FileList.add(fileInfo);
                     }
+                    /* 가장 최신 게시글 코드 조회 */
+                    PostEntity lastPost = postService.LastPost();
+                    
+                    
                 }
                 /* 파일 리스트를 한 번에 DB에 저장 */
                 postService.registFileList(FileList);

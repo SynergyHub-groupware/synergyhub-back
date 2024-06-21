@@ -19,10 +19,15 @@ public class AttachmentEntity {
     private String attachUrl;
     private String attachSort;
 
-    public AttachmentEntity( String attachOriginal, String attachSave, String attachUrl, String attachSort) {
+    private AttachmentEntity(String attachOriginal, String attachSave, String attachUrl, String attachSort){
         this.attachOriginal = attachOriginal;
         this.attachSave = attachSave;
         this.attachUrl = attachUrl;
         this.attachSort = attachSort;
+    }
+}
+
+    public static AttachmentEntity of(String attachOriginal, String attachSave, String attachUrl, String attachSort){
+        return new AttachmentEntity(attachOriginal, attachSave, attachUrl, attachSort);
     }
 }
