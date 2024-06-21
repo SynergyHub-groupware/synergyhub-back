@@ -39,6 +39,11 @@ public class PostController {
 
     private final PostService postService;
 
+    @PostMapping("/commentAdd")
+    public ResponseEntity<CommentEntity> commentAdd(@RequestParam CommentEntity commentEntity) {
+        return ResponseEntity.ok(postService.commentAdd(commentEntity));
+    }
+
     @GetMapping("/commentList/{postCode}")
     public ResponseEntity<List<CommentEntity>> getCommentList(@PathVariable String postCode) {
         return ResponseEntity.ok(postService.getCommentList(postCode));

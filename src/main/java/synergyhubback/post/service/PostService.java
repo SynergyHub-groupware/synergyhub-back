@@ -7,10 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.post.domain.entity.*;
+import synergyhubback.post.domain.repository.CommentRepository;
 import synergyhubback.post.domain.repository.PostRepository;
 import synergyhubback.post.dto.request.PostRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,7 +21,8 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private AttachmentRepository attachmentRepository;
-
+    @Autowired
+    private CommentRepository commentRepository;
     public PostEntity LastPost() {
         return postRepository.LastPost();
     }
@@ -31,6 +34,7 @@ public class PostService {
 
 
     }
+
 
     @Transactional
     public PostEntity insertPost(PostRequest newPost) {
@@ -86,5 +90,18 @@ public class PostService {
 
     public List<CommentEntity> getCommentList(String postCode) {
         return postRepository.getCommentList(postCode);
+    }
+
+    public CommentEntity commentAdd(CommentEntity commentEntity) {
+        CommentEntity comment = new CommentEntity();
+        comment.setCommCon(commentEntity.getCommCon());
+        comment.setPostCode(commentEntity.getPostCode());
+        comment.setCommStatus(commentEntity.getCommStatus());
+        LocalDateTime now = LocalDateTime.now();
+        comment.setCommDate(now);
+        comment.setEmpCode(commentEntity.getEmpCode());
+
+
+        return commentRepository.save(comment);
     }
 }

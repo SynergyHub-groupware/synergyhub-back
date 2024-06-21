@@ -35,4 +35,5 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     @Query("select c from CommentEntity c where c.PostCode.PostCode = :postCode")
     List<CommentEntity> getCommentList(@Param("postCode") String postCode);
+
 }
