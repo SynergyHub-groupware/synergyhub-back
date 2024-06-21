@@ -37,10 +37,10 @@ GET http://localhost:8080/employee/employeeList
 Authorization: Bearer eyJkYXRlIjoxNzE4ODEyNjc0NjU3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTg4MTYyNzR9.VtwyIYOipD3NrgxYCC3ZiBaFRxdOv8RvZ3Y64ujW8VPpfNySWKJaUAdaXY22fFHwn3NZO-paK3JbN6E6NoyxlA
 
 ### 부서 전체 조회
-GET http://localhost:8080/employee/employeeList
+GET http://localhost:8080/employee/departments
 
 ### 부서 상세 조회
-GET http://localhost:8080/employee/departmentList/{{dept_code}}
+GET http://localhost:8080/employee/departmentList/D1
 
 ### 조직도 전체 조회
 GET http://localhost:8080/employee/org
