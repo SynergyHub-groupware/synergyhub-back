@@ -14,4 +14,5 @@ public interface EmitterRepository {
     void deleteByPheedCode(String pheedCode);
     void deleteAllEmitterStartWithPheedCode(String empCode);
     void deleteAllEventCacheStartWithPheedCode(String empCode);
+    void deleteById(String emitterId);
 }

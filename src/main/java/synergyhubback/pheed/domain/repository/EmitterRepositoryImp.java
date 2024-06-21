@@ -64,5 +64,10 @@ public class EmitterRepositoryImp implements EmitterRepository {
         );
     }
 
+    @Override
+    public void deleteById(String id) {
+        emitters.remove(id);
+    }
+
 
 }

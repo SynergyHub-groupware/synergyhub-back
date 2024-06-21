@@ -19,7 +19,7 @@ public class Pheed {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PHEED_CODE")
+    @Column(name = "pheed_code")
     private int pheedCode;           // 피드 코드
 
     @Column(name = "PHEED_CON")
