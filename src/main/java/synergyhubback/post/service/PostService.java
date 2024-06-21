@@ -104,4 +104,8 @@ public class PostService {
 
         return commentRepository.save(comment);
     }
+
+    public List<LowBoardEntity> getAllLowBoard() {
+       return postRepository.getAllLowBoard();
+    }
 }

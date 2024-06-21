@@ -127,6 +127,12 @@ public class PostController {
         List<LowBoardEntity> lowBoardList = postService.getLowBoard(boardCode);
         return ResponseEntity.ok(lowBoardList);
     }
+    @GetMapping("/getAllLowBoard")
+    public ResponseEntity<List<LowBoardEntity>> getLowBoardPin() {
+        List<LowBoardEntity> lowBoardList = postService.getAllLowBoard();
+        System.out.println(lowBoardList);
+        return ResponseEntity.ok(lowBoardList);
+    }
 
     @PostMapping("/add")
     public ResponseEntity<?> addProduct(@RequestParam(value = "attachFile", required = false) List<MultipartFile> attachFile,
