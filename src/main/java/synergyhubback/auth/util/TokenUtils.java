@@ -39,14 +39,19 @@ public class TokenUtils {
                 .get("emp_code").toString();
     }
 
-    // 액세스 토큰에서 emp_Name 값 추출
-    public static String getEmp_Name(String accessToken){
+
+    /* 새로 추가함 */
+    /* 액세스 토큰에서 dept_code 값 추출 */
+    public static String getDeptCode(String accessToken) {
+
         return Jwts.parserBuilder()
                 .setSigningKey(createSignature())
                 .build()
                 .parseClaimsJws(accessToken)
                 .getBody()
-                .get("emp_Name").toString();
+
+                .get("dept_code", String.class);
+
     }
 
     // yml 파일에서 secretKey 값을 jwtSecretKey에 설정

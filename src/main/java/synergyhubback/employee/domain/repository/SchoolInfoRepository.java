@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.entity.SchoolInfo;
+import synergyhubback.employee.dto.response.SchoolInfoResponse;
 
 import java.util.List;
 

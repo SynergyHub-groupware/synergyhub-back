@@ -35,6 +35,7 @@ public class Employee {
 
 
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_code", referencedColumnName = "dept_code")
     private Department department;
@@ -50,6 +51,7 @@ public class Employee {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_code", referencedColumnName = "bank_code")
     private Bank bank;
+
 
     public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
@@ -88,6 +90,7 @@ public class Employee {
     public void setBank(Bank bank) {
         this.bank = bank;
     }
+
 
     public void resetPassword(String newEmpPass) {
         this.emp_pass = newEmpPass;

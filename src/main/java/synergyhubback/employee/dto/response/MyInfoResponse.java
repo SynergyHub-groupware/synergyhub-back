@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import synergyhubback.employee.domain.entity.Certificate;
 import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.entity.SchoolInfo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,6 +40,7 @@ public class MyInfoResponse {
     private int bank_code;
     private String bank_name;
 
+
     public static MyInfoResponse getMyInfo(Employee employee) {
 
         return new MyInfoResponse(
@@ -64,4 +68,6 @@ public class MyInfoResponse {
                 employee.getBank().getBank_name()
         );
     }
+
+
 }
