@@ -1,5 +1,6 @@
 package synergyhubback.approval.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
