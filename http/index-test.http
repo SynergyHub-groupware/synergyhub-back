@@ -3,7 +3,7 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2024062",
+  "emp_code" : "2024061",
   "emp_pass" : "2024062"
 }
 
@@ -30,4 +30,4 @@ Authorization: Bearer eyJkYXRlIjoxNzE4OTMwMDE4MTIwLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 
 ### 보낸 쪽지 전체 조회
 GET http://localhost:8080/emp/message/send
-Authorization: Bearer eyJkYXRlIjoxNzE4OTMwMDE4MTIwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTg5MzM2MTh9.Hhj9Ky4d49rlGCfrKtgVVXgHNplkLqvtDqjku6tGjm8xfkL5Ey1aNRqyZhnWRIIHBL5MJ3NAK8rXnkZ38qrSAw
+Authorization: Bearer eyJkYXRlIjoxNzE4OTQyNTY2MjI5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTg5NDYxNjZ9.idWiILJ0FbgrK0YXJlrL_E1mJXgB2_kzTwMa9Kcuz_wi4XcbxQPIqgCb_RDN-GajVZjlSetspf6qiVnssCpmew

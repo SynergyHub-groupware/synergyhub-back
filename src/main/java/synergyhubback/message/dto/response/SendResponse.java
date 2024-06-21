@@ -38,6 +38,7 @@ public class SendResponse {
                 message.getStorCode().getStorCode()
         );
     }
+    // MERGE
 
 
 }
