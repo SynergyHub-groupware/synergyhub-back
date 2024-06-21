@@ -25,9 +25,10 @@ public class AttachmentEntity {
         this.attachUrl = attachUrl;
         this.attachSort = attachSort;
     }
-}
-
     public static AttachmentEntity of(String attachOriginal, String attachSave, String attachUrl, String attachSort){
         return new AttachmentEntity(attachOriginal, attachSave, attachUrl, attachSort);
     }
+
 }
+
+

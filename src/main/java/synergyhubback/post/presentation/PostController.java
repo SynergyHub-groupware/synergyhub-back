@@ -201,10 +201,10 @@ public class PostController {
                         PostEntity lastPost = postService.LastPost();
 
                         /* DB에 저장할 파일의 정보 처리 */
-                        AttachmentEntity fileInfo = new AttachmentEntity(originalFileName, saveFileName,fileUploadDir + "/" +saveFileName,lastPost.getPostCode());
+//                        AttachmentEntity fileInfo = new AttachmentEntity(originalFileName, saveFileName,fileUploadDir + "/" +saveFileName,lastPost.getPostCode());
 
                         /* 리스트에 파일 정보 저장 */
-                        FileList.add(fileInfo);
+//                        FileList.add(fileInfo);
                     }
                     /* 가장 최신 게시글 코드 조회 */
                     PostEntity lastPost = postService.LastPost();
