@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Clob;
+
 @Entity
 @Table(name = "APPROVAL_FORM")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,4 +21,7 @@ public class Form {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lsCode")
     private LineSort lineSort;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String afCon;
 }
