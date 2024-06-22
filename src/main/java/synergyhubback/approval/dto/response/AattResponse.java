@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AattResponse {
     private final String aattSort;
-    @JsonFormat(pattern = "yyyy.MM.dd HH시 mm분")
+    @JsonFormat(pattern = "yyyy년 MM월 dd일 HH시 mm분")
     private final LocalDateTime aattStart;
-    @JsonFormat(pattern = "yyyy.MM.dd HH시 mm분")
+    @JsonFormat(pattern = "yyyy년 MM월 dd일 HH시 mm분")
     private final LocalDateTime aattEnd;
     private final LocalDate aattOccur;
     private final String aattPlace;

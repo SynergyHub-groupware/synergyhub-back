@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class Etc {
     @Id
     private String aeCode;
+    @Column(columnDefinition = "LONGTEXT")
     private String aeCon;
 
     public static Etc of(String aeCode, String aeCon){

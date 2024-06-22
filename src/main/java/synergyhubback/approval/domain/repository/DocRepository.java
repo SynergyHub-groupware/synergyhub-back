@@ -7,7 +7,7 @@ import synergyhubback.approval.domain.entity.Document;
 import java.util.List;
 import java.util.Optional;
 
-public interface DocRepository extends JpaRepository<Document, Integer> {
+public interface DocRepository extends JpaRepository<Document, String> {
 
     Document findByAdDetail(String code);
 
@@ -15,4 +15,7 @@ public interface DocRepository extends JpaRepository<Document, Integer> {
             "ORDER BY SUBSTRING(AD_CODE, 1, 2), CAST(SUBSTRING(AD_CODE, 3) AS UNSIGNED) DESC " +
             "LIMIT 1", nativeQuery = true)
     Optional<Document> findTopOrderByAdCodeDesc();
+
+    @Query("SELECT d.adDetail FROM Document d WHERE d.adCode = :adCode")
+    String findAdDetailById(String adCode);
 }

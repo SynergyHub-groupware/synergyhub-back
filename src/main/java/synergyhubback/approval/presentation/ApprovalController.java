@@ -123,18 +123,24 @@ public class ApprovalController {
 
         if (matcher.matches()) {
             String textPart = matcher.group(1);     // 문자열 부분
-            String numberPart = matcher.group(2);   // 숫자 부분
 
+            Object viewDetail = null;
             switch (textPart){
-                case "AP": break;
-                case "AE": break;
-                case "AATT": AattResponse viewDetail = approvalService.findViewDetail(adDetail); break;
-                case "AAPP": break;
+                case "AP": viewDetail = approvalService.findApDetail(adDetail); break;
+                case "AE": viewDetail = approvalService.findAeDetail(adDetail); break;
+                case "AATT": viewDetail = approvalService.findAattDetail(adDetail); break;
+                case "AAPP": viewDetail = approvalService.findAappDetail(adDetail); break;
             }
-        } else {
-            return ResponseEntity.badRequest().body("Invalid adDetail format");
+            return ResponseEntity.ok(viewDetail);
         }
-        
-        return null;
+
+        return ResponseEntity.badRequest().body("Invalid adDetail format");
     }
+
+    @DeleteMapping("/document/delete")
+    public ResponseEntity<Void> deleteDocument(@RequestParam final String adCode){
+        approvalService.deleteDocument(adCode);
+        return ResponseEntity.noContent().build();
+    }
+
 }

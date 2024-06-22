@@ -2,10 +2,8 @@ package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,18 +15,23 @@ import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.repository.EmployeeRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ApprovalService {
 
+    private final EmployeeRepository employeeRepository;
     @Value("${file.approval-dir}")
     private String approvalDir;
 
@@ -142,12 +145,14 @@ public class ApprovalService {
 
             List<AppointDetail> AppointDetailList = docRegistRequest.getAppointDetailList();
             for(AppointDetail detail: AppointDetailList){
+                Employee employee = employeeRepository.findByEmpCode(detail.getEmployee().getEmp_code());
+
                 AppointDetail newDetail = AppointDetail.of(
                         newAppoint,
                         detail.getAdetBefore(),
                         detail.getAdetAfter(),
                         detail.getAdetType(),
-                        detail.getEmpCode()
+                        employee
                 );
                 appointDetailRepository.save(newDetail);
             }
@@ -326,9 +331,51 @@ public class ApprovalService {
         return viewLineList.stream().map(ViewLineResponse::from).toList();
     }
 
-    public AattResponse findViewDetail(final String adDetail) {
-        ApprovalAttendance viewDetail = approvalAttendanceRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+    public ApResponse findApDetail(final String adDetail) {
+        Personal viewDetail = personalRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+        return ApResponse.from(viewDetail);
+    }
 
+    public AeResponse findAeDetail(final String adDetail) {
+        Etc viewDetail = etcRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+        return AeResponse.from(viewDetail);
+    }
+
+    public AattResponse findAattDetail(final String adDetail) {
+        ApprovalAttendance viewDetail = approvalAttendanceRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
         return AattResponse.from(viewDetail);
+    }
+
+    public List<AappResponse> findAappDetail(final String adDetail) {
+        // 대한님 출력내용 확인 후, reponse 구성 수정필요
+        List<AppointDetail> viewDetail = appointDetailRepository.findByAdDetail(adDetail);
+        return viewDetail.stream().map(AappResponse::from).toList();
+    }
+
+    public void deleteDocument(final String adCode) {
+        String adDetail = docRepository.findAdDetailById(adCode);
+
+        Pattern pattern = Pattern.compile("([a-zA-Z]+)(\\d+)");
+        Matcher matcher = pattern.matcher(adDetail);
+
+        if (matcher.matches()) {
+            String textPart = matcher.group(1);
+            switch (textPart){  // 상세내용 삭제
+                case "AP": personalRepository.deleteById(adDetail); break;
+                case "AE": etcRepository.deleteById(adDetail); break;
+                case "AATT": approvalAttendanceRepository.deleteById(adDetail); break;
+                case "AAPP": approvalAppointRepository.deleteById(adDetail); break;
+            }
+        }
+
+        // 결재보관내역 삭제
+        List<ApprovalStorage> storageList = approvalStorageRepository.findByDocument_AdCode(adCode);
+        if(storageList != null && !storageList.isEmpty()) approvalStorageRepository.deleteByDocument_AdCode(adCode);
+
+        // 실결재라인 삭제
+        trueLineRepository.deleteByDocument_AdCode(adCode);
+
+        // 결재문서 삭제
+        docRepository.deleteById(adCode);
     }
 }

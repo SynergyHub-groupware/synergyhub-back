@@ -17,6 +17,7 @@ public class DocListResponse {
     @JsonFormat(pattern = "yyyy.MM.dd")
     private final LocalDate adReportDate;
     private final String adStatus;
+    private final int afCode;
     private final String afName;
     private final String adDetail;
     private final int talOrder;
@@ -31,6 +32,7 @@ public class DocListResponse {
                 trueLine.getDocument().getEmployee().getEmp_code(),
                 trueLine.getDocument().getAdReportDate(),
                 trueLine.getDocument().getAdStatus(),
+                trueLine.getDocument().getForm().getAfCode(),
                 trueLine.getDocument().getForm().getAfName(),
                 trueLine.getDocument().getAdDetail(),
                 trueLine.getTalOrder(),
