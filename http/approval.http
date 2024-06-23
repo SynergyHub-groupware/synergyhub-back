@@ -74,8 +74,17 @@ GET http://localhost:8080/approval/viewLine?adCode=AD17
 ### 결재 상세보기 : 상세내용
 GET http://localhost:8080/approval/viewDetail?adDetail=AATT11
 
+### 결재 상세보기 : 첨부파일
+GET http://localhost:8080/approval/viewAttach?adCode=AD17
+
+### 결재 상세보기 : 첨부파일 다운로드
+GET http://localhost:8080/approval/downloadAttach?attachOriginal=결재 더미_V1.sql&attachSave=a73274a4-4c56-46b8-8082-f6db0c281f0a.sql
+
 ### 대한님 출력내용 확인필요 (발령내역)
 GET http://localhost:8080/approval/viewDetail?adDetail=AAPP1
 
 ### 결재 상세보기 : 삭제
 DELETE http://localhost:8080/approval/document/delete?adCode=AD17
+
+### 결재 상세보기 : 수정
+PATCH http://localhost:8080/approval/modifyStatus?adCode=AD19

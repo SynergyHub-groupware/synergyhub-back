@@ -2,6 +2,8 @@ package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,10 @@ import synergyhubback.employee.domain.repository.EmployeeRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -352,7 +358,45 @@ public class ApprovalService {
         return viewDetail.stream().map(AappResponse::from).toList();
     }
 
+    public List<AttachmentResponse> findAttachList(final String adCode) {
+        List<AttachmentEntity> attachList = attachmentRepository.findByAttachSort(adCode);
+        return attachList.stream().map(AttachmentResponse::from).toList();
+    }
+
+    public Resource downloadAttach(final String attachSave) {
+        try {
+            Path filePath = Paths.get(approvalDir).resolve(attachSave).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new RuntimeException("File not found " + attachSave);
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("File not found " + attachSave, e);
+        }
+    }
+
     public void deleteDocument(final String adCode) {
+        // 첨부파일 삭제
+        List<AttachmentEntity> attachList = attachmentRepository.findByAttachSort(adCode);
+        if(attachList != null && !attachList.isEmpty()){
+            attachmentRepository.deleteAll(attachList);         // db에서 삭제
+
+            for (AttachmentEntity attachment : attachList) {    // 로컬 폴더에서 파일삭제
+                String attachSave = attachment.getAttachSave();
+                try {
+                    Path filePath = Paths.get(attachment.getAttachUrl(), attachSave);
+                    Files.delete(filePath);
+                } catch (Exception e) {
+                    System.err.println("Failed to delete file: " + attachSave);
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // 상세내용 삭제
         String adDetail = docRepository.findAdDetailById(adCode);
 
         Pattern pattern = Pattern.compile("([a-zA-Z]+)(\\d+)");
@@ -360,7 +404,7 @@ public class ApprovalService {
 
         if (matcher.matches()) {
             String textPart = matcher.group(1);
-            switch (textPart){  // 상세내용 삭제
+            switch (textPart){
                 case "AP": personalRepository.deleteById(adDetail); break;
                 case "AE": etcRepository.deleteById(adDetail); break;
                 case "AATT": approvalAttendanceRepository.deleteById(adDetail); break;
@@ -377,5 +421,12 @@ public class ApprovalService {
 
         // 결재문서 삭제
         docRepository.deleteById(adCode);
+    }
+
+    @Transactional
+    public void modifyStatus(final String adCode) {
+        Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
+        foundDocument.modifyAdStatus("수정중");
+        docRepository.save(foundDocument);
     }
 }

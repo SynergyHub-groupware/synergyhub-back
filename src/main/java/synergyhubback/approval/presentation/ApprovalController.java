@@ -137,10 +137,31 @@ public class ApprovalController {
         return ResponseEntity.badRequest().body("Invalid adDetail format");
     }
 
+    @GetMapping("/viewAttach")
+    public ResponseEntity<List<AttachmentResponse>> findAttachList(@RequestParam final String adCode){
+        final List<AttachmentResponse> attachList = approvalService.findAttachList(adCode);
+        return ResponseEntity.ok(attachList);
+    }
+
+    @GetMapping("/downloadAttach")
+    public ResponseEntity<Resource> downloadAttach(@RequestParam String attachOriginal, @RequestParam String attachSave) {
+        Resource file = approvalService.downloadAttach(attachSave);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachOriginal + "\"")
+                .body(file);
+    }
+
     @DeleteMapping("/document/delete")
     public ResponseEntity<Void> deleteDocument(@RequestParam final String adCode){
         approvalService.deleteDocument(adCode);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/modifyStatus")
+    public ResponseEntity<Void> modifyStatus(@RequestParam final String adCode){
+        approvalService.modifyStatus(adCode);
+        return ResponseEntity.ok().build();
     }
 
 }
