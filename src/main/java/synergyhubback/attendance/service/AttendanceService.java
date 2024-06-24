@@ -234,7 +234,7 @@ public class AttendanceService {
         defaultScheduleRepository.save(defaultSchedule);
     }
 
-    /* 지정 출퇴근시간 조회 */
+    /* 파라미터를 통한 지정 출퇴근시간 조회 */
     public List<DefaultSchedule> findDefaultSchedules(String deptTitle, LocalTime startTime, LocalTime endTime) {
         return defaultScheduleRepository.findByDeptTitleAndAtdStartTimeAndAtdEndTime(deptTitle, startTime, endTime);
     }
@@ -249,6 +249,7 @@ public class AttendanceService {
     }
 
     /* 지정 출퇴근시간 수정 */
+    @Transactional
     public void updateDefaultSchedule(String deptTitle, LocalTime startTime, LocalTime endTime, Employee employee) {
 
         // deptTitle과 employee의 empCode가 모두 일치하는 첫 번째 DefaultSchedule 조회
@@ -277,5 +278,15 @@ public class AttendanceService {
         }
     }
 
-
+    /* 지정 출퇴근시간 삭제 */
+    @Transactional
+    public boolean deleteSchedule(int dsCode) {
+        Optional<DefaultSchedule> optionalSchedule = defaultScheduleRepository.findById(dsCode);
+        if (optionalSchedule.isPresent()) {
+            defaultScheduleRepository.delete(optionalSchedule.get());
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

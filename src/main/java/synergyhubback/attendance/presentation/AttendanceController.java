@@ -164,6 +164,16 @@ public class AttendanceController {
     }
 
     // 지정 출퇴근시간 삭제
+    @Operation(summary = "지정 출퇴근시간 삭제", description = "지정 출퇴근시간을 삭제한다.")
+    @DeleteMapping("/DeleteSchedule/{dsCode}")
+    public ResponseEntity<ResponseMessage> deleteSchedule(@PathVariable int dsCode) {
+        boolean deleted = attendanceService.deleteSchedule(dsCode);
+        if(deleted) {
+            return ResponseEntity.ok().body(new ResponseMessage(200, "삭제 성공", null));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage(404, "삭제할 데이터가 없습니다.", null));
+        }
+    }
 
 
     /* 근태 기록 ------------------------------------ */

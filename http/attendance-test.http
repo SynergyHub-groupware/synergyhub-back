@@ -44,10 +44,8 @@ Content-Type: application/json
     { "emp_code": 2021011 }
 }
 
-
-### 지정 출/퇴근시간 수정
-
 ### 지정 출/퇴근시간 삭제
+DELETE http://localhost:8080/api/attendance/DeleteSchedule/1
 
 ### 피드 발송
 POST http://localhost:8080/api/pheed/create
