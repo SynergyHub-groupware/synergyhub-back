@@ -91,145 +91,246 @@ public class ApprovalService {
 
     @Transactional
     public void regist(DocRegistRequest docRegistRequest, MultipartFile[] files, @RequestParam boolean temporary) {
-        int afCode = docRegistRequest.getForm().getAfCode();
-        String code = "";
 
-        // 결재양식별 결재상세내용 해당 테이블에 저장
-        if (afCode == 2 || afCode == 3 || afCode == 4 || afCode == 5) {
-            code = generateAttendanceCode();
-            ApprovalAttendance newAttendance = null;
+        if (docRegistRequest.getAdCode() != null && !docRegistRequest.getAdCode().isEmpty()) {
+            Document existDoc = docRepository.findById(docRegistRequest.getAdCode()).orElseThrow(() -> new IllegalArgumentException("Invalid adCode:" + docRegistRequest.getAdCode()));
 
-            if(afCode == 2){            // 예외근무신청서
-                 newAttendance = ApprovalAttendance.of( code,
-                        docRegistRequest.getApprovalAttendance().getAattSort(),
-                        docRegistRequest.getApprovalAttendance().getAattStart(),
-                        docRegistRequest.getApprovalAttendance().getAattEnd(),
-                        docRegistRequest.getApprovalAttendance().getAattPlace(),
-                        docRegistRequest.getApprovalAttendance().getAattCon()
+            if (existDoc != null){
+                // 결재문서 수정 후, 저장
+                existDoc.modifyDocument(docRegistRequest.getAdTitle(),docRegistRequest.getAdReportDate(),docRegistRequest.getAdStatus());
+                docRepository.save(existDoc);
+
+                // 결재상세 수정 후, 저장
+                String adDetail = docRegistRequest.getAdDetail();
+
+                Pattern pattern = Pattern.compile("([a-zA-Z]+)(\\d+)");
+                Matcher matcher = pattern.matcher(adDetail);
+
+                if (matcher.matches()) {
+                    String textPart = matcher.group(1);
+                    switch (textPart){
+                        case "AP":
+                            Personal existPersonal = personalRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+                            existPersonal.modifyPersonal(
+                                    docRegistRequest.getPersonal().getApStart(),
+                                    docRegistRequest.getPersonal().getApEnd(),
+                                    docRegistRequest.getPersonal().getApContact(),
+                                    docRegistRequest.getPersonal().getApReason()
+                            );
+                            personalRepository.save(existPersonal); break;
+
+                        case "AE":
+                            Etc existEtc = etcRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+                            existEtc.modifyEtc(docRegistRequest.getEtc().getAeCon());
+                            etcRepository.save(existEtc); break;
+
+                        case "AATT":
+                            ApprovalAttendance existAttend = approvalAttendanceRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+                            existAttend.modifyApprovalAttendance(
+                                    docRegistRequest.getApprovalAttendance().getAattSort(),
+                                    docRegistRequest.getApprovalAttendance().getAattStart(),
+                                    docRegistRequest.getApprovalAttendance().getAattEnd(),
+                                    docRegistRequest.getApprovalAttendance().getAattOccur(),
+                                    docRegistRequest.getApprovalAttendance().getAattPlace(),
+                                    docRegistRequest.getApprovalAttendance().getAattCon(),
+                                    docRegistRequest.getApprovalAttendance().getAattReason()
+                            );
+                            approvalAttendanceRepository.save(existAttend); break;
+
+                        case "AAPP":
+                            ApprovalAppoint existAppoint = approvalAppointRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+                            existAppoint.modifyApprovalAppoint(
+                                    docRegistRequest.getApprovalAppoint().getAappNo(),
+                                    docRegistRequest.getApprovalAppoint().getAappDate(),
+                                    docRegistRequest.getApprovalAppoint().getAappTitle()
+                            );
+                            approvalAppointRepository.save(existAppoint);
+
+                            List<AppointDetail> existDetailList = appointDetailRepository.findByAappCode(adDetail);
+                            List<AppointDetail> newDetailList = docRegistRequest.getAppointDetailList();
+                            for (AppointDetail existDetail : existDetailList) {
+                                // 기존의 AppointDetail을 찾아서 새로 입력받은 값으로 갱신
+                                for (AppointDetail newDetail : newDetailList) {
+//                                    if (existDetail.getId() == newDetail.getId()) { // 기존 데이터와 새 데이터의 식별자 비교
+//                                        existDetail.modifyAppointDetail(
+//                                                newDetail.getAdetBefore(),
+//                                                newDetail.getAdetAfter(),
+//                                                newDetail.getAdetType()
+//                                                // 필요한 다른 필드들도 추가
+//                                        );
+//                                        appointDetailRepository.save(existDetail);
+//                                        break; // 해당 기존 AppointDetail에 대한 처리 완료 후 반복 종료
+//                                    }
+                                }
+                            }
+
+
+//                            List<AppointDetail> AppointDetailList = docRegistRequest.getAppointDetailList();
+//                            for (AppointDetail detail : AppointDetailList) {
+//                                Employee employee = employeeRepository.findByEmpCode(detail.getEmployee().getEmp_code());
+//
+//                                AppointDetail newDetail = AppointDetail.of(
+//                                        newAppoint,
+//                                        detail.getAdetBefore(),
+//                                        detail.getAdetAfter(),
+//                                        detail.getAdetType(),
+//                                        employee
+//                                );
+//                                appointDetailRepository.save(newDetail);
+//                            }
+
+                    }
+                }
+
+                // 실결재라인 수정 후, 저장
+
+                // 첨부파일 수정 후, 저장
+
+
+            }
+        } else {
+
+            int afCode = docRegistRequest.getForm().getAfCode();
+            String code = "";
+
+            // 결재양식별 결재상세내용 해당 테이블에 저장
+            if (afCode == 2 || afCode == 3 || afCode == 4 || afCode == 5) {
+                code = generateAttendanceCode();
+                ApprovalAttendance newAttendance = null;
+
+                if (afCode == 2) {            // 예외근무신청서
+                    newAttendance = ApprovalAttendance.of(code,
+                            docRegistRequest.getApprovalAttendance().getAattSort(),
+                            docRegistRequest.getApprovalAttendance().getAattStart(),
+                            docRegistRequest.getApprovalAttendance().getAattEnd(),
+                            docRegistRequest.getApprovalAttendance().getAattPlace(),
+                            docRegistRequest.getApprovalAttendance().getAattCon()
+                    );
+                } else if (afCode == 3) {      // 초과근무신청서
+                    newAttendance = ApprovalAttendance.of(code,
+                            docRegistRequest.getApprovalAttendance().getAattReason(),
+                            docRegistRequest.getApprovalAttendance().getAattSort(),
+                            docRegistRequest.getApprovalAttendance().getAattStart(),
+                            docRegistRequest.getApprovalAttendance().getAattEnd(),
+                            docRegistRequest.getApprovalAttendance().getAattPlace(),
+                            docRegistRequest.getApprovalAttendance().getAattCon()
+                    );
+                } else if (afCode == 4) {      // 지각사유서
+                    newAttendance = ApprovalAttendance.of(code,
+                            docRegistRequest.getApprovalAttendance().getAattSort(),
+                            docRegistRequest.getApprovalAttendance().getAattOccur(),
+                            docRegistRequest.getApprovalAttendance().getAattReason()
+                    );
+                } else if (afCode == 5) {      // 휴가신청서
+                    newAttendance = ApprovalAttendance.of(code,
+                            docRegistRequest.getApprovalAttendance().getAattSort(),
+                            docRegistRequest.getApprovalAttendance().getAattStart(),
+                            docRegistRequest.getApprovalAttendance().getAattEnd()
+                    );
+                }
+
+                approvalAttendanceRepository.save(newAttendance);
+            } else if (afCode == 7 || afCode == 8) {        // 휴직신청서 & 사직신청서
+                code = generatePersonalCode();
+                Personal newPersonal = Personal.of(code,
+                        docRegistRequest.getPersonal().getApStart(),
+                        docRegistRequest.getPersonal().getApEnd(),
+                        docRegistRequest.getPersonal().getApContact(),
+                        docRegistRequest.getPersonal().getApReason()
                 );
-            }else if(afCode == 3){      // 초과근무신청서
-                newAttendance = ApprovalAttendance.of( code,
-                        docRegistRequest.getApprovalAttendance().getAattReason(),
-                        docRegistRequest.getApprovalAttendance().getAattSort(),
-                        docRegistRequest.getApprovalAttendance().getAattStart(),
-                        docRegistRequest.getApprovalAttendance().getAattEnd(),
-                        docRegistRequest.getApprovalAttendance().getAattPlace(),
-                        docRegistRequest.getApprovalAttendance().getAattCon()
+                personalRepository.save(newPersonal);
+            } else if (afCode == 1) {   // 인사발령
+                code = generateAppointCode();
+                ApprovalAppoint newAppoint = ApprovalAppoint.of(code,
+                        docRegistRequest.getApprovalAppoint().getAappNo(),
+                        docRegistRequest.getApprovalAppoint().getAappDate(),
+                        docRegistRequest.getApprovalAppoint().getAappTitle()
                 );
-            }else if(afCode == 4){      // 지각사유서
-                newAttendance = ApprovalAttendance.of( code,
-                        docRegistRequest.getApprovalAttendance().getAattSort(),
-                        docRegistRequest.getApprovalAttendance().getAattOccur(),
-                        docRegistRequest.getApprovalAttendance().getAattReason()
-                );
-            }else if(afCode == 5){      // 휴가신청서
-                newAttendance = ApprovalAttendance.of( code,
-                        docRegistRequest.getApprovalAttendance().getAattSort(),
-                        docRegistRequest.getApprovalAttendance().getAattStart(),
-                        docRegistRequest.getApprovalAttendance().getAattEnd()
-                );
+                approvalAppointRepository.save(newAppoint);
+
+                List<AppointDetail> AppointDetailList = docRegistRequest.getAppointDetailList();
+                for (AppointDetail detail : AppointDetailList) {
+                    Employee employee = employeeRepository.findByEmpCode(detail.getEmployee().getEmp_code());
+
+                    AppointDetail newDetail = AppointDetail.of(
+                            newAppoint,
+                            detail.getAdetBefore(),
+                            detail.getAdetAfter(),
+                            detail.getAdetType(),
+                            employee
+                    );
+                    appointDetailRepository.save(newDetail);
+                }
+            } else {    // 기타결재
+                code = generateEtcCode();
+                Etc newEtc = Etc.of(code, docRegistRequest.getEtc().getAeCon());
+                etcRepository.save(newEtc);
             }
 
-            approvalAttendanceRepository.save(newAttendance);
-        } else if (afCode == 7 || afCode == 8) {        // 휴직신청서 & 사직신청서
-            code = generatePersonalCode();
-            Personal newPersonal = Personal.of( code,
-                    docRegistRequest.getPersonal().getApStart(),
-                    docRegistRequest.getPersonal().getApEnd(),
-                    docRegistRequest.getPersonal().getApContact(),
-                    docRegistRequest.getPersonal().getApReason()
+            // 결재문서 저장
+            Document newDoc = Document.of(
+                    generateDocumentCode(),
+                    docRegistRequest.getAdTitle(),
+                    docRegistRequest.getEmployee(),
+                    docRegistRequest.getAdReportDate(),
+                    docRegistRequest.getAdStatus(),
+                    docRegistRequest.getForm(),
+                    code
             );
-            personalRepository.save(newPersonal);
-        } else if (afCode == 1) {   // 인사발령
-            code = generateAppointCode();
-            ApprovalAppoint newAppoint = ApprovalAppoint.of( code,
-                    docRegistRequest.getApprovalAppoint().getAappNo(),
-                    docRegistRequest.getApprovalAppoint().getAappDate(),
-                    docRegistRequest.getApprovalAppoint().getAappTitle()
-            );
-            approvalAppointRepository.save(newAppoint);
+            docRepository.save(newDoc);
 
-            List<AppointDetail> AppointDetailList = docRegistRequest.getAppointDetailList();
-            for(AppointDetail detail: AppointDetailList){
-                Employee employee = employeeRepository.findByEmpCode(detail.getEmployee().getEmp_code());
+            // 방금 저장한 결재문서 조회해오기
+            Document findDoc = docRepository.findByAdDetail(code);
 
-                AppointDetail newDetail = AppointDetail.of(
-                        newAppoint,
-                        detail.getAdetBefore(),
-                        detail.getAdetAfter(),
-                        detail.getAdetType(),
-                        employee
+            // 실결재라인 저장
+            List<TrueLine> TrueLineList = docRegistRequest.getTrueLineList();
+            for (TrueLine line : TrueLineList) {
+                TrueLine newLine = TrueLine.of(
+                        findDoc,
+                        line.getTalOrder(),
+                        line.getTalRole(),
+                        "미결재",
+                        line.getEmployee()
                 );
-                appointDetailRepository.save(newDetail);
-            }
-        } else {    // 기타결재
-            code = generateEtcCode();
-            Etc newEtc = Etc.of(code, docRegistRequest.getEtc().getAeCon());
-            etcRepository.save(newEtc);
-        }
-
-        // 결재문서 저장
-        Document newDoc = Document.of(
-                generateDocumentCode(),
-                docRegistRequest.getAdTitle(),
-                docRegistRequest.getEmployee(),
-                docRegistRequest.getAdReportDate(),
-                docRegistRequest.getAdStatus(),
-                docRegistRequest.getForm(),
-                code
-        );
-        docRepository.save(newDoc);
-
-        // 방금 저장한 결재문서 조회해오기
-        Document findDoc = docRepository.findByAdDetail(code);
-
-        // 실결재라인 저장
-        List<TrueLine> TrueLineList = docRegistRequest.getTrueLineList();
-        for(TrueLine line: TrueLineList){
-            TrueLine newLine = TrueLine.of(
-                    findDoc,
-                    line.getTalOrder(),
-                    line.getTalRole(),
-                    "미결재",
-                    line.getEmployee()
-            );
-            trueLineRepository.save(newLine);
-        }
-
-        // 첨부파일 저장
-        File uploadDirectory = new File(approvalDir);   // 업로드 디렉토리가 존재하지 않으면 생성합니다.
-        if (!uploadDirectory.exists()) uploadDirectory.mkdirs();
-
-        for (MultipartFile file : files) {
-            String originalFileName = file.getOriginalFilename();
-            String saveFileName = generateSaveFileName(originalFileName);
-
-            // 파일 저장 경로 생성
-            File destFile = new File(approvalDir + File.separator + saveFileName);
-
-            // 파일을 로컬에 저장
-            try {
-                file.transferTo(destFile);
-            } catch (IOException e) {
-                e.printStackTrace();
+                trueLineRepository.save(newLine);
             }
 
-            // 첨부파일 테이블에 정보 저장
-            AttachmentEntity newAttachment = AttachmentEntity.of(
-                    originalFileName,
-                    saveFileName,
-                    approvalDir,
-                    findDoc.getAdCode()
-            );
-            attachmentRepository.save(newAttachment);
-        }
+            // 첨부파일 저장
+            File uploadDirectory = new File(approvalDir);   // 업로드 디렉토리가 존재하지 않으면 생성합니다.
+            if (!uploadDirectory.exists()) uploadDirectory.mkdirs();
 
-        if(temporary){  // 임시저장
-            String finalCode = code;
-            ApprovalBox findBox = approvalBoxRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Invalid ApprovalBox code:" + finalCode));
+            for (MultipartFile file : files) {
+                String originalFileName = file.getOriginalFilename();
+                String saveFileName = generateSaveFileName(originalFileName);
 
-            ApprovalStorage newStorage = ApprovalStorage.of(findDoc, findBox);
-            approvalStorageRepository.save(newStorage);
+                // 파일 저장 경로 생성
+                File destFile = new File(approvalDir + File.separator + saveFileName);
+
+                // 파일을 로컬에 저장
+                try {
+                    file.transferTo(destFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // 첨부파일 테이블에 정보 저장
+                AttachmentEntity newAttachment = AttachmentEntity.of(
+                        originalFileName,
+                        saveFileName,
+                        approvalDir,
+                        findDoc.getAdCode()
+                );
+                attachmentRepository.save(newAttachment);
+            }
+
+            if (temporary) {  // 임시저장
+                String finalCode = code;
+                ApprovalBox findBox = approvalBoxRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Invalid ApprovalBox code:" + finalCode));
+
+                ApprovalStorage newStorage = ApprovalStorage.of(findDoc, findBox);
+                approvalStorageRepository.save(newStorage);
+            }
+
         }
     }
 
@@ -309,6 +410,7 @@ public class ApprovalService {
     @Transactional(readOnly = true)
     public List<DocListResponse> findDocList(final Integer empCode, String status) {
         switch (status){
+            case "temporary": status = "임시저장"; break;
             case "waiting" : status = "대기"; break;
             case "process" : status = "진행중"; break;
             case "return" : status  = "반려"; break;
@@ -429,4 +531,10 @@ public class ApprovalService {
         foundDocument.modifyAdStatus("수정중");
         docRepository.save(foundDocument);
     }
+
+//    public void uploadImage(Integer empCode, String filename) {
+//        Employee foundEmployee = employeeRepository.findById(empCode).orElseThrow(() -> new RuntimeException("Employee not found"));
+//        foundEmployee.signRegist(filename);
+//        employeeRepository.save(foundEmployee);
+//    }
 }

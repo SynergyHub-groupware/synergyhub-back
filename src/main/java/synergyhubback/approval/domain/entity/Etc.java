@@ -20,4 +20,8 @@ public class Etc {
     public static Etc of(String aeCode, String aeCon){
         return new Etc(aeCode, aeCon);
     }
+
+    public void modifyEtc(String aeCon){
+        this.aeCon = aeCon;
+    }
 }

@@ -27,7 +27,7 @@ Content-Type: application/json
 //@emp_code = 2024062
 ### 내정보 조회
 GET http://localhost:8080/employee/myInfo
-Authorization: Bearer eyJkYXRlIjoxNzE4OTMwNDc2OTg3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDIxLCJleHAiOjE3MTg5MzQwNzZ9.c-t8Yn8KpBQXviAPQI5MJDpEyoxERswBbEolCayIWcQDxQ7uvRWhuc7Py9CwXvdZ74aUzTJwESEHl5Twy0O32Q
+Authorization: Bearer eyJkYXRlIjoxNzE5MTg5NTA5MjU5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTkxOTMxMDl9.LR1tQeu529xI06jigsKSRUPw3FPPLWcxXBQOO-YUkwZrgc6-hvo8pBruH-PYQaNTgr83zJoKQhBGtTdcznoO1w
 
 
 ### 인사기록카드 조회

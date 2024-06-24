@@ -16,6 +16,7 @@ public class ViewLineResponse {
     private final LocalDate talDate;
     private final String deptTitle;
     private final String titleName;
+    private final int empCode;
     private final String empName;
     private final String empSign;
     private final String talReason;
@@ -28,6 +29,7 @@ public class ViewLineResponse {
                 trueLine.getTalDate(),
                 trueLine.getEmployee().getDepartment().getDept_title(),
                 trueLine.getEmployee().getTitle().getTitle_name(),
+                trueLine.getEmployee().getEmp_code(),
                 trueLine.getEmployee().getEmp_name(),
                 trueLine.getEmployee().getEmp_sign(),
                 trueLine.getTalReason()

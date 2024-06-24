@@ -39,4 +39,10 @@ public class Document {
     public void modifyAdStatus(String adStatus) {
         this.adStatus = adStatus;
     }
+
+    public void modifyDocument(String adTitle, LocalDate adReportDate, String adStatus){
+        this.adTitle = adTitle;
+        this.adReportDate = adReportDate;
+        this.adStatus = adStatus;
+    }
 }

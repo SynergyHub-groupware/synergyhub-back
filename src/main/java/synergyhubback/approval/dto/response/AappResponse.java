@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class AappResponse {
     private final String aappCode;
     private final String aappNo;
-    @JsonFormat(pattern = "yyyy년 MM월 dd일")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate aappDate;
     private final String aappTitle;
 

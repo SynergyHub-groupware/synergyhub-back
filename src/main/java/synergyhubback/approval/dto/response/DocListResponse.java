@@ -19,6 +19,7 @@ public class DocListResponse {
     private final String adStatus;
     private final int afCode;
     private final String afName;
+    private final int lsCode;
     private final String adDetail;
     private final int talOrder;
     private final String talRole;
@@ -34,6 +35,7 @@ public class DocListResponse {
                 trueLine.getDocument().getAdStatus(),
                 trueLine.getDocument().getForm().getAfCode(),
                 trueLine.getDocument().getForm().getAfName(),
+                trueLine.getDocument().getForm().getLineSort().getLsCode(),
                 trueLine.getDocument().getAdDetail(),
                 trueLine.getTalOrder(),
                 trueLine.getTalRole(),

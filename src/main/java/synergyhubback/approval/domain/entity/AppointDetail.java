@@ -38,4 +38,11 @@ public class AppointDetail {
     public static AppointDetail of(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, Employee employee){
         return new AppointDetail(approvalAppoint, adetBefore, adetAfter, adetType, employee);
     }
+
+    public void modifyAppointDetail(String adetBefore, String adetAfter, String adetType, Employee employee){
+        this.adetBefore = adetBefore;
+        this.adetAfter = adetAfter;
+        this.adetType = adetType;
+        this.employee = employee;
+    }
 }
