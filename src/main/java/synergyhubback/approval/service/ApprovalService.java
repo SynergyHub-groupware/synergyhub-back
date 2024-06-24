@@ -26,11 +26,13 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -91,9 +93,14 @@ public class ApprovalService {
 
     @Transactional
     public void regist(DocRegistRequest docRegistRequest, MultipartFile[] files, @RequestParam boolean temporary) {
+        String adCode = docRegistRequest.getAdCode();
+        String adDetail = docRegistRequest.getAdDetail();
 
-        if (docRegistRequest.getAdCode() != null && !docRegistRequest.getAdCode().isEmpty()) {
-            Document existDoc = docRepository.findById(docRegistRequest.getAdCode()).orElseThrow(() -> new IllegalArgumentException("Invalid adCode:" + docRegistRequest.getAdCode()));
+        System.out.println("adCode = " + adCode);
+        System.out.println("adDetail = " + adDetail);
+
+        if (adCode != null && !adCode.isEmpty()) {
+            Document existDoc = docRepository.findById(adCode).orElseThrow(() -> new IllegalArgumentException("Invalid adCode:" + adCode));
 
             if (existDoc != null){
                 // 결재문서 수정 후, 저장
@@ -101,8 +108,6 @@ public class ApprovalService {
                 docRepository.save(existDoc);
 
                 // 결재상세 수정 후, 저장
-                String adDetail = docRegistRequest.getAdDetail();
-
                 Pattern pattern = Pattern.compile("([a-zA-Z]+)(\\d+)");
                 Matcher matcher = pattern.matcher(adDetail);
 
@@ -110,6 +115,7 @@ public class ApprovalService {
                     String textPart = matcher.group(1);
                     switch (textPart){
                         case "AP":
+                            System.out.println(" AP 부분 실행 ");
                             Personal existPersonal = personalRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
                             existPersonal.modifyPersonal(
                                     docRegistRequest.getPersonal().getApStart(),
@@ -125,6 +131,7 @@ public class ApprovalService {
                             etcRepository.save(existEtc); break;
 
                         case "AATT":
+                            System.out.println(" AATT 부분 실행 ");
                             ApprovalAttendance existAttend = approvalAttendanceRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
                             existAttend.modifyApprovalAttendance(
                                     docRegistRequest.getApprovalAttendance().getAattSort(),
@@ -146,61 +153,95 @@ public class ApprovalService {
                             );
                             approvalAppointRepository.save(existAppoint);
 
-                            List<AppointDetail> existDetailList = appointDetailRepository.findByAappCode(adDetail);
-                            List<AppointDetail> newDetailList = docRegistRequest.getAppointDetailList();int existIndex = 0;
-                            int newIndex = 0;
+                            List<AppointDetail> existDetailList = appointDetailRepository.findByApprovalAppoint_AappCode(adDetail);
+                            List<AppointDetail> newDetailList = docRegistRequest.getAppointDetailList();
+                            int existSize = existDetailList.size();
+                            int newSize = newDetailList.size();
 
-                            // 동일한 경우 그대로 덮어쓰기
-                            while (existIndex < existDetailList.size() && newIndex < newDetailList.size()) {
-                                AppointDetail existDetail = existDetailList.get(existIndex);
-                                AppointDetail newDetail = newDetailList.get(newIndex);
-
-//                                if (existDetail.getId() == newDetail.getId()) {
-//                                    existDetail.modifyAppointDetail(
-//                                            newDetail.getAdetBefore(),
-//                                            newDetail.getAdetAfter(),
-//                                            newDetail.getAdetType()
-//                                            // 필요한 다른 필드들도 추가
-//                                    );
-//                                    appointDetailRepository.save(existDetail);
-//                                    existIndex++;
-//                                    newIndex++;
-//                                } else {
-//                                    break; // ID가 일치하지 않으면 더 이상 처리하지 않음
-//                                }
+                            // 길이가 같으면 그대로 덮어쓰기
+                            if (existSize == newSize) {
+                                IntStream.range(0, existSize).forEach(i -> {
+                                    AppointDetail existList = existDetailList.get(i);
+                                    AppointDetail newList = newDetailList.get(i);
+                                    updateAppointDetail(existList, newList);
+                                });
+                            }
+                            // existTrueLine이 더 길면 순서대로 덮어쓰고 남은 부분 삭제
+                            else if (existSize > newSize) {
+                                IntStream.range(0, newSize).forEach(i -> {
+                                    AppointDetail existList = existDetailList.get(i);
+                                    AppointDetail newList = newDetailList.get(i);
+                                    updateAppointDetail(existList, newList);
+                                });
+                                // 남은 뒷부분 삭제
+                                IntStream.range(newSize, existSize).forEach(i -> {
+                                    appointDetailRepository.delete(existDetailList.get(i));
+                                });
+                            }
+                            // newTrueLine이 더 길면 순서대로 덮어쓰고 나머지 값 추가
+                            else {
+                                IntStream.range(0, existSize).forEach(i -> {
+                                    AppointDetail existList = existDetailList.get(i);
+                                    AppointDetail newList = newDetailList.get(i);
+                                    updateAppointDetail(existList, newList);
+                                });
+                                // 나머지 값 추가
+                                IntStream.range(existSize, newSize).forEach(i -> {
+                                    AppointDetail newList = newDetailList.get(i);
+                                    appointDetailRepository.save(newList);
+                                });
                             }
 
-                            // 기존의 AppointDetail이 더 많으면 삭제
-                            while (existIndex < existDetailList.size()) {
-                                appointDetailRepository.delete(existDetailList.get(existIndex));
-                                existIndex++;
-                            }
-
-                            // 새로운 AppointDetail이 더 많으면 추가
-                            while (newIndex < newDetailList.size()) {
-                                AppointDetail newDetail = newDetailList.get(newIndex);
-
-                                Employee employee = employeeRepository.findByEmpCode(newDetail.getEmployee().getEmp_code());
-
-                                AppointDetail newAppointDetail = AppointDetail.of(
-                                        existAppoint,
-                                        newDetail.getAdetBefore(),
-                                        newDetail.getAdetAfter(),
-                                        newDetail.getAdetType(),
-                                        employee
-                                );
-                                appointDetailRepository.save(newAppointDetail);
-
-                                newIndex++;
-                            }
                     }
                 }
 
                 // 실결재라인 수정 후, 저장
+                List<TrueLine> existTrueLine = trueLineRepository.findByDocument_AdCode(adCode);
+                List<TrueLine> newTrueLine = docRegistRequest.getTrueLineList();
+                int existSize = existTrueLine.size();
+                int newSize = newTrueLine.size();
 
-                // 첨부파일 수정 후, 저장
+                // 길이가 같으면 그대로 덮어쓰기
+                if (existSize == newSize) {
+                    IntStream.range(0, existSize).forEach(i -> {
+                        TrueLine existLine = existTrueLine.get(i);
+                        TrueLine newLine = newTrueLine.get(i);
+                        updateTrueLine(existLine, newLine);
+                    });
+                }
+                // existTrueLine이 더 길면 순서대로 덮어쓰고 남은 부분 삭제
+                else if (existSize > newSize) {
+                    IntStream.range(0, newSize).forEach(i -> {
+                        TrueLine existLine = existTrueLine.get(i);
+                        TrueLine newLine = newTrueLine.get(i);
+                        updateTrueLine(existLine, newLine);
+                    });
+                    // 남은 뒷부분 삭제
+                    IntStream.range(newSize, existSize).forEach(i -> {
+                        trueLineRepository.delete(existTrueLine.get(i));
+                    });
+                }
+                // newTrueLine이 더 길면 순서대로 덮어쓰고 나머지 값 추가
+                else {
+                    IntStream.range(0, existSize).forEach(i -> {
+                        TrueLine existLine = existTrueLine.get(i);
+                        TrueLine newLine = newTrueLine.get(i);
+                        updateTrueLine(existLine, newLine);
+                    });
+                    // 나머지 값 추가
+                    IntStream.range(existSize, newSize).forEach(i -> {
+                        TrueLine newLine = newTrueLine.get(i);
+                        trueLineRepository.save(newLine);
+                    });
+                }
 
+                // 첨부파일 수정 후, 저장 ????
 
+                // 임시저장 문서를 상신할 경우, 임시저장 정보 삭제
+                if(temporary == false){
+                    int abCode = 1; // 임시저장
+                    approvalStorageRepository.deleteByDocument_AdCodeAndApprovalBox_AbCode(adCode, abCode);
+                }
             }
         } else {
 
@@ -346,6 +387,28 @@ public class ApprovalService {
             }
 
         }
+    }
+
+    private void updateAppointDetail(AppointDetail existList, AppointDetail newList){
+        existList.modifyAppointDetail(
+                newList.getAdetBefore(),
+                newList.getAdetAfter(),
+                newList.getAdetType(),
+                newList.getEmployee()
+        );
+        appointDetailRepository.save(existList);
+    }
+
+    private void updateTrueLine(TrueLine existLine, TrueLine newLine) {
+        existLine.modifyTrueLine(
+                newLine.getTalOrder(),
+                newLine.getTalRole(),
+                "미결재",
+                newLine.getEmployee(),
+                newLine.getTalReason(),
+                newLine.getTalDate()
+        );
+        trueLineRepository.save(existLine);
     }
 
     private String generatePersonalCode() {

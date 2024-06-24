@@ -14,5 +14,5 @@ public interface AppointDetailRepository extends JpaRepository<AppointDetail, In
             "WHERE ad.approvalAppoint.aappCode = :adDetail")
     List<AppointDetail> findByAdDetail(String adDetail);
 
-    List<AppointDetail> findByAappCode(String adDetail);
+    List<AppointDetail> findByApprovalAppoint_AappCode(String adDetail);
 }

@@ -48,4 +48,6 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
     List<TrueLine> findViewLineList(String adCode);
 
     void deleteByDocument_AdCode(String adCode);
+
+    List<TrueLine> findByDocument_AdCode(String adCode);
 }

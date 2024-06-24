@@ -9,4 +9,6 @@ public interface ApprovalStorageRepository extends JpaRepository<ApprovalStorage
     List<ApprovalStorage> findByDocument_AdCode(String adCode);
 
     void deleteByDocument_AdCode(String adCode);
+
+    void deleteByDocument_AdCodeAndApprovalBox_AbCode(String adCode, int abCode);
 }

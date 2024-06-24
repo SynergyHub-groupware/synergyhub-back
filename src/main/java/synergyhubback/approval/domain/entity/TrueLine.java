@@ -67,4 +67,13 @@ public class TrueLine {
     public static TrueLine of(Document document, int talOrder, String talRole, String talStatus, Employee employee, String talReason, LocalDate talDate){
         return new TrueLine(document, talOrder, talRole, talStatus, employee, talReason, talDate);
     }
+
+    public void modifyTrueLine(int talOrder, String talRole, String talStatus, Employee employee, String talReason, LocalDate talDate){
+        this.talOrder = talOrder;
+        this.talRole = talRole;
+        this.talStatus = talStatus;
+        this.employee = employee;
+        this.talReason = talReason;
+        this.talDate = talDate;
+    }
 }
