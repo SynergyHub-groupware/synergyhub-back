@@ -29,7 +29,7 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "emp_Code")
-    private Employee employee;                //사원코드
+    private Employee employee;          //사원코드
 
     private int atsCode;                //근무상태코드 (추후 fk)
 

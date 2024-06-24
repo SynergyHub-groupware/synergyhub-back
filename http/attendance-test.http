@@ -17,7 +17,33 @@ Content-Type: application/json
 POST http://localhost:8080/api/attendance/registEndTime/2024061
 Content-Type: application/json
 
+### 지정 출/퇴근시간 모두 조회
+GET http://localhost:8080/api/attendance/allSchedules
+Content-Type: application/json
+
 ### 지정 출/퇴근시간 등록
+POST http://localhost:8080/api/attendance/registSchedule
+Content-Type: application/json
+
+{
+  "deptTitle": "D3",
+  "atdStartTime": "09:00:00",
+  "atdEndTime": "18:00:00",
+  "employee": null
+}
+
+### 지정 출/퇴근시간 수정
+PUT http://localhost:8080/api/attendance/updateSchedule
+Content-Type: application/json
+
+{
+  "deptTitle": "D1",
+  "atdStartTime": "10:00:00",
+  "atdEndTime": "18:00:00",
+  "employee":
+    { "emp_code": 2021011 }
+}
+
 
 ### 지정 출/퇴근시간 수정
 
@@ -30,8 +56,7 @@ Content-Type: application/json
 {
   "pheedCode": 1,
   "pheedCon": "테스트 피드 내용입니다.",
-  "pheedSort": "일반",
-  "empCode": 2021011
+  "pheedSort": "일반"
 }
 
 

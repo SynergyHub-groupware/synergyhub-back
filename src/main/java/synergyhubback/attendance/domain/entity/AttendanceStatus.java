@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class AttendanceStatus {
 
     @Id
-    private int atsCode;       //근무상태코드(pk)
+    private int atsCode;        //근무상태코드(pk)
     private String atsName;     //근무상태명
 
 }

@@ -10,11 +10,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.attendance.domain.entity.Attendance;
+import synergyhubback.attendance.domain.entity.DefaultSchedule;
 import synergyhubback.attendance.domain.repository.AttendanceRepository;
+import synergyhubback.attendance.domain.repository.DefaultScheduleRepository;
 import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
+import synergyhubback.attendance.dto.request.DefaultScheduleRequest;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
+import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
 import synergyhubback.common.util.DateUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
@@ -34,15 +38,18 @@ public class AttendanceService {
     private final ModelMapper modelMapper;
     private final AttendanceRepository attendanceRepository;
     private final EmployeeRepository employeeRepository;
+    private final DefaultScheduleRepository defaultScheduleRepository;
 
-    public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository, EmployeeRepository employeeRepository) {
+    public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository,
+                             EmployeeRepository employeeRepository, DefaultScheduleRepository defaultScheduleRepository) {
         this.modelMapper = modelMapper;
         this.attendanceRepository = attendanceRepository;
         this.employeeRepository = employeeRepository;
+        this.defaultScheduleRepository = defaultScheduleRepository;
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "00 50 09 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "00 02 11 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -64,11 +71,11 @@ public class AttendanceService {
                 newAttendanceRequest.setAtsCode(1);
             }
 
-            newAttendanceRequest.setAtdDate(LocalDate.now()); // 현재 날짜로 설정
+            newAttendanceRequest.setAtdDate(LocalDate.now());                         // 현재 날짜로 설정
             newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));   // 오전 09:00 으로 설정
             newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
-            newAttendanceRequest.setEmployee(employee);                   // 사원 코드 설정
-            newAttendanceRequest.setAtsCode(1);                         // 근무 상태, 디폴트는 미출근?
+            newAttendanceRequest.setEmployee(employee);                               // 사원 코드 설정
+            newAttendanceRequest.setAtsCode(1);                                       // 근무 상태, 디폴트는 미출근?
 
             System.out.println(newAttendanceRequest);
 
@@ -213,4 +220,62 @@ public class AttendanceService {
 
         return response;
     }
+
+    /* 지정 출퇴근시간 등록 */
+    @Transactional
+    public void registDefaultSchedule(String deptTitle, LocalTime atdStartTime, LocalTime atdEndTime, Employee employee) {
+        DefaultSchedule defaultSchedule = DefaultSchedule.builder()
+                .deptTitle(deptTitle)
+                .atdStartTime(atdStartTime)
+                .atdEndTime(atdEndTime)
+                .employee(employee)
+                .build();
+
+        defaultScheduleRepository.save(defaultSchedule);
+    }
+
+    /* 지정 출퇴근시간 조회 */
+    public List<DefaultSchedule> findDefaultSchedules(String deptTitle, LocalTime startTime, LocalTime endTime) {
+        return defaultScheduleRepository.findByDeptTitleAndAtdStartTimeAndAtdEndTime(deptTitle, startTime, endTime);
+    }
+
+    /* 모든 지정 출퇴근시간 조회 */
+    public List<DefaultScheduleResponse> findAllDefaultSchedules() {
+        List<DefaultSchedule> defaultSchedules = defaultScheduleRepository.findAll();
+
+        return defaultSchedules.stream()
+                .map(DefaultScheduleResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    /* 지정 출퇴근시간 수정 */
+    public void updateDefaultSchedule(String deptTitle, LocalTime startTime, LocalTime endTime, Employee employee) {
+
+        // deptTitle과 employee의 empCode가 모두 일치하는 첫 번째 DefaultSchedule 조회
+        DefaultSchedule deptSchedule = defaultScheduleRepository.findByDeptTitleAndEmployee(deptTitle, employee);
+
+        if (deptSchedule != null) {
+            // empCode와 deptTitle 모두 일치하는 경우 단일 엔티티 업데이트
+            deptSchedule.updateStartTime(startTime);
+            deptSchedule.updateEndTime(endTime);
+            defaultScheduleRepository.save(deptSchedule); // 엔티티 저장
+        } else {
+            // empCode와 deptTitle이 모두 일치하는 DefaultSchedule이 없는 경우
+            // deptTitle에 해당하는 모든 DefaultSchedule 조회
+            List<DefaultSchedule> deptSchedules = defaultScheduleRepository.findAllByDeptTitle(deptTitle);
+
+            if (!deptSchedules.isEmpty()) {
+                // deptTitle에 해당하는 모든 DefaultSchedule 일괄 업데이트
+                for (DefaultSchedule schedule : deptSchedules) {
+                    schedule.updateStartTime(startTime);
+                    schedule.updateEndTime(endTime);
+                }
+                defaultScheduleRepository.saveAll(deptSchedules); // 엔티티들 일괄 저장
+            } else {
+                throw new RuntimeException("수정할 출퇴근시간이 존재하지 않습니다.");
+            }
+        }
+    }
+
+
 }

@@ -17,7 +17,7 @@ public class AttendanceRegistRequest {
     private LocalTime atdEndTime;       //지정퇴근시간
     private LocalTime startTime;        //출근시간
     private LocalTime endTime;          //퇴근시간
-    private Employee employee;                //사원코드 (추후 fk)
+    private Employee employee;          //사원코드 (추후 fk)
     private int atsCode;                //근무상태코드 (추후 fk)
 
     @Override
