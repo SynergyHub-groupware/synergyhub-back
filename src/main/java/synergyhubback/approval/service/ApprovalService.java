@@ -147,38 +147,52 @@ public class ApprovalService {
                             approvalAppointRepository.save(existAppoint);
 
                             List<AppointDetail> existDetailList = appointDetailRepository.findByAappCode(adDetail);
-                            List<AppointDetail> newDetailList = docRegistRequest.getAppointDetailList();
-                            for (AppointDetail existDetail : existDetailList) {
-                                // 기존의 AppointDetail을 찾아서 새로 입력받은 값으로 갱신
-                                for (AppointDetail newDetail : newDetailList) {
-//                                    if (existDetail.getId() == newDetail.getId()) { // 기존 데이터와 새 데이터의 식별자 비교
-//                                        existDetail.modifyAppointDetail(
-//                                                newDetail.getAdetBefore(),
-//                                                newDetail.getAdetAfter(),
-//                                                newDetail.getAdetType()
-//                                                // 필요한 다른 필드들도 추가
-//                                        );
-//                                        appointDetailRepository.save(existDetail);
-//                                        break; // 해당 기존 AppointDetail에 대한 처리 완료 후 반복 종료
-//                                    }
-                                }
+                            List<AppointDetail> newDetailList = docRegistRequest.getAppointDetailList();int existIndex = 0;
+                            int newIndex = 0;
+
+                            // 동일한 경우 그대로 덮어쓰기
+                            while (existIndex < existDetailList.size() && newIndex < newDetailList.size()) {
+                                AppointDetail existDetail = existDetailList.get(existIndex);
+                                AppointDetail newDetail = newDetailList.get(newIndex);
+
+//                                if (existDetail.getId() == newDetail.getId()) {
+//                                    existDetail.modifyAppointDetail(
+//                                            newDetail.getAdetBefore(),
+//                                            newDetail.getAdetAfter(),
+//                                            newDetail.getAdetType()
+//                                            // 필요한 다른 필드들도 추가
+//                                    );
+//                                    appointDetailRepository.save(existDetail);
+//                                    existIndex++;
+//                                    newIndex++;
+//                                } else {
+//                                    break; // ID가 일치하지 않으면 더 이상 처리하지 않음
+//                                }
                             }
 
+                            // 기존의 AppointDetail이 더 많으면 삭제
+                            while (existIndex < existDetailList.size()) {
+                                appointDetailRepository.delete(existDetailList.get(existIndex));
+                                existIndex++;
+                            }
 
-//                            List<AppointDetail> AppointDetailList = docRegistRequest.getAppointDetailList();
-//                            for (AppointDetail detail : AppointDetailList) {
-//                                Employee employee = employeeRepository.findByEmpCode(detail.getEmployee().getEmp_code());
-//
-//                                AppointDetail newDetail = AppointDetail.of(
-//                                        newAppoint,
-//                                        detail.getAdetBefore(),
-//                                        detail.getAdetAfter(),
-//                                        detail.getAdetType(),
-//                                        employee
-//                                );
-//                                appointDetailRepository.save(newDetail);
-//                            }
+                            // 새로운 AppointDetail이 더 많으면 추가
+                            while (newIndex < newDetailList.size()) {
+                                AppointDetail newDetail = newDetailList.get(newIndex);
 
+                                Employee employee = employeeRepository.findByEmpCode(newDetail.getEmployee().getEmp_code());
+
+                                AppointDetail newAppointDetail = AppointDetail.of(
+                                        existAppoint,
+                                        newDetail.getAdetBefore(),
+                                        newDetail.getAdetAfter(),
+                                        newDetail.getAdetType(),
+                                        employee
+                                );
+                                appointDetailRepository.save(newAppointDetail);
+
+                                newIndex++;
+                            }
                     }
                 }
 
