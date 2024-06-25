@@ -17,5 +17,6 @@ public class PheedCreateRequest {
     private String deStatus;         // 삭제상태
     private String pheedSort;        // 피드분류
     private Employee employee;       // 사원코드
+    private String url;              // 링크
 
 }
