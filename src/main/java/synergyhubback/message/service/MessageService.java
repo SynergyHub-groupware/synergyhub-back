@@ -11,6 +11,7 @@ import synergyhubback.message.domain.entity.Storage;
 import synergyhubback.message.domain.repository.MessageRepository;
 import synergyhubback.message.domain.repository.StorageRepository;
 import synergyhubback.message.dto.response.BinResponse;
+import synergyhubback.message.dto.response.ImpResponse;
 import synergyhubback.message.dto.response.ReceiveResponse;
 import synergyhubback.message.dto.response.SendResponse;
 
@@ -74,4 +75,15 @@ public class MessageService {
         messageRepository.save(message);
     }
 
+    /* 중요 보관함 전체 조회 로직 */
+    public List<ImpResponse> getImpMessage(int empCode) {
+
+        List <Message> impList = messageRepository.findByImp_EmpCode(empCode);
+
+        System.out.println("impList : " + impList.size());
+
+        return impList.stream()
+                .map(ImpResponse::getImpMessage)
+                .collect(Collectors.toList());
+    }
 }

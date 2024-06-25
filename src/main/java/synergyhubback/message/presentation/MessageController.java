@@ -8,6 +8,7 @@ import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.dto.request.RevMsgDelRequest;
 import synergyhubback.message.dto.response.BinResponse;
+import synergyhubback.message.dto.response.ImpResponse;
 import synergyhubback.message.dto.response.ReceiveResponse;
 import synergyhubback.message.dto.response.SendResponse;
 import synergyhubback.message.service.MessageService;
@@ -72,5 +73,20 @@ public class MessageController {
         messageService.RevMsgDel(msgCode, request.getStorCode());
 
         return ResponseEntity.noContent().build();
+    }
+
+    /* 중요 보관함 전체 조회 */
+    @GetMapping("/important")
+    public ResponseEntity<List<ImpResponse>> getImpMessage (@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<ImpResponse> impList = messageService.getImpMessage(empCode);
+
+        System.out.println("impList : controller : " + impList.size());
+
+        return new ResponseEntity<>(impList, HttpStatus.OK);
     }
 }
