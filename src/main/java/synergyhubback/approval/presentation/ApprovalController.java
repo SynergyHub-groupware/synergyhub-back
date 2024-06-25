@@ -199,6 +199,7 @@ public class ApprovalController {
 
     @PatchMapping("/accept")
     public ResponseEntity<Void> acceptDocument(@RequestParam final Integer empCode, @RequestParam final String status, @RequestParam final String adCode){
+        System.out.println("status = " + status);
         approvalService.acceptDocument(empCode, status, adCode);
         return ResponseEntity.ok().build();
     }

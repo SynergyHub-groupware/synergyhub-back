@@ -39,6 +39,17 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findCompleteSendList(Integer empCode);
+
+    @Query("SELECT t FROM TrueLine t " +
+            "JOIN t.document d " +
+            "JOIN d.employee e " +
+            "JOIN d.form f " +
+            "WHERE d.employee.emp_code = :empCode " +
+            "AND t.talStatus = '반려' " +
+            "ORDER BY d.adReportDate DESC, " +
+            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+    List<TrueLine> findReturnSendList(Integer empCode);
+
     @Query("SELECT t FROM TrueLine t " +
             "JOIN t.employee e " +
             "JOIN e.department d " +
@@ -96,4 +107,12 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findReturnReceiveList(Integer empCode);
+
+    @Query("SELECT t FROM TrueLine t " +
+            "WHERE t.document.adCode = :adCode " +
+            "AND t.talOrder > (" +
+            "SELECT t2.talOrder " +
+            "FROM TrueLine t2 " +
+            "WHERE t2.document.adCode = :adCode AND t2.employee.emp_code = :empCode)")
+    List<TrueLine> findAfterList(Integer empCode, String adCode);
 }

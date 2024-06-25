@@ -31,6 +31,7 @@ public class ReceiveListResponse {
     private final LocalDate talDate;
     private final int empCode;
     private final String empName;
+    private final String talReason;
 
     public static ReceiveListResponse from(final TrueLine trueLine){
         return new ReceiveListResponse(
@@ -51,7 +52,8 @@ public class ReceiveListResponse {
                 trueLine.getTalStatus(),
                 trueLine.getTalDate(),
                 trueLine.getEmployee().getEmp_code(),
-                trueLine.getEmployee().getEmp_name()
+                trueLine.getEmployee().getEmp_name(),
+                trueLine.getTalReason()
         );
     }
 }

@@ -500,7 +500,7 @@ public class ApprovalService {
         if(status.equals("완료")){
             docList = trueLineRepository.findCompleteSendList(empCode);
         }else if(status.equals("반려")){
-
+            docList = trueLineRepository.findReturnSendList(empCode);
         }else{
             docList = trueLineRepository.findWaitingSendList(empCode, status);
         }
@@ -620,6 +620,8 @@ public class ApprovalService {
     }
 
     public List<ReceiveListResponse> findReceiveList(Integer empCode, String status) {
+        System.out.println("status = " + status);
+
         List<TrueLine> docList = null;
 
         if(status.equals("complete")){
@@ -637,7 +639,19 @@ public class ApprovalService {
 
     public void acceptDocument(Integer empCode, String status, String adCode) {
         Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
-        foundDocument.modifyStatus(status);
+
+        if(status.equals("전결")) {
+            foundDocument.modifyStatus("완료");
+
+            // 이후 순서 전결처리
+            List<TrueLine> afterList = trueLineRepository.findAfterList(empCode, adCode);
+            for (TrueLine line : afterList) {
+                line.modifyAccept("전결", LocalDate.now());
+                trueLineRepository.save(line);
+            }
+        }else{
+            foundDocument.modifyStatus(status);     // status : 진행중, 완료
+        }
         docRepository.save(foundDocument);
 
         TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
