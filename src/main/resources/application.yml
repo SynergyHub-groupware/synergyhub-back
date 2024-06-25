@@ -39,6 +39,6 @@ server:
 jwt:
   secret: asdfjk12938fu08bh3rhq2387qfe8hjvweh2w93ur9djvhw983o3uew23rfgeiv8hewsor2hjdhxmzqw83o832 #??? ???
   access:
-    expiration: 3600000
+    expiration: 604800000
   refresh:
     expiration: 604800000

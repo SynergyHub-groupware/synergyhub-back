@@ -22,7 +22,23 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "AND e.emp_code = :empCode " +
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
-    List<TrueLine> findTrueLineWithPendingStatus(Integer empCode, String status);
+    List<TrueLine> findWaitingSendList(Integer empCode, String status);
+
+    @Query("SELECT t FROM TrueLine t " +
+            "JOIN t.document d " +
+            "JOIN d.employee e " +
+            "JOIN d.form f " +
+            "WHERE t.talOrder = (" +
+            "    SELECT MAX(t2.talOrder) " +
+            "    FROM TrueLine t2 " +
+            "    WHERE t2.document = d " +
+            "    AND t2.talStatus = '승인' " +
+            ")" +
+            "AND d.adStatus = '완료' " +
+            "AND e.emp_code = :empCode " +
+            "ORDER BY d.adReportDate DESC, " +
+            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+    List<TrueLine> findCompleteSendList(Integer empCode);
     @Query("SELECT t FROM TrueLine t " +
             "JOIN t.employee e " +
             "JOIN e.department d " +
@@ -66,4 +82,18 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findCompleteReceiveList(Integer empCode);
+
+    @Query("SELECT t FROM TrueLine t " +
+            "JOIN t.document d " +
+            "JOIN d.employee e " +
+            "JOIN d.form f " +
+            "WHERE t.document.adCode IN (" +
+            "    SELECT t2.document.adCode " +
+            "    FROM TrueLine t2 " +
+            "    WHERE t2.employee.emp_code = :empCode " +
+            ")" +
+            "AND t.talStatus = '반려' " +
+            "ORDER BY d.adReportDate DESC, " +
+            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+    List<TrueLine> findReturnReceiveList(Integer empCode);
 }

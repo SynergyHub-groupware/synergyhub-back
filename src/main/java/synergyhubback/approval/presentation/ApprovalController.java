@@ -203,4 +203,11 @@ public class ApprovalController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/return")
+    public ResponseEntity<Void> returnDocument(@RequestParam final Integer empCode, @RequestParam final String adCode, @RequestBody final String talReason){
+        System.out.println("talReason = " + talReason);
+        approvalService.returnDocunet(empCode, adCode, talReason);
+        return ResponseEntity.ok().build();
+    }
+
 }

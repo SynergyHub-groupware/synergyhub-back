@@ -66,7 +66,7 @@ Content-Type: application/json
 GET http://localhost:8080/approval/send/document?empCode=2024062&status=temporary
 
 ### 보낸결재함[대기] 조회
-GET http://localhost:8080/approval/send/document?empCode=2024062&status=progress
+GET http://localhost:8080/approval/send/document?empCode=2024062&status=return
 
 ### 보낸결재함[대기] 조회 + 페이지
 GET http://localhost:8080/approval/send/document?page=1&empCode=2021048&status=waiting
@@ -95,4 +95,4 @@ PATCH http://localhost:8080/approval/modifyStatus?adCode=AD19
 
 
 ### 받은결재함[대기] 조회
-GET http://localhost:8080/approval/receive/document?empCode=2020011&status=complete
+GET http://localhost:8080/approval/receive/document?empCode=2020011&status=return

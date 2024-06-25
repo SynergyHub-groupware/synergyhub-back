@@ -495,7 +495,15 @@ public class ApprovalService {
             case "complete" : status = "완료"; break;
         }
 
-        List<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(empCode, status);
+        List<TrueLine> docList = null;
+
+        if(status.equals("완료")){
+            docList = trueLineRepository.findCompleteSendList(empCode);
+        }else if(status.equals("반려")){
+
+        }else{
+            docList = trueLineRepository.findWaitingSendList(empCode, status);
+        }
 
         return docList.stream().map(ReceiveListResponse::from).toList();
     }
@@ -617,7 +625,7 @@ public class ApprovalService {
         if(status.equals("complete")){
             docList = trueLineRepository.findCompleteReceiveList(empCode);
         }else if(status.equals("return")){
-
+            docList = trueLineRepository.findReturnReceiveList(empCode);
         }else if(status.equals("reference")){
 
         }else{
@@ -634,6 +642,16 @@ public class ApprovalService {
 
         TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
         foundLine.modifyAccept("승인", LocalDate.now());
+        trueLineRepository.save(foundLine);
+    }
+
+    public void returnDocunet(Integer empCode, String adCode, String talReason) {
+        Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
+        foundDocument.modifyStatus("반려");
+        docRepository.save(foundDocument);
+
+        TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
+        foundLine.modifyReturn("반려", talReason, LocalDate.now());
         trueLineRepository.save(foundLine);
     }
 }

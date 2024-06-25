@@ -81,4 +81,10 @@ public class TrueLine {
         this.talStatus = talStatus;
         this.talDate = talDate;
     }
+
+    public void modifyReturn(String talStatus, String talReason, LocalDate talDate){
+        this.talStatus = talStatus;
+        this.talReason = talReason;
+        this.talDate = talDate;
+    }
 }
