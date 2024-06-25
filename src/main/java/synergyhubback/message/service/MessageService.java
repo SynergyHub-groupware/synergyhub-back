@@ -10,10 +10,7 @@ import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.domain.entity.Storage;
 import synergyhubback.message.domain.repository.MessageRepository;
 import synergyhubback.message.domain.repository.StorageRepository;
-import synergyhubback.message.dto.response.BinResponse;
-import synergyhubback.message.dto.response.ImpResponse;
-import synergyhubback.message.dto.response.ReceiveResponse;
-import synergyhubback.message.dto.response.SendResponse;
+import synergyhubback.message.dto.response.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +59,7 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
+    /* 휴지통 PUT 업데이트 로직 */
     @Transactional
     public void RevMsgDel(String msgCode, int storCode) {
         Message message = messageRepository.findById(msgCode)
@@ -84,6 +82,18 @@ public class MessageService {
 
         return impList.stream()
                 .map(ImpResponse::getImpMessage)
+                .collect(Collectors.toList());
+    }
+
+    /* 업무 보관함 전체 조회 로직 */
+    public List<WorkResponse> getWorkMessage(int empCode) {
+
+        List<Message> workList = messageRepository.findByWork_EmpCode(empCode);
+
+        System.out.println("workList : " + workList.size());
+
+        return workList.stream()
+                .map(WorkResponse::getWorkMessage)
                 .collect(Collectors.toList());
     }
 }

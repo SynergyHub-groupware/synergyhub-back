@@ -20,4 +20,7 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query("SELECT m FROM Message m WHERE (m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.storCode.storCode = 2")
     List<Message> findByImp_EmpCode(int empCode);
+
+    @Query("SELECT m FROM Message m WHERE (m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.storCode.storCode = 3")
+    List<Message> findByWork_EmpCode(int empCode);
 }
