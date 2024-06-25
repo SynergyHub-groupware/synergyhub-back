@@ -122,8 +122,8 @@ public class ApprovalController {
     }
 
     @GetMapping("/send/document")
-    public ResponseEntity<List<DocListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
-        final List<DocListResponse> docList = approvalService.findDocList(empCode, status);
+    public ResponseEntity<List<ReceiveListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
+        final List<ReceiveListResponse> docList = approvalService.findDocList(empCode, status);
         return ResponseEntity.ok(docList);
     }
 
@@ -191,6 +191,16 @@ public class ApprovalController {
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/trueLine")
-//    public
+    @GetMapping("/receive/document")
+    public ResponseEntity<List<ReceiveListResponse>> findReceiveList(@RequestParam final Integer empCode, @RequestParam final String status){
+        final List<ReceiveListResponse> docList = approvalService.findReceiveList(empCode, status);
+        return ResponseEntity.ok(docList);
+    }
+
+    @PatchMapping("/accept")
+    public ResponseEntity<Void> acceptDocument(@RequestParam final Integer empCode, @RequestParam final String status, @RequestParam final String adCode){
+        approvalService.acceptDocument(empCode, status, adCode);
+        return ResponseEntity.ok().build();
+    }
+
 }

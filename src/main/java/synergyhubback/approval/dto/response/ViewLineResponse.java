@@ -1,5 +1,6 @@
 package synergyhubback.approval.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ public class ViewLineResponse {
     private final int talOrder;
     private final String talRole;
     private final String talStatus;
+    @JsonFormat(pattern = "yyyy.MM.dd")
     private final LocalDate talDate;
     private final String deptTitle;
     private final String titleName;

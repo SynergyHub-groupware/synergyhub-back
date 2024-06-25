@@ -45,4 +45,8 @@ public class Document {
         this.adReportDate = adReportDate;
         this.adStatus = adStatus;
     }
+
+    public void modifyStatus(String adStatus){
+        this.adStatus = adStatus;
+    }
 }

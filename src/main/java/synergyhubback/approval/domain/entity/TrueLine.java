@@ -76,4 +76,9 @@ public class TrueLine {
         this.talReason = talReason;
         this.talDate = talDate;
     }
+
+    public void modifyAccept(String talStatus, LocalDate talDate){
+        this.talStatus = talStatus;
+        this.talDate = talDate;
+    }
 }

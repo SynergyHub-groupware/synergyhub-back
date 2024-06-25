@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -485,17 +486,18 @@ public class ApprovalService {
     }
 
     @Transactional(readOnly = true)
-    public List<DocListResponse> findDocList(final Integer empCode, String status) {
+    public List<ReceiveListResponse> findDocList(final Integer empCode, String status) {
         switch (status){
             case "temporary": status = "임시저장"; break;
             case "waiting" : status = "대기"; break;
-            case "process" : status = "진행중"; break;
+            case "progress" : status = "진행중"; break;
             case "return" : status  = "반려"; break;
             case "complete" : status = "완료"; break;
         }
+
         List<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(empCode, status);
 
-        return docList.stream().map(DocListResponse::from).toList();
+        return docList.stream().map(ReceiveListResponse::from).toList();
     }
 
 //    public Page<DocListResponse> findDocList(final Integer page, final Integer empCode, String status) {
@@ -609,9 +611,29 @@ public class ApprovalService {
         docRepository.save(foundDocument);
     }
 
-//    public void uploadImage(Integer empCode, String filename) {
-//        Employee foundEmployee = employeeRepository.findById(empCode).orElseThrow(() -> new RuntimeException("Employee not found"));
-//        foundEmployee.signRegist(filename);
-//        employeeRepository.save(foundEmployee);
-//    }
+    public List<ReceiveListResponse> findReceiveList(Integer empCode, String status) {
+        List<TrueLine> docList = null;
+
+        if(status.equals("complete")){
+            docList = trueLineRepository.findCompleteReceiveList(empCode);
+        }else if(status.equals("return")){
+
+        }else if(status.equals("reference")){
+
+        }else{
+            docList = trueLineRepository.findWaitingReceiveList(empCode);
+        }
+
+        return docList.stream().map(ReceiveListResponse::from).toList();
+    }
+
+    public void acceptDocument(Integer empCode, String status, String adCode) {
+        Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
+        foundDocument.modifyStatus(status);
+        docRepository.save(foundDocument);
+
+        TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
+        foundLine.modifyAccept("승인", LocalDate.now());
+        trueLineRepository.save(foundLine);
+    }
 }
