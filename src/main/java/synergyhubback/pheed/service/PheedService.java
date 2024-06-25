@@ -34,7 +34,7 @@ public class PheedService {
     }
 
     @Transactional
-    public void send(int pheedCode, String pheedCon, String pheedSort, Employee employee) {
+    public void send(int pheedCode, String pheedCon, String pheedSort, Employee employee, String url) {
         Employee fetchedEmployee = employeeRepository.findByEmpCode(employee.getEmp_code());
         if (fetchedEmployee == null) {
             throw new IllegalArgumentException("Employee not found with empCode: " + employee.getEmp_code());
@@ -48,6 +48,7 @@ public class PheedService {
                 .deStatus("N")
                 .pheedSort(pheedSort)
                 .employee(fetchedEmployee)
+                .url(url)
                 .build();
 
         Pheed savedPheed = pheedRepository.save(pheed);
@@ -117,6 +118,7 @@ public class PheedService {
                 .deStatus("N")
                 .pheedSort(request.getPheedSort())
                 .employee(employee)
+                .url(request.getUrl())
                 .build();
 
         pheedRepository.save(pheed);

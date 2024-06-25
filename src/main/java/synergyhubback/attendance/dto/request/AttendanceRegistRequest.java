@@ -2,6 +2,7 @@ package synergyhubback.attendance.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import synergyhubback.attendance.domain.entity.AttendanceStatus;
 import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
@@ -17,8 +18,8 @@ public class AttendanceRegistRequest {
     private LocalTime atdEndTime;       //지정퇴근시간
     private LocalTime startTime;        //출근시간
     private LocalTime endTime;          //퇴근시간
-    private Employee employee;                //사원코드 (추후 fk)
-    private int atsCode;                //근무상태코드 (추후 fk)
+    private Employee employee;          //사원코드 (추후 fk)
+    private AttendanceStatus attendanceStatus;                //근무상태코드 (추후 fk)
 
     @Override
     public String toString() {
@@ -30,8 +31,9 @@ public class AttendanceRegistRequest {
         sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);
         sb.append(", employee=").append(employee);
-        sb.append(", atsCode=").append(atsCode);
+        sb.append(", atsCode=").append(attendanceStatus);
         sb.append('}');
         return sb.toString();
     }
+
 }
