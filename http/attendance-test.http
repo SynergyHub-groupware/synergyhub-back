@@ -11,11 +11,17 @@ GET http://localhost:8080/api/attendance/current-week
 
 ### 출근시간 등록
 POST http://localhost:8080/api/attendance/registStartTime/2024061
-Content-Type: application/json
 
 ### 퇴근시간 등록
 POST http://localhost:8080/api/attendance/registEndTime/2024061
+
+### 지정 출/퇴근시간 조회 테스트
+GET http://localhost:8080/api/attendance/test
 Content-Type: application/json
+
+{
+  "employee" : 2021011
+}
 
 ### 지정 출/퇴근시간 모두 조회
 GET http://localhost:8080/api/attendance/allSchedules
@@ -45,7 +51,7 @@ Content-Type: application/json
 }
 
 ### 지정 출/퇴근시간 삭제
-DELETE http://localhost:8080/api/attendance/DeleteSchedule/1
+DELETE http://localhost:8080/api/attendance/DeleteSchedule/3
 
 ### 피드 발송
 POST http://localhost:8080/api/pheed/create

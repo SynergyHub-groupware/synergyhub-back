@@ -31,12 +31,11 @@ public class DefaultScheduleResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime atdEndTime;
 
-    @Column(name = "emp_code")
     private Integer empCode;
 
     public DefaultScheduleResponse(DefaultSchedule defaultSchedule) {
         this.dsCode = defaultSchedule.getDsCode();
-        this.deptTitle = defaultSchedule.getDeptTitle();
+        this.deptTitle = defaultSchedule.getDeptCode();
         this.atdStartTime = defaultSchedule.getAtdStartTime();
         this.atdEndTime = defaultSchedule.getAtdEndTime();
 

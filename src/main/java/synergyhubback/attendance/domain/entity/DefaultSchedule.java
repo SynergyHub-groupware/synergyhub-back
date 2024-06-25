@@ -22,8 +22,8 @@ public class DefaultSchedule {
     @Column(name = "ds_code")
     private int dsCode;
 
-    @Column(name = "dept_title")
-    private String deptTitle;
+    @Column(name = "dept_code")
+    private String deptCode;
 
     @Column(name = "atd_start_time")
     private LocalTime atdStartTime;
@@ -36,9 +36,9 @@ public class DefaultSchedule {
     private Employee employee;          //사원코드
 
     @Builder
-    public DefaultSchedule(int dsCode, String deptTitle, LocalTime atdStartTime, LocalTime atdEndTime, Employee employee) {
+    public DefaultSchedule(int dsCode, String deptCode, LocalTime atdStartTime, LocalTime atdEndTime, Employee employee) {
         this.dsCode = dsCode;
-        this.deptTitle = deptTitle;
+        this.deptCode = deptCode;
         this.atdStartTime = atdStartTime;
         this.atdEndTime = atdEndTime;
         this.employee = employee;

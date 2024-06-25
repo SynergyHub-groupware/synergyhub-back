@@ -15,17 +15,17 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 public class DefaultScheduleRequest {
 
-    private String deptTitle;
+    private String deptCode;
     private String atdStartTime;
     private String atdEndTime;
     private Employee employee;
 
     @JsonCreator
-    public DefaultScheduleRequest(@JsonProperty("deptTitle") String deptTitle,
+    public DefaultScheduleRequest(@JsonProperty("deptTitle") String deptCode,
                                   @JsonProperty("atdStartTime") String atdStartTime,
                                   @JsonProperty("atdEndTime") String atdEndTime,
                                   @JsonProperty("employee") Employee employee) {
-        this.deptTitle = deptTitle;
+        this.deptCode = deptCode;
         this.atdStartTime = atdStartTime;
         this.atdEndTime = atdEndTime;
         this.employee = employee;

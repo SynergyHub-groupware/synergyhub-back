@@ -11,12 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.attendance.domain.entity.Attendance;
 import synergyhubback.attendance.domain.entity.DefaultSchedule;
+import synergyhubback.attendance.domain.repository.DefaultScheduleRepository;
 import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
 import synergyhubback.attendance.dto.request.DefaultScheduleRequest;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
 import synergyhubback.attendance.service.AttendanceService;
+import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.dto.response.MyInfoResponse;
+import synergyhubback.employee.service.EmployeeService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
@@ -32,12 +36,14 @@ import java.util.Map;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final EmployeeService employeeService;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, EmployeeService employeeService) {
         this.attendanceService = attendanceService;
+        this.employeeService = employeeService;
     }
 
-    /* 근태 등록 기능 ------------------------------------  */
+    /* ------------------------------------ 근태일지 생성 ------------------------------------  */
 
     //출근시간 등록기능
     @Operation(summary = "출근 시간 등록", description = "출근 시간을 등록한다.")
@@ -59,6 +65,7 @@ public class AttendanceController {
                     .body(new ResponseMessage(404, "근태 기록을 찾을 수 없습니다.", null));
         }
     }
+
     //퇴근시간 등록기능
     @Operation(summary = "퇴근 시간 등록", description = "퇴근 시간을 등록한다.")
     @PostMapping("/registEndTime/{empCode}")
@@ -80,7 +87,7 @@ public class AttendanceController {
         }
     }
 
-    /* 지정 출퇴근시간 ------------------------------------ */
+    /* ------------------------------------ 지정 출퇴근시간 ------------------------------------ */
 
     // 지정 출퇴근시간 등록
     @Operation(summary = "지정 출퇴근시간 등록", description = "지정 출퇴근시간을 등록한다.")
@@ -89,7 +96,7 @@ public class AttendanceController {
     public ResponseEntity<ResponseMessage> registDefaultSchedule(@RequestBody DefaultScheduleRequest request) {
         try {
             // Null 체크 추가
-            if (request.getDeptTitle() == null) {
+            if (request.getDeptCode() == null) {
                 throw new IllegalArgumentException("DeptTitle이 null입니다.");
             } else if (request.getAtdStartTime() == null) {
                 throw new IllegalArgumentException("StartTime이 null입니다.");
@@ -99,7 +106,7 @@ public class AttendanceController {
 
             // 존재 여부 체크
             List<DefaultSchedule> existingSchedules = attendanceService.findDefaultSchedules(
-                    request.getDeptTitle(), request.getParsedStartTime(), request.getParsedEndTime());
+                    request.getDeptCode(), request.getParsedStartTime(), request.getParsedEndTime());
             if (!existingSchedules.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.CONFLICT)
@@ -107,7 +114,7 @@ public class AttendanceController {
             }
 
             // 지정 출퇴근시간 등록
-            attendanceService.registDefaultSchedule(request.getDeptTitle(), request.getParsedStartTime(), request.getParsedEndTime(), request.getEmployee());
+            attendanceService.registDefaultSchedule(request.getDeptCode(), request.getParsedStartTime(), request.getParsedEndTime(), request.getEmployee());
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -142,7 +149,7 @@ public class AttendanceController {
     public ResponseEntity<ResponseMessage> updateDefaultSchedule(@RequestBody DefaultScheduleRequest request) {
         try {
             // Null 체크 추가
-            if (request.getDeptTitle() == null) {
+            if (request.getDeptCode() == null) {
                 throw new IllegalArgumentException("DeptTitle이 null입니다.");
             } else if (request.getAtdStartTime() == null) {
                 throw new IllegalArgumentException("StartTime이 null입니다.");
@@ -151,7 +158,7 @@ public class AttendanceController {
             }
 
             // 출퇴근시간 수정
-            attendanceService.updateDefaultSchedule(request.getDeptTitle(), request.getParsedStartTime(), request.getParsedEndTime(), request.getEmployee());
+            attendanceService.updateDefaultSchedule(request.getDeptCode(), request.getParsedStartTime(), request.getParsedEndTime(), request.getEmployee());
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -176,7 +183,7 @@ public class AttendanceController {
     }
 
 
-    /* 근태 기록 ------------------------------------ */
+    /* ------------------------------------ 근태 기록 ------------------------------------ */
 
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
     @GetMapping("/all")
@@ -220,6 +227,23 @@ public class AttendanceController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
+    }
+
+    /* ------------------------------------ 초과근무  ------------------------------------ */
+
+    @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
+    @GetMapping("/overwork")
+    public ResponseEntity<ResponseMessage> findAllOverTimeWork() {
+        List<AttendancesResponse> attendances = attendanceService.findAllOverTimeWork();
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("attendances", attendances); // 복수형으로 변경: attendance -> attendances
+        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
     }
 
 }
