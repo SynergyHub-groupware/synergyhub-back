@@ -2,29 +2,22 @@ package synergyhubback.attendance.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import synergyhubback.attendance.domain.entity.Attendance;
 import synergyhubback.attendance.domain.entity.DefaultSchedule;
-import synergyhubback.attendance.domain.repository.DefaultScheduleRepository;
 import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
 import synergyhubback.attendance.dto.request.DefaultScheduleRequest;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
+import synergyhubback.attendance.dto.response.OverWorkResponse;
 import synergyhubback.attendance.service.AttendanceService;
-import synergyhubback.employee.domain.entity.Employee;
-import synergyhubback.employee.dto.response.MyInfoResponse;
 import synergyhubback.employee.service.EmployeeService;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,21 +222,29 @@ public class AttendanceController {
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
     }
 
-    /* ------------------------------------ 초과근무  ------------------------------------ */
+    /* ------------------------------------ 초과근무 ------------------------------------ */
 
-    @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
+    @Operation(summary = "초과근무 기록 조회", description = "초과근무 기록을 조회한다.")
     @GetMapping("/overwork")
     public ResponseEntity<ResponseMessage> findAllOverTimeWork() {
-        List<AttendancesResponse> attendances = attendanceService.findAllOverTimeWork();
+        List<OverWorkResponse> overWorks = attendanceService.findAllOverTimeWork();
         HttpHeaders headers = new HttpHeaders();
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("attendances", attendances); // 복수형으로 변경: attendance -> attendances
+        responseMap.put("overWorks", overWorks);
         ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(responseMessage);
     }
+
+    /* ------------------------------------ 휴가 ------------------------------------ */
+
+    // 휴가 일괄 등록
+
+    // 휴가 전체 조회
+
+    // 휴가 기록 조회
 
 }

@@ -33,14 +33,6 @@ public class DayOffResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime doEndTime;                                             //종료시간
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate doInsertDate;                                          //부여일자
-
-    private int granted;                                                     //부여수
-    private int used;                                                        //사용수
-    private int remaining;                                                   //잔여수
-    private Employee employee;                                               //사원코드 (추후 fk)
-
     public DayOffResponse(DayOff dayOff) {
         this.doCode = dayOff.getDoCode();
         this.doName = dayOff.getDoName();
@@ -48,11 +40,6 @@ public class DayOffResponse {
         this.doEndDate = dayOff.getDoEndDate();
         this.doStartTime = dayOff.getDoStartTime();
         this.doEndTime = dayOff.getDoEndTime();
-        this.doInsertDate = dayOff.getDoInsertDate();
-        this.granted= dayOff.getGranted();
-        this.used = dayOff.getUsed();
-        this.remaining = dayOff.getRemaining();
-        this.employee = dayOff.getEmployee();
     }
 
 }

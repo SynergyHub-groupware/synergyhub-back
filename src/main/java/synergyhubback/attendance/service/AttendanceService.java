@@ -7,15 +7,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import synergyhubback.attendance.domain.entity.Attendance;
-import synergyhubback.attendance.domain.entity.AttendanceStatus;
-import synergyhubback.attendance.domain.entity.DefaultSchedule;
+import synergyhubback.attendance.domain.entity.*;
 import synergyhubback.attendance.domain.repository.*;
 import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
+import synergyhubback.attendance.dto.request.DayOffBalanceRequest;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
+import synergyhubback.attendance.dto.response.OverWorkResponse;
 import synergyhubback.common.util.DateUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
@@ -36,26 +36,28 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final EmployeeRepository employeeRepository;
     private final DefaultScheduleRepository defaultScheduleRepository;
-    private final OverTimeWorkRepository overTimeWorkRepository;
+    private final OverWorkRepository overWorkRepository;
     private final AttendanceStatusRepository attendanceStatusRepository;
     private final DayOffRepository dayOffRepository;
+    private final DayOffBalanceRepository dayOffBalanceRepository;
 
     public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository,
                              EmployeeRepository employeeRepository, DefaultScheduleRepository defaultScheduleRepository,
-                             OverTimeWorkRepository overTimeWorkRepository, AttendanceStatusRepository attendanceStatusRepository,
-                             DayOffRepository dayOffRepository) {
+                             OverWorkRepository overWorkRepository, AttendanceStatusRepository attendanceStatusRepository,
+                             DayOffRepository dayOffRepository, DayOffBalanceRepository dayOffBalanceRepository) {
 
         this.modelMapper = modelMapper;
         this.attendanceRepository = attendanceRepository;
         this.employeeRepository = employeeRepository;
         this.defaultScheduleRepository = defaultScheduleRepository;
-        this.overTimeWorkRepository = overTimeWorkRepository;
+        this.overWorkRepository = overWorkRepository;
         this.attendanceStatusRepository = attendanceStatusRepository;
         this.dayOffRepository = dayOffRepository;
+        this.dayOffBalanceRepository = dayOffBalanceRepository;
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "00 48 16 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "00 55 20 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -204,7 +206,6 @@ public class AttendanceService {
         return response;
     }
 
-
     /* 금주의 근태 기록 */
     @Transactional(readOnly = true)
     public List<AttendancesResponse> getAttendancesForCurrentWeek() {
@@ -323,9 +324,50 @@ public class AttendanceService {
 
     /* ------------------------------------ 초과근무 기록 ------------------------------------ */
 
-    public List<AttendancesResponse> findAllOverTimeWork() {
-        List<DefaultSchedule> overTimeWorkList = overTimeWorkRepository.findAll();
+    public List<OverWorkResponse> findAllOverTimeWork() {
+        List<OverWork> overTimeWorkList = overWorkRepository.findAll();
 
-        return null;
+        return overTimeWorkList.stream()
+                .map(OverWorkResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    /* ------------------------------------ 휴가 일괄 생성 ------------------------------------ */
+
+    @Scheduled(cron = "00 01 21 * * *") // 일자 설정
+    @Transactional
+    public void createDayOffRecord() {
+
+        // 모든 사원 목록 조회
+        List<Employee> employees = employeeRepository.findAll();
+
+        for (Employee employee : employees) {
+            // 사원의 최신 휴가관리 목록 조회
+            DayOffBalance latestDayOffBalance = dayOffBalanceRepository.findTopByOrderByDbCodeDesc();
+
+            // 새로운 근무기록 생성을 위한 DTO 객체 생성
+            DayOffBalanceRequest newDayOffBalance = new DayOffBalanceRequest();
+
+            // 근무일지 코드 생성
+            if (latestDayOffBalance != null) {
+                newDayOffBalance.setDbCode(latestDayOffBalance.getDbCode() + 1);
+            } else {
+                newDayOffBalance.setDbCode(1);
+            }
+
+            // 부여수, 잔여수, 사용수, 사원코드 설정
+            newDayOffBalance.setGranted(15);
+            newDayOffBalance.setRemainnig(15);
+            newDayOffBalance.setDbUsed(0);
+            newDayOffBalance.setEmployee(employee);
+
+            // 부여날짜 설정
+            LocalDate currentDate = LocalDate.now();
+            newDayOffBalance.setDbInsertDate(currentDate);
+
+            // DTO 객체를 Entity 로 매핑하여 저장
+            DayOffBalance dayOffBalance = modelMapper.map(newDayOffBalance, DayOffBalance.class);
+            dayOffBalanceRepository.save(dayOffBalance);
+        }
     }
 }
