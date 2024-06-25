@@ -3,11 +3,11 @@ package synergyhubback.message.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import synergyhubback.auth.util.TokenUtils;
+import synergyhubback.message.domain.entity.Message;
+import synergyhubback.message.dto.request.RevMsgDelRequest;
+import synergyhubback.message.dto.response.BinResponse;
 import synergyhubback.message.dto.response.ReceiveResponse;
 import synergyhubback.message.dto.response.SendResponse;
 import synergyhubback.message.service.MessageService;
@@ -51,4 +51,26 @@ public class MessageController {
         return new ResponseEntity<>(sendList, HttpStatus.OK);
     }
 
+    /* 휴지통 전체 리스트 조회 */
+    @GetMapping("/bin")
+    public ResponseEntity<List<BinResponse>> getBinMessage (@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<BinResponse> binList = messageService.getBinMessage(empCode);
+
+        System.out.println("binList : controller : " + binList.size());
+
+        return new ResponseEntity<>(binList, HttpStatus.OK);
+    }
+
+    /* 받은 쪽지 휴지통 업데이트(PATCH) */
+    @PutMapping("/receive/{msgCode}/bin")
+    public ResponseEntity<Void> RevMsgDel(@PathVariable String msgCode, @RequestBody RevMsgDelRequest request) {
+        messageService.RevMsgDel(msgCode, request.getStorCode());
+
+        return ResponseEntity.noContent().build();
+    }
 }

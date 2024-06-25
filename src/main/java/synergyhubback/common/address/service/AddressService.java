@@ -7,9 +7,11 @@ import synergyhubback.common.address.domain.dto.AddressSelect;
 import synergyhubback.common.address.domain.repository.AddressDeptRepository;
 import synergyhubback.common.address.domain.repository.AddressEmpRepository;
 import synergyhubback.common.address.domain.repository.AddressPositionRepository;
+import synergyhubback.common.address.domain.repository.AddressTitleRepository;
 import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.entity.Position;
+import synergyhubback.employee.domain.entity.Title;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public class AddressService {
     private final AddressDeptRepository addressDeptRepository;
     private final AddressPositionRepository addressPositionRepository;
     private final AddressEmpRepository addressEmpRepository;
+    private final AddressTitleRepository addressTitleRepository;
     
     /* 전체 회원 정보 조회*/
     public List<AddressSelect> getAllAddress() {
@@ -30,6 +33,7 @@ public class AddressService {
         return employees.stream().map(employee -> {
             Department department = addressDeptRepository.findById(employee.getDepartment().getDept_code()).orElse(null);
             Position position = addressPositionRepository.findById(employee.getPosition().getPosition_code()).orElse(null);
+            Title title = addressTitleRepository.findById(employee.getTitle().getTitle_code()).orElse(null);
 
             return new AddressSelect(
                     employee.getEmp_code(),
@@ -41,7 +45,8 @@ public class AddressService {
                     employee.getHire_date(),
                     employee.getEmp_status(),
                     department != null ? department.getDept_title() : "",
-                    position != null ? position.getPosition_name() : ""
+                    position != null ? position.getPosition_name() : "",
+                    title != null ? title.getTitle_name() : ""
             );
         }).collect(Collectors.toList());
     }
