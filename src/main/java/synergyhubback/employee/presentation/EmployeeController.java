@@ -145,7 +145,7 @@ public class EmployeeController {
         return ResponseEntity.ok().build();
     }
 
-//    /* 내 정보 조회 */
+    /* 내 정보 조회 */
 //    @GetMapping("/myInfo")
 //    public ResponseEntity<MyInfoResponse> getMyInfo(@RequestHeader("Authorization") String token) {
 //
