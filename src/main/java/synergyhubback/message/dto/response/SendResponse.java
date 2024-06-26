@@ -23,6 +23,8 @@ public class SendResponse {
     private int empRev;
     private int empSend;
     private int storCode;
+    private String revName;
+    private String revPosition;
 
     public static SendResponse getSendMessage(Message message) {
 
@@ -35,7 +37,9 @@ public class SendResponse {
                 message.getEmerStatus(),
                 message.getEmpRev().getEmp_code(),
                 message.getEmpSend().getEmp_code(),
-                message.getStorCode().getStorCode()
+                message.getStorCode().getStorCode(),
+                message.getEmpRev().getEmp_name(),
+                message.getEmpRev().getPosition().getPosition_name()
         );
     }
     // MERGE

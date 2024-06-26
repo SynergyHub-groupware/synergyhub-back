@@ -59,7 +59,7 @@ public class PheedController {
     @PostMapping(value = "/create", consumes = "application/json")
     public ResponseEntity<String> createPheed(@RequestBody PheedCreateRequest request) {
         try {
-            pheedService.send(request.getPheedCode(), request.getPheedCon(), request.getPheedSort(), request.getEmployee());
+            pheedService.send(request.getPheedCode(), request.getPheedCon(), request.getPheedSort(), request.getEmployee(), request.getUrl());
             return ResponseEntity.status(HttpStatus.CREATED).body("Pheed created successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

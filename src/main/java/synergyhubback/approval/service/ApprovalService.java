@@ -296,7 +296,7 @@ public class ApprovalService {
     }
 
     @Transactional(readOnly = true)
-    public List<DocListResponse> findDocList(Integer empCode, String status) {
+    public List<DocListResponse> findDocList(final Integer empCode, String status) {
         switch (status){
             case "waiting" : status = "대기"; break;
             case "process" : status = "진행중"; break;
@@ -321,4 +321,14 @@ public class ApprovalService {
 //        return docList.map(DocListResponse::from);
 //    }
 
+    public List<ViewLineResponse> findViwLineList(final String adCode) {
+        List<TrueLine> viewLineList = trueLineRepository.findViewLineList(adCode);
+        return viewLineList.stream().map(ViewLineResponse::from).toList();
+    }
+
+    public AattResponse findViewDetail(final String adDetail) {
+        ApprovalAttendance viewDetail = approvalAttendanceRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
+
+        return AattResponse.from(viewDetail);
+    }
 }

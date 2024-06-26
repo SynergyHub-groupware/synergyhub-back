@@ -41,8 +41,11 @@ public class Pheed {
     @JoinColumn(name = "EMP_CODE")
     private Employee employee;       // 사원코드
 
+    @Column(name = "URL")
+    private String url;              // 링크
+
     @Builder
-    public Pheed(int pheedCode, String pheedCon, LocalTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee) {
+    public Pheed(int pheedCode, String pheedCon, LocalTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee, String url) {
         this.pheedCode = pheedCode;
         this.pheedCon = pheedCon;
         this.creStatus = creStatus;
@@ -50,6 +53,7 @@ public class Pheed {
         this.deStatus = deStatus;
         this.pheedSort = pheedSort;
         this.employee = employee;
+        this.url = url;
     }
 
 }

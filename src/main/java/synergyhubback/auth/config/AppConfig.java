@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import synergyhubback.attendance.domain.entity.Attendance;
+import synergyhubback.attendance.domain.entity.AttendanceStatus;
 import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
 
 @Configuration
@@ -23,7 +24,7 @@ public class AppConfig {
                         .startTime(((AttendanceRegistRequest) request.getSource()).getStartTime())
                         .endTime(((AttendanceRegistRequest) request.getSource()).getEndTime())
                         .employee(((AttendanceRegistRequest) request.getSource()).getEmployee())
-                        .atsCode(((AttendanceRegistRequest) request.getSource()).getAtsCode())
+                        .attendanceStatus(((AttendanceRegistRequest) request.getSource()).getAttendanceStatus())
                         .build());
         return modelMapper;
     }

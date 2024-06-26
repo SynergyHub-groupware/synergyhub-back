@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "emp_code" : "2024061",
-  "emp_pass" : "2024061"
+  "emp_pass" : "2024062"
 
 }
 
@@ -27,8 +27,20 @@ GET http://localhost:8080/address/select
 
 ### 받은 쪽지 전체 조회
 GET http://localhost:8080/emp/message/receive
-Authorization: Bearer eyJkYXRlIjoxNzE4OTMwMDE4MTIwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTg5MzM2MTh9.Hhj9Ky4d49rlGCfrKtgVVXgHNplkLqvtDqjku6tGjm8xfkL5Ey1aNRqyZhnWRIIHBL5MJ3NAK8rXnkZ38qrSAw
+Authorization: Bearer eyJkYXRlIjoxNzE5Mjg3NzUyMTY3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkyOTEzNTJ9.C8bbPSGiKlk0Wanx9hEL0k0HLLiLzGvTxhKoJHvasE_IFcmsRTanLmDDvdTFtQKSOUrhxGZVg04G5bgmd8FYmQ
 
 ### 보낸 쪽지 전체 조회
 GET http://localhost:8080/emp/message/send
-Authorization: Bearer eyJkYXRlIjoxNzE4OTQyNTY2MjI5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTg5NDYxNjZ9.idWiILJ0FbgrK0YXJlrL_E1mJXgB2_kzTwMa9Kcuz_wi4XcbxQPIqgCb_RDN-GajVZjlSetspf6qiVnssCpmew
+Authorization: Bearer eyJkYXRlIjoxNzE5Mjg3NzUyMTY3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkyOTEzNTJ9.C8bbPSGiKlk0Wanx9hEL0k0HLLiLzGvTxhKoJHvasE_IFcmsRTanLmDDvdTFtQKSOUrhxGZVg04G5bgmd8FYmQ
+
+### 받은 쪽지 휴지통 PUT
+PUT http://localhost:8080/emp/message/receive/MS72/bin
+Content-Type: application/json
+
+{
+  "storCode": 5
+}
+
+### 휴지통 전체 조회
+GET http://localhost:8080/emp/message/bin
+Authorization: Bearer eyJkYXRlIjoxNzE5MzAxODY4ODE4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkzMDU0Njh9.3Zb1WjuYaMQfdKITOFJRqltOd8VD6gpXDMEae9u2a51Vj3Q_phJ58u4QPIFltXJIhGdp5OZHZEh1uGniwcKhMA

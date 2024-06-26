@@ -36,4 +36,7 @@ public class Message {
     @JoinColumn(name = "stor_code", referencedColumnName = "storCode")
     private Storage storCode;
 
+    public void setStorCode(Storage storCode) {
+        this.storCode = storCode;
+    }
 }

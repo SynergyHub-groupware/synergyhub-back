@@ -28,14 +28,16 @@ public class Attendance {
     private LocalTime endTime;          //퇴근시간
 
     @ManyToOne
-    @JoinColumn(name = "emp_Code")
-    private Employee employee;                //사원코드
+    @JoinColumn(name = "emp_code")
+    private Employee employee;          //사원코드
 
-    private int atsCode;                //근무상태코드 (추후 fk)
+    @ManyToOne
+    @JoinColumn(name = "ats_code")
+    private AttendanceStatus attendanceStatus;                //근무상태코드 (추후 fk)
 
 
     @Builder
-    public Attendance(int atdCode, LocalDate atdDate, LocalTime atdStartTime, LocalTime atdEndTime, LocalTime startTime, LocalTime endTime, Employee employee, int atsCode) {
+    public Attendance(int atdCode, LocalDate atdDate, LocalTime atdStartTime, LocalTime atdEndTime, LocalTime startTime, LocalTime endTime, Employee employee, AttendanceStatus attendanceStatus) {
         this.atdCode = atdCode;
         this.atdDate = atdDate;
         this.atdStartTime = atdStartTime;
@@ -43,7 +45,7 @@ public class Attendance {
         this.startTime = startTime;
         this.endTime = endTime;
         this.employee = employee;
-        this.atsCode = atsCode;
+        this.attendanceStatus = attendanceStatus;
     }
 
     // 출근시간 업데이트

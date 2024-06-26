@@ -6,23 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import synergyhubback.approval.domain.entity.TrueLine;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.response.*;
-import synergyhubback.approval.page.Paging;
-import synergyhubback.approval.page.PagingButtonInfo;
-import synergyhubback.approval.page.PagingResponse;
 import synergyhubback.approval.service.ApprovalService;
-import synergyhubback.auth.util.TokenUtils;
-import synergyhubback.employee.dto.response.EmployeeListResponse;
 import synergyhubback.employee.service.EmployeeService;
 
 import java.io.IOException;
@@ -30,6 +21,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/approval")
@@ -115,4 +109,32 @@ public class ApprovalController {
 //        return ResponseEntity.ok(pagingResponse);
 //    }
 
+    @GetMapping("/viewLine")
+    public ResponseEntity<List<ViewLineResponse>> findViwLineList(@RequestParam final String adCode){
+        final List<ViewLineResponse> viewLineList = approvalService.findViwLineList(adCode);
+        return ResponseEntity.ok(viewLineList);
+    }
+    
+    @GetMapping("/viewDetail")
+    public ResponseEntity<?> findViewDetail(@RequestParam final String adDetail){
+        // 정규 표현식을 사용하여 문자열과 숫자 분리
+        Pattern pattern = Pattern.compile("([a-zA-Z]+)(\\d+)");
+        Matcher matcher = pattern.matcher(adDetail);
+
+        if (matcher.matches()) {
+            String textPart = matcher.group(1);     // 문자열 부분
+            String numberPart = matcher.group(2);   // 숫자 부분
+
+            switch (textPart){
+                case "AP": break;
+                case "AE": break;
+                case "AATT": AattResponse viewDetail = approvalService.findViewDetail(adDetail); break;
+                case "AAPP": break;
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Invalid adDetail format");
+        }
+        
+        return null;
+    }
 }
