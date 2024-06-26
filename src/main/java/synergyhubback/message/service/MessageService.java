@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.message.domain.entity.Message;
@@ -95,5 +96,15 @@ public class MessageService {
         return workList.stream()
                 .map(WorkResponse::getWorkMessage)
                 .collect(Collectors.toList());
+    }
+
+    /* Rev Msg By MsgCode */
+    public Message findMsgByMsgCode(String msgCode) {
+        return messageRepository.findByMsgCode(msgCode);
+    }
+
+    /* Send Msg By MsgCode */
+    public Message findSendMsgByMsgCode(String msgCode) {
+        return messageRepository.findSendMsgByMsgCode(msgCode);
     }
 }

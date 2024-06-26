@@ -101,4 +101,30 @@ public class MessageController {
 
         return new ResponseEntity<>(workList, HttpStatus.OK);
     }
+
+    /* MS 코드에 따라 Rev Detail 조회 */
+    @GetMapping("/receive/{msgCode}")
+    public ResponseEntity<ReceiveResponse> getMsgByCode(@PathVariable String msgCode) {
+
+        Message message = messageService.findMsgByMsgCode(msgCode);
+        if(message == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ReceiveResponse response = ReceiveResponse.getReceiveMessage(message);
+        return ResponseEntity.ok(response);
+    }
+
+    /* MS 코드에 따라 Send Detail 조회 */
+    @GetMapping("/send/{msgCode}")
+    public ResponseEntity<SendResponse> getSendMsgByCode(@PathVariable String msgCode) {
+
+        Message message = messageService.findSendMsgByMsgCode(msgCode);
+        if(message == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        SendResponse response = SendResponse.getSendMessage(message);
+        return ResponseEntity.ok(response);
+    }
 }
