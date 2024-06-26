@@ -80,14 +80,13 @@ public class ApprovalService {
 
     @Transactional(readOnly = true)
     public List<FormLineResponse> findFormLine(final Integer lsCode) {
-        List<Line> formLine = null;
+        List<Line> formLine = lineRepository.findByLineSortLsCodeOrderByAlOrderAsc(lsCode);
+        return formLine.stream().map(FormLineResponse::from).toList();
+    }
 
-        if (lsCode != null && lsCode > 0) {
-            formLine = lineRepository.findByLineSortLsCodeOrderByAlOrderAsc(lsCode);
-        } else {
-            formLine = lineRepository.findAll();
-        }
-
+    @Transactional(readOnly = true)
+    public List<FormLineResponse> findAllLine() {
+        List<Line> formLine = lineRepository.findAll();
         return formLine.stream().map(FormLineResponse::from).toList();
     }
 

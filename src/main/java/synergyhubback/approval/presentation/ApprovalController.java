@@ -46,8 +46,13 @@ public class ApprovalController {
     }
 
     @GetMapping("/formLine")
-    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam(required = false) final Integer lsCode){
+    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam final Integer lsCode){
         final List<FormLineResponse> formLine = approvalService.findFormLine(lsCode);
+        return ResponseEntity.ok(formLine);
+    }
+    @GetMapping("/allLine")
+    public ResponseEntity<List<FormLineResponse>> findAllLine(){
+        final List<FormLineResponse> formLine = approvalService.findAllLine();
         return ResponseEntity.ok(formLine);
     }
 
