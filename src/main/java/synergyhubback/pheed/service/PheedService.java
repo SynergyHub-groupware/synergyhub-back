@@ -13,6 +13,7 @@ import synergyhubback.pheed.dto.request.PheedCreateRequest;
 import synergyhubback.pheed.dto.response.PheedResponse;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class PheedService {
         Pheed pheed = Pheed.builder()
                 .pheedCode(pheedCode)
                 .pheedCon(pheedCon)
-                .creStatus(LocalTime.now())
+                .creStatus(LocalDateTime.now())
                 .readStatus("N")
                 .deStatus("N")
                 .pheedSort(pheedSort)
@@ -112,7 +113,7 @@ public class PheedService {
         Pheed pheed = Pheed.builder()
                 .pheedCode(request.getPheedCode())
                 .pheedCon(request.getPheedCon())
-                .creStatus(LocalTime.now())
+                .creStatus(LocalDateTime.now())
                 .readStatus("N")
                 .deStatus("N")
                 .pheedSort(request.getPheedSort())

@@ -19,6 +19,8 @@ import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
+import synergyhubback.pheed.domain.entity.Pheed;
+import synergyhubback.pheed.domain.repository.PheedRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -57,6 +59,7 @@ public class ApprovalService {
     private final ApprovalStorageRepository approvalStorageRepository;
     private final TrueLineRepository trueLineRepository;
     private final AttachmentRepository attachmentRepository;
+    private final PheedRepository pheedRepository;
 
     @Transactional(readOnly = true)
     public List<FormListResponse> findFormList() {
@@ -97,9 +100,6 @@ public class ApprovalService {
         String adCode = docRegistRequest.getAdCode();
         String adDetail = docRegistRequest.getAdDetail();
 
-        System.out.println("adCode = " + adCode);
-        System.out.println("adDetail = " + adDetail);
-
         if (adCode != null && !adCode.isEmpty()) {
             Document existDoc = docRepository.findById(adCode).orElseThrow(() -> new IllegalArgumentException("Invalid adCode:" + adCode));
 
@@ -116,7 +116,6 @@ public class ApprovalService {
                     String textPart = matcher.group(1);
                     switch (textPart){
                         case "AP":
-                            System.out.println(" AP 부분 실행 ");
                             Personal existPersonal = personalRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
                             existPersonal.modifyPersonal(
                                     docRegistRequest.getPersonal().getApStart(),
@@ -132,7 +131,6 @@ public class ApprovalService {
                             etcRepository.save(existEtc); break;
 
                         case "AATT":
-                            System.out.println(" AATT 부분 실행 ");
                             ApprovalAttendance existAttend = approvalAttendanceRepository.findById(adDetail).orElseThrow(() -> new IllegalArgumentException("Invalid adDetail:" + adDetail));
                             existAttend.modifyApprovalAttendance(
                                     docRegistRequest.getApprovalAttendance().getAattSort(),
@@ -324,8 +322,9 @@ public class ApprovalService {
             }
 
             // 결재문서 저장
+            String documentCode = generateDocumentCode();
             Document newDoc = Document.of(
-                    generateDocumentCode(),
+                    documentCode,
                     docRegistRequest.getAdTitle(),
                     docRegistRequest.getEmployee(),
                     docRegistRequest.getAdReportDate(),
@@ -377,6 +376,28 @@ public class ApprovalService {
                         findDoc.getAdCode()
                 );
                 attachmentRepository.save(newAttachment);
+            }
+
+            if(!temporary){     // 임시저장이 아닐때만 즉, 결재상신일때만 피드에 정보 저장
+                // 작성자 이름 받아오기
+                int writerCode = docRegistRequest.getEmployee().getEmp_code();
+                String writer = employeeRepository.findEmpNameById(writerCode);
+
+                // 결재문서 제목 받아오기
+                String ttl = docRepository.findAdTitleById(documentCode);
+
+                // 결재라인에서 첫번째 결재자 받아오기
+                Employee receiver = TrueLineList.get(0).getEmployee();
+
+                String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
+
+                Pheed newPheed = Pheed.of(
+                        pheedContent,
+                        LocalDateTime.now(), "N", "N",
+                        documentCode,
+                        receiver
+                );
+                pheedRepository.save(newPheed);
             }
 
             if (temporary) {  // 임시저장
@@ -516,7 +537,6 @@ public class ApprovalService {
 //            case "complete" : status = "완료"; break;
 //        }
 //        Page<TrueLine> docList = trueLineRepository.findTrueLineWithPendingStatus(getPageable(page), empCode, status);
-//        System.out.println("docList = " + docList);
 //
 //        return docList.map(DocListResponse::from);
 //    }
@@ -613,10 +633,20 @@ public class ApprovalService {
     }
 
     @Transactional
-    public void modifyStatus(final String adCode) {
+    public void modifyStatus(final String adCode) {     // 상신했던 결재문서 수정하기
         Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
-        foundDocument.modifyAdStatus("수정중");
+
+        // 결재문서 상태 변경
+        foundDocument.modifyAdStatus("임시저장");
         docRepository.save(foundDocument);
+
+        // 임시저장 시킴
+        ApprovalBox findBox = approvalBoxRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Invalid ApprovalBox code:" + 1));
+        ApprovalStorage newStorage = ApprovalStorage.of(foundDocument, findBox);
+        approvalStorageRepository.save(newStorage);
+
+        // 해당 문서코드로 저장된 피드정보가 아직은 하나밖에 없을테니까
+        pheedRepository.deleteByPheedSort(adCode);
     }
 
     public List<ReceiveListResponse> findReceiveList(Integer empCode, String status) {
@@ -638,6 +668,10 @@ public class ApprovalService {
     }
 
     public void acceptDocument(Integer empCode, String status, String adCode) {
+        // 결재 시작 피드 전송을 위해서 가장 먼저 해당 문서의 상태 조회
+        String foundAdStatus = docRepository.findAdStatusById(adCode);
+        System.out.println("foundAdStatus = " + foundAdStatus);
+
         Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
 
         if(status.equals("전결")) {
@@ -657,6 +691,52 @@ public class ApprovalService {
         TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
         foundLine.modifyAccept("승인", LocalDate.now());
         trueLineRepository.save(foundLine);
+
+        // 피드
+        String approver = employeeRepository.findEmpNameById(empCode);  // 승인한 사람 이름 조회
+        String ttl = docRepository.findAdTitleById(adCode);             // 결재문서 제목 조회
+
+        int writerCode = docRepository.findEmployeeEmpCodeById(adCode);         // 작성자 사원코드 조회
+        String writerName = employeeRepository.findEmpNameById(writerCode);     // 작성자 이름 조회
+        Employee writer = employeeRepository.findById(writerCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + writerCode));
+
+        if(foundAdStatus.equals("대기")){                         // 결재가 시작되었을때 전송
+            String pheedContent1 = "'" + ttl + "' 결재가 시작되었습니다.";
+            Pheed newPheed1 = Pheed.of(
+                    pheedContent1,
+                    LocalDateTime.now(), "N", "N",
+                    adCode,
+                    writer
+            );
+            pheedRepository.save(newPheed1);
+        }
+
+        String foundAdStatus2 = docRepository.findAdStatusById(adCode); // 결재 승인 후에 문서 상태 조회
+        if(foundAdStatus2.equals("완료")){     // 결재가 완료되었을때 전송
+            String pheedContent2 = "'" + ttl + "' 결재가 완료되었습니다.";
+            Pheed newPheed2 = Pheed.of(
+                    pheedContent2,
+                    LocalDateTime.now(), "N", "N",
+                    adCode,
+                    writer
+            );
+            pheedRepository.save(newPheed2);
+        }
+
+        // 다음 결재자한테 보내기
+        List<TrueLine> afterList = trueLineRepository.findAfterList(empCode, adCode);   // 다음 결재자 리스트 조회
+        if (afterList != null && !afterList.isEmpty()) {
+            Employee nextApprover = afterList.get(0).getEmployee();                // 다음 결재자 중 첫번째 결재자 조회
+
+            String pheedContent3 = writerName + "님이 상신한 '" + ttl + "' 결재가 대기중입니다.";
+            Pheed newPheed3 = Pheed.of(
+                    pheedContent3,
+                    LocalDateTime.now(), "N", "N",
+                    adCode,
+                    nextApprover
+            );
+            pheedRepository.save(newPheed3);
+        }
     }
 
     public void returnDocunet(Integer empCode, String adCode, String talReason) {
@@ -667,5 +747,22 @@ public class ApprovalService {
         TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
         foundLine.modifyReturn("반려", talReason, LocalDate.now());
         trueLineRepository.save(foundLine);
+
+        // 피드
+        String turnedEmployee = employeeRepository.findEmpNameById(empCode);    // 반려한 사람 이름 조회
+        String ttl = docRepository.findAdTitleById(adCode);                     // 결재문서 제목 조회
+
+        int writerCode = docRepository.findEmployeeEmpCodeById(adCode);         // 작성자 사원코드 조회
+        Employee receiver = employeeRepository.findById(writerCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + writerCode));
+
+        String pheedContent = turnedEmployee + "님이 '" + ttl + "' 결재를 반려하였습니다.";
+
+        Pheed newPheed = Pheed.of(
+                pheedContent,
+                LocalDateTime.now(), "N", "N",
+                adCode,
+                receiver
+        );
+        pheedRepository.save(newPheed);
     }
 }

@@ -18,4 +18,13 @@ public interface DocRepository extends JpaRepository<Document, String> {
 
     @Query("SELECT d.adDetail FROM Document d WHERE d.adCode = :adCode")
     String findAdDetailById(String adCode);
+
+    @Query("SELECT d.adTitle FROM Document d WHERE d.adCode = :adCode")
+    String findAdTitleById(String adCode);
+
+    @Query("SELECT d.employee.emp_code FROM Document d WHERE d.adCode = :adCode")
+    int findEmployeeEmpCodeById(String adCode);
+
+    @Query("SELECT d.adStatus FROM Document d WHERE d.adCode = :adCode")
+    String findAdStatusById(String adCode);
 }

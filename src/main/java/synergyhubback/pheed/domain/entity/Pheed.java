@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.parameters.P;
 import synergyhubback.employee.domain.entity.Employee;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -26,7 +28,7 @@ public class Pheed {
     private String pheedCon;         // 피드내용
 
     @Column(name = "CRE_STATUS")
-    private LocalTime creStatus;     // 생성시간
+    private LocalDateTime creStatus;     // 생성시간
 
     @Column(name = "READ_STATUS")
     private String readStatus;       // 읽음상태
@@ -42,7 +44,7 @@ public class Pheed {
     private Employee employee;       // 사원코드
 
     @Builder
-    public Pheed(int pheedCode, String pheedCon, LocalTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee) {
+    public Pheed(int pheedCode, String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee) {
         this.pheedCode = pheedCode;
         this.pheedCon = pheedCon;
         this.creStatus = creStatus;
@@ -52,4 +54,15 @@ public class Pheed {
         this.employee = employee;
     }
 
+    public Pheed(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee) {
+        this.pheedCon = pheedCon;
+        this.creStatus = creStatus;
+        this.readStatus = readStatus;
+        this.deStatus = deStatus;
+        this.pheedSort = pheedSort;
+        this.employee = employee;
+    }
+    public static Pheed of(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee){
+        return new Pheed(pheedCon, creStatus, readStatus, deStatus, pheedSort, employee);
+    }
 }

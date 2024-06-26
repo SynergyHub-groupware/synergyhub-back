@@ -72,6 +72,7 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "    AND t2.talStatus = '미결재' " +
             ")" +
             "AND t.employee.emp_code = :empCode " +
+            "AND (d.adStatus = '대기' OR d.adStatus = '진행중') " +
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findWaitingReceiveList(Integer empCode);
@@ -90,6 +91,7 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "    AND t2.talStatus = '승인' " +
             ")" +
             "AND t.employee.emp_code = :empCode " +
+            "AND d.adStatus = '완료' " +
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findCompleteReceiveList(Integer empCode);
@@ -113,6 +115,8 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "AND t.talOrder > (" +
             "SELECT t2.talOrder " +
             "FROM TrueLine t2 " +
-            "WHERE t2.document.adCode = :adCode AND t2.employee.emp_code = :empCode)")
+            "WHERE t2.document.adCode = :adCode AND t2.employee.emp_code = :empCode) " +
+            "AND t.talStatus = '미결재' " +
+            "ORDER BY t.talOrder")
     List<TrueLine> findAfterList(Integer empCode, String adCode);
 }
