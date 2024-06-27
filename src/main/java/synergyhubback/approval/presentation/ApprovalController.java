@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import synergyhubback.approval.dto.request.DocRegistRequest;
+import synergyhubback.approval.dto.request.FormRegistRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
 import synergyhubback.employee.service.EmployeeService;
@@ -204,16 +205,35 @@ public class ApprovalController {
 
     @PatchMapping("/accept")
     public ResponseEntity<Void> acceptDocument(@RequestParam final Integer empCode, @RequestParam final String status, @RequestParam final String adCode){
-        System.out.println("status = " + status);
         approvalService.acceptDocument(empCode, status, adCode);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/return")
     public ResponseEntity<Void> returnDocument(@RequestParam final Integer empCode, @RequestParam final String adCode, @RequestBody final String talReason){
-        System.out.println("talReason = " + talReason);
         approvalService.returnDocunet(empCode, adCode, talReason);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/registForm")
+    public ResponseEntity<Void> registForm(@RequestBody final FormRegistRequest formRegistRequest){
+        System.out.println("formRegistRequest = " + formRegistRequest);
+        approvalService.registForm(formRegistRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteForm")
+    public ResponseEntity<Void> deleteForm(@RequestParam final int afCode){
+        approvalService.deleteForm(afCode);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/modifyForm")
+    public ResponseEntity<Void> modifyForm(@RequestBody final FormRegistRequest formRegistRequest, @RequestParam final int afCode){
+        System.out.println("formRegistRequest = " + formRegistRequest);
+        approvalService.modifyForm(formRegistRequest, afCode);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

@@ -14,6 +14,7 @@ import synergyhubback.approval.dao.LineEmpMapper;
 import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
 import synergyhubback.approval.dto.request.DocRegistRequest;
+import synergyhubback.approval.dto.request.FormRegistRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
@@ -60,6 +61,7 @@ public class ApprovalService {
     private final TrueLineRepository trueLineRepository;
     private final AttachmentRepository attachmentRepository;
     private final PheedRepository pheedRepository;
+    private final LineSortRepository lineSortRepository;
 
     @Transactional(readOnly = true)
     public List<FormListResponse> findFormList() {
@@ -649,8 +651,6 @@ public class ApprovalService {
     }
 
     public List<ReceiveListResponse> findReceiveList(Integer empCode, String status) {
-        System.out.println("status = " + status);
-
         List<TrueLine> docList = null;
 
         if(status.equals("complete")){
@@ -669,7 +669,6 @@ public class ApprovalService {
     public void acceptDocument(Integer empCode, String status, String adCode) {
         // 결재 시작 피드 전송을 위해서 가장 먼저 해당 문서의 상태 조회
         String foundAdStatus = docRepository.findAdStatusById(adCode);
-        System.out.println("foundAdStatus = " + foundAdStatus);
 
         Document foundDocument = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
 
@@ -763,5 +762,37 @@ public class ApprovalService {
                 receiver
         );
         pheedRepository.save(newPheed);
+    }
+
+    public void registForm(FormRegistRequest formRegistRequest) {
+        int lsCode = formRegistRequest.getLineSort().getLsCode();
+        LineSort foundLine = lineSortRepository.findById(lsCode).orElseThrow(() -> new RuntimeException("LineSort not found with lsCode: " + lsCode));
+
+        Form newForm = Form.of(
+                formRegistRequest.getAfName(),
+                formRegistRequest.getAfExplain(),
+                foundLine,
+                formRegistRequest.getAfCon()
+        );
+        formRepository.save(newForm);
+    }
+
+    public void deleteForm(int afCode) {
+        formRepository.deleteById(afCode);
+    }
+
+    public void modifyForm(FormRegistRequest formRegistRequest, int afCode) {
+        int lsCode = formRegistRequest.getLineSort().getLsCode();
+        LineSort foundLine = lineSortRepository.findById(lsCode).orElseThrow(() -> new RuntimeException("LineSort not found with lsCode: " + lsCode));
+
+        Form foundForm = formRepository.findById(afCode).orElseThrow(() -> new RuntimeException("Form not found with afCode: " + afCode));
+
+        foundForm.modifyForm(
+                formRegistRequest.getAfName(),
+                formRegistRequest.getAfExplain(),
+                foundLine,
+                formRegistRequest.getAfCon()
+        );
+        formRepository.save(foundForm);
     }
 }

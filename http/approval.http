@@ -92,7 +92,34 @@ DELETE http://localhost:8080/approval/document/delete?adCode=AD17
 ### 결재 상세보기 : 수정
 PATCH http://localhost:8080/approval/modifyStatus?adCode=AD19
 
-
-
 ### 받은결재함[대기] 조회
 GET http://localhost:8080/approval/receive/document?empCode=2020011&status=return
+
+### 결재양식 등록
+POST http://localhost:8080/approval/registForm
+Content-Type: application/json
+
+{
+  "afName": "테스트",
+  "afCon": "테스트",
+  "afExplain": "테스트",
+  "lineSort": {
+    "lsCode": 1
+  }
+}
+
+### 결재양식 삭제
+DELETE http://localhost:8080/approval/deleteForm?afCode=14
+
+### 결재양식 수정
+POST http://localhost:8080/approval/modifyForm?afCode=14
+Content-Type: application/json
+
+{
+  "afName": "테스트1",
+  "afCon": "테스트1",
+  "afExplain": "테스트1",
+  "lineSort": {
+    "lsCode": 2
+  }
+}
