@@ -13,8 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.approval.dao.LineEmpMapper;
 import synergyhubback.approval.domain.entity.*;
 import synergyhubback.approval.domain.repository.*;
+import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.request.FormRegistRequest;
+import synergyhubback.approval.dto.request.StorageListRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
@@ -795,4 +797,30 @@ public class ApprovalService {
         );
         formRepository.save(foundForm);
     }
+
+    public void registBox(BoxRequest boxRequest) {
+        ApprovalBox newBox = ApprovalBox.of(
+                boxRequest.getAbName(),
+                boxRequest.getEmpCode()
+        );
+        approvalBoxRepository.save(newBox);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoxListResponse> findBoxList(Integer empCode) {
+        List<ApprovalBox> boxList = approvalBoxRepository.findByEmpCode(empCode);
+        return boxList.stream().map(BoxListResponse::from).toList();
+    }
+
+    public void modifybox(int abCode, BoxRequest boxRequest) {
+        ApprovalBox foundBox = approvalBoxRepository.findById(abCode).orElseThrow(() -> new RuntimeException("ApprovalBox not found with abCode: " + abCode));
+        foundBox.modifyName(boxRequest.getAbName());
+        approvalBoxRepository.save(foundBox);
+    }
+
+    public void deleteBox(int abCode) {
+        approvalBoxRepository.deleteById(abCode);
+        approvalStorageRepository.deleteByApprovalBox_AbCode(abCode);
+    }
+
 }

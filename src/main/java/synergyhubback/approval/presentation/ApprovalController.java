@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.request.FormRegistRequest;
+import synergyhubback.approval.dto.request.StorageListRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
 import synergyhubback.employee.service.EmployeeService;
@@ -217,7 +219,6 @@ public class ApprovalController {
 
     @PostMapping("/registForm")
     public ResponseEntity<Void> registForm(@RequestBody final FormRegistRequest formRegistRequest){
-        System.out.println("formRegistRequest = " + formRegistRequest);
         approvalService.registForm(formRegistRequest);
         return ResponseEntity.ok().build();
     }
@@ -230,10 +231,32 @@ public class ApprovalController {
 
     @PostMapping("/modifyForm")
     public ResponseEntity<Void> modifyForm(@RequestBody final FormRegistRequest formRegistRequest, @RequestParam final int afCode){
-        System.out.println("formRegistRequest = " + formRegistRequest);
         approvalService.modifyForm(formRegistRequest, afCode);
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/registBox")
+    public ResponseEntity<Void> registBox(@RequestBody final BoxRequest boxRequest){
+        approvalService.registBox(boxRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/boxList")
+    public ResponseEntity<List<BoxListResponse>> findBoxList(@RequestParam final Integer empCode){
+        final List<BoxListResponse> boxList = approvalService.findBoxList(empCode);
+        return ResponseEntity.ok(boxList);
+    }
+
+    @PatchMapping("/modifybox")
+    public ResponseEntity<Void> modifybox(@RequestParam int abCode, @RequestBody BoxRequest boxRequest){
+        approvalService.modifybox(abCode, boxRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteBox")
+    public ResponseEntity<Void> deleteBox(@RequestParam final int abCode){
+        approvalService.deleteBox(abCode);
+        return ResponseEntity.noContent().build();
+    }
 
 }

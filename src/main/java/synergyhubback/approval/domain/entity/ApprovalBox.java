@@ -24,4 +24,6 @@ public class ApprovalBox {
     public static ApprovalBox of(String abName,int empCode){
         return new ApprovalBox(abName, empCode);
     }
+
+    public void modifyName(String abName){this.abName = abName;}
 }

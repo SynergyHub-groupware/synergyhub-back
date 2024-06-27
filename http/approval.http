@@ -123,3 +123,27 @@ Content-Type: application/json
     "lsCode": 2
   }
 }
+
+### 보관함 등록
+POST http://localhost:8080/approval/registBox
+Content-Type: application/json
+
+{
+  "abName": "테스트",
+  "empCode": 2021048
+}
+
+### 보관함 조회
+GET http://localhost:8080/approval/boxList?empCode=2021048
+
+### 보관함 수정
+PATCH http://localhost:8080/approval/modifybox?abCode=3
+Content-Type: application/json
+
+{
+  "abName": "테스트2"
+}
+
+### 보관함 삭제
+DELETE http://localhost:8080/approval/deleteBox?abCode=3
+
