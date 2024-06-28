@@ -29,7 +29,6 @@ Content-Type: application/json
 GET http://localhost:8080/employee/myInfo
 Authorization: Bearer eyJkYXRlIjoxNzE5NTU2OTQ2NTI1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk1NjA1NDZ9.1eQO0AoTbyLbbHjD8A4E7xyIccZJuaXXrzH8hfH29_rtQck61umuy9WgBStwtHRfjdJb4EatOvjhhFEQafHn6A
 
-
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard
 Authorization: Bearer eyJkYXRlIjoxNzE4OTM0ODU2NjY1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDIxLCJleHAiOjE3MTg5Mzg0NTZ9.o9fp7DwEpTr5FUsB0T1tnsB275qRcPRlh6l1hn4D_MlTYn3yySYe7kDdWNszBA4hViIKCxyz5YXDVHpF4hL8Cg
@@ -43,6 +42,9 @@ GET http://localhost:8080/employee/departments
 
 ### 부서 상세 조회
 GET http://localhost:8080/employee/departmentList/D1
+
+### 직위 전체 조회
+GET http://localhost:8080/employee/empTitles
 
 ### 조직도 전체 조회
 GET http://localhost:8080/employee/org

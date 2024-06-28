@@ -105,6 +105,15 @@ public class EmployeeController {
         return ResponseEntity.ok(departmentResponse);
     }
 
+    /* 직위 전체 조회 */
+    @GetMapping("/empTitles")
+    public ResponseEntity<List<EmpTitleListResponse>> getEmpTitleList() {
+
+        List<EmpTitleListResponse> empTitleList = employeeService.getEmpTitleList();
+
+        return ResponseEntity.ok(empTitleList);
+    }
+
     /* orgChart 조회 */
     @GetMapping("/org")
     public ResponseEntity<List<OrgResponse>> getOrg() {

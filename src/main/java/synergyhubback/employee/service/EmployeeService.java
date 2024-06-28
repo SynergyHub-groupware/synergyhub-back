@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import synergyhubback.approval.domain.entity.Line;
+import synergyhubback.approval.dto.response.FormLineResponse;
 import synergyhubback.auth.dto.LoginDto;
 import synergyhubback.common.exception.NotFoundException;
 import synergyhubback.employee.domain.entity.*;
@@ -212,6 +214,12 @@ public class EmployeeService {
 
     }
 
+    public List<EmpTitleListResponse> getEmpTitleList() {
+        List<Title> empTitleList = titleRepository.findAll();
+
+        return empTitleList.stream().map(EmpTitleListResponse::from).toList();
+    }
+
     public List<OrgResponse> getOrgEmps(
 
 
@@ -243,5 +251,4 @@ public class EmployeeService {
 
         employeeRepository.save(employee);
     }
-
 }

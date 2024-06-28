@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import synergyhubback.pheed.domain.entity.Pheed;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @AllArgsConstructor
@@ -16,8 +17,8 @@ public class PheedResponse {
     private int pheedCode;           // 피드 코드
     private String pheedCon;         // 피드내용
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-    private LocalTime creStatus;     // 생성시간
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime creStatus;     // 생성시간
 
     private String readStatus;       // 읽음상태
     private String deStatus;         // 삭제상태
