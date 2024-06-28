@@ -1,5 +1,6 @@
 package synergyhubback.approval.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -68,5 +69,15 @@ public class ApprovalAttendance {
     }
     public static ApprovalAttendance of(String aattCode, String aattSort, LocalDateTime aattStart, LocalDateTime aattEnd){
         return new ApprovalAttendance(aattCode, aattSort, aattStart, aattEnd);
+    }
+
+    public void modifyApprovalAttendance(String aattSort, LocalDateTime aattStart, LocalDateTime aattEnd, LocalDate aattOccur, String aattPlace, String aattCon, String aattReason){
+        this.aattSort = aattSort;
+        this.aattStart = aattStart;
+        this.aattEnd = aattEnd;
+        this.aattOccur = aattOccur;
+        this.aattPlace = aattPlace;
+        this.aattCon = aattCon;
+        this.aattReason = aattReason;
     }
 }

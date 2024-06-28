@@ -25,4 +25,10 @@ public class ApprovalAppoint {
     public static ApprovalAppoint of(String aappCode, String aappNo, LocalDate aappDate, String aappTitle){
         return new ApprovalAppoint(aappCode, aappNo, aappDate, aappTitle);
     }
+
+    public void modifyApprovalAppoint(String aappNo, LocalDate aappDate, String aappTitle){
+        this.aappNo = aappNo;
+        this.aappDate = aappDate;
+        this.aappTitle = aappTitle;
+    }
 }

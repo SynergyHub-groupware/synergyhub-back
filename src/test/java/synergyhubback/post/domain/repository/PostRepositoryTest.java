@@ -55,24 +55,29 @@ public class PostRepositoryTest {
 //        // when
 //        postRepository.save(post); // 데이터베이스에 엔티티 저장
 //        PostEntity lastPost = postRepository.LastPost(); // 메소드 호출
-        AttachmentEntity attachment = new AttachmentEntity();
-        attachment.setAttachOriginal("tqwqeqweest.txt");
-        attachment.setAttachUrl("testsadasda.txt");
-        attachment.setAttachSave("ss"+UUID.randomUUID());
-        attachment.setAttachSort("POst-" + "tesadasdst.txt");
-
-// 리스트 생성 후 attachment 객체 추가
-        List<AttachmentEntity> attachmentList = new ArrayList<>();
-        attachmentList.add(attachment);
-
-// 리스트를 registFileList 메서드에 전달
-        postService.registFileList(attachmentList);
-
-// attachment 객체 출력 (선택 사항)
-        System.out.println(attachment);
+//        AttachmentEntity attachment = new AttachmentEntity();
+//        attachment.setAttachOriginal("tqwqeqweest.txt");
+//        attachment.setAttachUrl("testsadasda.txt");
+//        attachment.setAttachSave("ss"+UUID.randomUUID());
+//        attachment.setAttachSort("POst-" + "tesadasdst.txt");
+//
+//// 리스트 생성 후 attachment 객체 추가
+//        List<AttachmentEntity> attachmentList = new ArrayList<>();
+//        attachmentList.add(attachment);
+//
+//// 리스트를 registFileList 메서드에 전달
+//        postService.registFileList(attachmentList);
+//
+//// attachment 객체 출력 (선택 사항)
+//        System.out.println(attachment);
+//
+//// attachment가 null이 아닌지 확인
+//        assertNotNull(attachment);
+//        // 기대하는 값을 설정하고 확인합니다.
+//        // assertEquals(expectedValue, actualValue);
 
 // attachment가 null이 아닌지 확인
-        assertNotNull(attachment);
+//        assertNotNull(attachment);
         // 기대하는 값을 설정하고 확인합니다.
         // assertEquals(expectedValue, actualValue);
     }

@@ -36,8 +36,8 @@ public class PostEntity {
 
 
     private int EmpCode;
-    @OneToOne
-    @JoinColumn(name = "Low_Code")
+@ManyToOne
+@JoinColumn(name = "Low_Code")
     private LowBoardEntity LowBoardCode;
     @OneToOne
     @JoinColumn(name = "Ps_Code")

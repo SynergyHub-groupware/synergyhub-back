@@ -27,4 +27,11 @@ public class Personal {
     public static Personal of(String apCode, LocalDate apStart, LocalDate apEnd, String apContact, String apReason){
         return new Personal(apCode, apStart, apEnd, apContact, apReason);
     }
+
+    public void modifyPersonal(LocalDate apStart, LocalDate apEnd, String apContact, String apReason){
+        this.apStart = apStart;
+        this.apEnd = apEnd;
+        this.apContact = apContact;
+        this.apReason = apReason;
+    }
 }

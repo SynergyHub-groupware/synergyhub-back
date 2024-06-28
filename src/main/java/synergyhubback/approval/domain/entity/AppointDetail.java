@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import synergyhubback.employee.domain.entity.Employee;
 
 @Entity
 @Table(name = "APPOINT_DETAIL")
@@ -21,17 +22,27 @@ public class AppointDetail {
     private String adetBefore;
     private String adetAfter;
     private String adetType;
-    private int empCode;
 
-    private AppointDetail(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, int empCode){
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "emp_code")
+    private Employee employee;
+
+    private AppointDetail(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, Employee employee){
         this.approvalAppoint = approvalAppoint;
         this.adetBefore = adetBefore;
         this.adetAfter = adetAfter;
         this.adetType = adetType;
-        this.empCode = empCode;
+        this.employee = employee;
     }
 
-    public static AppointDetail of(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, int empCode){
-        return new AppointDetail(approvalAppoint, adetBefore, adetAfter, adetType, empCode);
+    public static AppointDetail of(ApprovalAppoint approvalAppoint, String adetBefore, String adetAfter, String adetType, Employee employee){
+        return new AppointDetail(approvalAppoint, adetBefore, adetAfter, adetType, employee);
+    }
+
+    public void modifyAppointDetail(String adetBefore, String adetAfter, String adetType, Employee employee){
+        this.adetBefore = adetBefore;
+        this.adetAfter = adetAfter;
+        this.adetType = adetType;
+        this.employee = employee;
     }
 }

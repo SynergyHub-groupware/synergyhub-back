@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,6 +29,9 @@ public class DayOff {
     private int granted;               //부여수
     private int used;                  //사용수
     private int remaining;             //잔여수
-    private int empCode;               //사원코드 (추후 fk)
+
+    @ManyToOne
+    @JoinColumn(name = "emp_code")
+    private Employee employee;               //사원코드 (추후 fk)
 
 }

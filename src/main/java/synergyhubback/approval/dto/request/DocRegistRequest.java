@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public class DocRegistRequest {
+    private String adCode;
     @NotBlank
     private String adTitle;
 
@@ -22,6 +23,8 @@ public class DocRegistRequest {
     private LocalDate adReportDate;
     @NotBlank
     private String adStatus;
+
+    private String adDetail;
 
     private Form form;
     private Etc etc;

@@ -1,0 +1,32 @@
+### 로그인 테스트
+POST http://localhost:8080/emp/auth/login
+Content-Type: application/json
+
+{
+  "emp_code" : "2024061",
+  "emp_pass" : "2024061"
+}
+
+### 피드 테스트
+POST http://localhost:8080/api/pheed/create
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer eyJkYXRlIjoxNzE4ODc1MDYyNTIyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTg4Nzg2NjJ9.MW549H6axK66hoq7kktbZNXgZbkjhw7j1mk0jXYHKXinrcZCkA9nKANncPTLKBwM1RU_drTUpHoz_LKQTxTa7w
+
+{
+  "pheedCon": "테스트 피드 내용입니다.",
+  "pheedSort": "일반",
+  "employee":
+  { "emp_code": 2024061 },
+  "url" : "http://localhost:3000/attendance"
+}
+
+### 피드 구독
+GET http://localhost:8080/api/pheed/subscribe
+Authorization: Bearer eyJkYXRlIjoxNzE5MTg5NzMzMzk4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkxOTMzMzN9.2SbzD5FHYvlSNRAtLv37RjBt0bOS3ZF40RO54i4PHpQ1z0h-PkS92gHNi7mBck4iw75y4dis_aLyGFWC2j9cwA
+Accept: text/event-stream
+Last-Event-ID: LAST_EVENT_ID
+
+### 피드 조회
+GET http://localhost:8080/api/pheed/list
+Content-Type: application/json
+Authorization: Bearer eyJkYXRlIjoxNzE4OTQ3OTQ5NzM5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTg5NTE1NDl9.G-rlASgOVedE-FgsRv8R3QAKrpKax_2dUcb29UULDLO6gEnLBZayt3opkoJ9Z7RVEjucmt5vx_FMXhQKgz1aRA
