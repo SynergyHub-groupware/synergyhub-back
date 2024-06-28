@@ -13,6 +13,4 @@ public class DetailByEmpRegistRequest {
 
     private String erd_title;
 
-    private int emp_code;
-
 }

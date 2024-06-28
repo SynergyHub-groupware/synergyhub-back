@@ -36,9 +36,11 @@ public class EmployeeController {
 
     /* 사원 등록 */
     @PostMapping("/empsRegist")
-    public ResponseEntity<Void> empsRegist (@RequestBody @Valid List<EmployeeRegistRequest> employeeRegistRequests) {
+    public ResponseEntity<Void> empsRegist (@RequestBody @Valid EmpRegistDataRequest empRegistDataRequests) {
 
-        employeeService.empsRegist(employeeRegistRequests);
+        List<EmployeeRegistRequest> employeeRegistRequests = empRegistDataRequests.getEmployees();
+
+        employeeService.empsRegist(employeeRegistRequests, empRegistDataRequests.getDetailErdNum(), empRegistDataRequests.getDetailErdTitle());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -78,7 +78,7 @@ public class EmployeeService {
         return LoginDto.from(employee);
     }
 
-    public void empsRegist(List<EmployeeRegistRequest> employeeRegistRequests) {
+    public void empsRegist(List<EmployeeRegistRequest> employeeRegistRequests, String detailErdNum, String detailErdTitle) {
         for (EmployeeRegistRequest employeeRegistRequest : employeeRegistRequests) {
 
             /* 사원코드 생성 (yyyyMM+1) */
@@ -106,8 +106,8 @@ public class EmployeeService {
 
             /* DetailByEmpRegist 객체 생성 */
             DetailByEmpRegist detailByEmpRegist = new DetailByEmpRegist(
-                    employeeRegistRequest.getDetailErdNum(),
-                    employeeRegistRequest.getDetailErdTitle(),
+                    detailErdNum,
+                    detailErdTitle,
                     newEmp
             );
 
