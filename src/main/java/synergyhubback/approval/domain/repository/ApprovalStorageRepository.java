@@ -1,6 +1,7 @@
 package synergyhubback.approval.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import synergyhubback.approval.domain.entity.ApprovalStorage;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface ApprovalStorageRepository extends JpaRepository<ApprovalStorage
     void deleteByDocument_AdCodeAndApprovalBox_AbCode(String adCode, int abCode);
 
     void deleteByApprovalBox_AbCode(int abCode);
+
+    List<ApprovalStorage> findByDocument_AdCodeAndApprovalBox_AbCode(String adCode, int abCode);
 }

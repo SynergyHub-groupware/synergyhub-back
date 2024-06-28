@@ -18,48 +18,71 @@ POST http://localhost:8080/approval/regist?temporary=true
 Content-Type: application/json
 
 {
-  "adTitle": "테스트",
-  "employee": {
-    "emp_code": 2021048
-  },
-  "adReportDate": "2023-04-15",
-  "adStatus": "대기",
-  "form": {
-    "afCode": 12
-  },
-  "etc": {
-    "aeCon": "테스트 입니다."
-  },
-  "trueLineList": [
-    {
-      "talOrder": 1,
-      "talRole": "결재",
-      "employee": {
-        "emp_code": 2023091
-      }
+  "document": {
+    "adTitle": "2024 인사발령",
+    "employee": {
+      "emp_code": 2021048
     },
-    {
-      "talOrder": 2,
-      "talRole": "전결",
-      "employee": {
-        "emp_code": 2024011
-      }
+    "adReportDate": "2023-04-15",
+    "adStatus": "대기",
+    "form": {
+      "afCode": 1
     },
-    {
-      "talOrder": 3,
-      "talRole": "결재",
-      "employee": {
-        "emp_code": 2020021
-      }
+    "approvalAppoint": {
+      "aappCode": "AAPP1",
+      "aappNo" : "app-2024-05-0001",
+      "aappDate" : "2024-06-28",
+      "aappTitle" : "테스트"
     },
-    {
-      "talOrder": 4,
-      "talRole": "결재",
-      "employee": {
-        "emp_code": 2020011
+    "appointDetailList": [
+      {
+        "adetBefore": "T5",
+        "adetAfter": "T4",
+        "adetType": "진급",
+        "employee": {
+          "emp_code": 2021032
+        }
+      },
+      {
+        "adetBefore": "D15",
+        "adetAfter": "D14",
+        "adetType": "부서이동",
+        "employee": {
+          "emp_code": 2023062
+        }
       }
-    }
-  ]
+    ],
+    "trueLineList": [
+      {
+        "talOrder": 1,
+        "talRole": "결재",
+        "employee": {
+          "emp_code": 2024051
+        }
+      },
+      {
+        "talOrder": 2,
+        "talRole": "결재",
+        "employee": {
+          "emp_code": 2021068
+        }
+      },
+      {
+        "talOrder": 3,
+        "talRole": "결재",
+        "employee": {
+          "emp_code": 2020021
+        }
+      },
+      {
+        "talOrder": 4,
+        "talRole": "결재",
+        "employee": {
+          "emp_code": 2020011
+        }
+      }
+    ]
+  }
 }
 
 ### 임시저장 조회
@@ -147,3 +170,11 @@ Content-Type: application/json
 ### 보관함 삭제
 DELETE http://localhost:8080/approval/deleteBox?abCode=3
 
+### 개인보관함에 결재문서 등록
+POST http://localhost:8080/approval/registDocInStorage?adCode=AD1&abCode=6
+
+### 개인보관함 조회
+GET http://localhost:8080/approval/docListInStorage?abCode=6
+
+### 개인보관함에서 결재문서 삭제
+DELETE http://localhost:8080/approval/deleteDocInStorage?adCode=AD1&abCode=6

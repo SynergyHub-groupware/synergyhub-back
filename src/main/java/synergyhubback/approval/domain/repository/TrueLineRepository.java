@@ -119,4 +119,37 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "AND t.talStatus = '미결재' " +
             "ORDER BY t.talOrder")
     List<TrueLine> findAfterList(Integer empCode, String adCode);
+
+    @Query("SELECT t FROM TrueLine t " +
+            "JOIN t.document d " +
+            "JOIN d.employee e " +
+            "JOIN d.form f " +
+            "JOIN ApprovalStorage s ON d = s.document " +
+            "JOIN ApprovalBox b ON s.approvalBox = b " +
+            "WHERE t.talOrder = (" +
+            "    SELECT MAX(t2.talOrder) " +
+            "    FROM TrueLine t2 " +
+            "    WHERE t2.document = d " +
+            "    AND t2.talStatus = '승인' " +
+            ")" +
+            "AND b.abCode = :abCode " +
+            "ORDER BY d.adReportDate DESC, " +
+            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+    List<TrueLine> findDocListInStorage(int abCode);
+
+//    @Query(value = "SELECT ab.AB_code, ab.AB_NAME, s.AS_CODE, ad.AD_CODE, ad.AD_TITLE, af.AF_NAME, tal.EMP_CODE, ei.emp_name, tal.TAL_DATE " +
+//            "FROM approval_box ab " +
+//            "JOIN approval_storage s USING (ab_code) " +
+//            "JOIN approval_doc ad USING (ad_code) " +
+//            "JOIN true_app_line tal ON ad.ad_code = tal.ad_code " +
+//            "JOIN employee_info ei ON tal.EMP_CODE = ei.EMP_CODE " +
+//            "JOIN approval_form af ON ad.AF_CODE = af.AF_CODE " +
+//            "WHERE ab.ab_code = :abCode " +
+//            "AND tal.tal_order = ( " +
+//            "    SELECT MAX(tal_order) " +
+//            "    FROM true_app_line " +
+//            "    WHERE ad_code = ad.ad_code " +
+//            "      AND tal_status = '승인' " +
+//            ")", nativeQuery = true)
+//    List<Object[]> findDocListInStorage(int abCode);
 }

@@ -24,6 +24,8 @@ public class DocListResponse {
     private final int talOrder;
     private final String talRole;
     private final String talStatus;
+    @JsonFormat(pattern = "yyyy.MM.dd")
+    private final LocalDate talDate;
     private final String empName;
 
     public static DocListResponse from(final TrueLine trueLine){
@@ -40,6 +42,7 @@ public class DocListResponse {
                 trueLine.getTalOrder(),
                 trueLine.getTalRole(),
                 trueLine.getTalStatus(),
+                trueLine.getTalDate(),
                 trueLine.getEmployee().getEmp_name()
         );
     }

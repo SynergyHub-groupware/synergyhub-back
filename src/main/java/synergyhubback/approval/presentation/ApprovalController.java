@@ -20,6 +20,7 @@ import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
 import synergyhubback.employee.service.EmployeeService;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -257,6 +258,18 @@ public class ApprovalController {
     public ResponseEntity<Void> deleteBox(@RequestParam final int abCode){
         approvalService.deleteBox(abCode);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/registDocInStorage")
+    public ResponseEntity<Void> registDocInStorage(@RequestParam String adCode, @RequestParam int abCode){
+        approvalService.registDocInStorage(adCode, abCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/docListInStorage")
+    public ResponseEntity<List<ReceiveListResponse>> findDocListInStorage(@RequestParam int abCode){
+        final List<ReceiveListResponse> docList = approvalService.findDocListInStorage(abCode);
+        return ResponseEntity.ok(docList);
     }
 
 }
