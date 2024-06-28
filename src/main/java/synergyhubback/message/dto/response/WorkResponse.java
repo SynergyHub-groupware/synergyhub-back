@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ReceiveResponse {
+public class WorkResponse {
 
     private String msgCode;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -25,10 +25,11 @@ public class ReceiveResponse {
     private int storCode;
     private String sendName;
     private String sendPosition;
+    private String revName;
+    private String revPosition;
 
-    public static ReceiveResponse getReceiveMessage(Message message) {
-
-        return new ReceiveResponse(
+    public static WorkResponse getWorkMessage(Message message) {
+        return new WorkResponse(
                 message.getMsgCode(),
                 message.getSendDate(),
                 message.getMsgTitle(),
@@ -39,7 +40,10 @@ public class ReceiveResponse {
                 message.getEmpSend().getEmp_code(),
                 message.getStorCode().getStorCode(),
                 message.getEmpSend().getEmp_name(),
-                message.getEmpSend().getPosition().getPosition_name()
+                message.getEmpSend().getPosition().getPosition_name(),
+                message.getEmpRev().getEmp_name(),
+                message.getEmpRev().getPosition().getPosition_name()
         );
     }
+
 }

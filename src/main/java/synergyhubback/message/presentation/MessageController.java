@@ -3,13 +3,12 @@ package synergyhubback.message.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import synergyhubback.auth.util.TokenUtils;
-import synergyhubback.message.dto.response.ReceiveResponse;
-import synergyhubback.message.dto.response.SendResponse;
+import synergyhubback.message.domain.entity.Message;
+import synergyhubback.message.dto.request.CreateMsgRequest;
+import synergyhubback.message.dto.request.RevMsgDelRequest;
+import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
 
 import java.util.List;
@@ -49,6 +48,107 @@ public class MessageController {
         System.out.println("sendList : controller : " + sendList.size());
 
         return new ResponseEntity<>(sendList, HttpStatus.OK);
+    }
+
+    /* 휴지통 전체 리스트 조회 */
+    @GetMapping("/bin")
+    public ResponseEntity<List<BinResponse>> getBinMessage (@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<BinResponse> binList = messageService.getBinMessage(empCode);
+
+        System.out.println("binList : controller : " + binList.size());
+
+        return new ResponseEntity<>(binList, HttpStatus.OK);
+    }
+
+    /* 받은 쪽지 휴지통 업데이트(PATCH) */
+    @PutMapping("/receive/{msgCode}/bin")
+    public ResponseEntity<Void> RevMsgDel(@PathVariable String msgCode, @RequestBody RevMsgDelRequest request) {
+        messageService.RevMsgDel(msgCode, request.getStorCode());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /* 중요 보관함 전체 조회 */
+    @GetMapping("/important")
+    public ResponseEntity<List<ImpResponse>> getImpMessage (@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<ImpResponse> impList = messageService.getImpMessage(empCode);
+
+        System.out.println("impList : controller : " + impList.size());
+
+        return new ResponseEntity<>(impList, HttpStatus.OK);
+    }
+
+    /* 업무 보관함 전체 조회 */
+    @GetMapping("/work")
+    public ResponseEntity<List<WorkResponse>> getWorkMessage(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<WorkResponse> workList = messageService.getWorkMessage(empCode);
+
+        System.out.println("workList : controller : " + workList);
+
+        return new ResponseEntity<>(workList, HttpStatus.OK);
+    }
+
+    /* MS 코드에 따라 Rev Detail 조회 */
+    @GetMapping("/receive/{msgCode}")
+    public ResponseEntity<ReceiveResponse> getMsgByCode(@PathVariable String msgCode) {
+
+        Message message = messageService.findMsgByMsgCode(msgCode);
+        if(message == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ReceiveResponse response = ReceiveResponse.getReceiveMessage(message);
+        return ResponseEntity.ok(response);
+    }
+
+    /* MS 코드에 따라 Send Detail 조회 */
+    @GetMapping("/send/{msgCode}")
+    public ResponseEntity<SendResponse> getSendMsgByCode(@PathVariable String msgCode) {
+
+        Message message = messageService.findSendMsgByMsgCode(msgCode);
+        if(message == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        SendResponse response = SendResponse.getSendMessage(message);
+        return ResponseEntity.ok(response);
+    }
+
+    /* Message Send (Insert) */
+    @PostMapping("/send")
+    public ResponseEntity<ResponseMsg> createMessage(@RequestBody CreateMsgRequest request) {
+
+        try {
+            messageService.createMessage(
+                    request.getMsgTitle(),
+                    request.getMsgCon(),
+                    request.getMsgStatus(),
+                    request.getEmerStatus(),
+                    request.getEmpRev(),
+                    request.getEmpSend(),
+                    request.getStorCode());
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "메세지를 전송했습니다.", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
     }
 
 }

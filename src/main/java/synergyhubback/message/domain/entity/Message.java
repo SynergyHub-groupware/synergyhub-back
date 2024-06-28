@@ -36,4 +36,30 @@ public class Message {
     @JoinColumn(name = "stor_code", referencedColumnName = "storCode")
     private Storage storCode;
 
+    public void setEmpRev(Employee empRev) {this.empRev = empRev;}
+    public void setEmpSend(Employee empSend) {this.empSend = empSend;}
+    public void setStorCode(Storage storCode) {
+        this.storCode = storCode;
+    }
+
+    public Message(String msgCode, LocalDate sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus){
+        this.msgCode = msgCode;
+        this.sendDate = sendDate;
+        this.msgTitle = msgTitle;
+        this.msgCon = msgCon;
+        this.msgStatus = msgStatus;
+        this.emerStatus = emerStatus;
+    }
+
+    public static Message create(String msgCode, LocalDate sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus) {
+
+        return new Message(
+                msgCode,
+                sendDate,
+                msgTitle,
+                msgCon,
+                msgStatus,
+                emerStatus
+        );
+    }
 }

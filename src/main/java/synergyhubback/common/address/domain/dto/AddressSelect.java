@@ -28,5 +28,6 @@ public class AddressSelect {
     private String emp_status;
     private String dept_title;
     private String position_name;
+    private String title_name;
 
 }
