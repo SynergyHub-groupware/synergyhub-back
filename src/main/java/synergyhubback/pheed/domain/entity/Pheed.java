@@ -47,7 +47,7 @@ public class Pheed {
     private String url;              // 링크
 
     @Builder
-    public Pheed(int pheedCode, String pheedCon, LocalTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee, String url) {
+    public Pheed(int pheedCode, String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee, String url) {
         this.pheedCode = pheedCode;
         this.pheedCon = pheedCon;
         this.creStatus = creStatus;
