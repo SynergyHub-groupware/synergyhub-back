@@ -12,4 +12,6 @@ public interface AttachmentRepository extends JpaRepository<AttachmentEntity, Lo
 
     @Query("SELECT a FROM AttachmentEntity a WHERE a.attachSort = :postCode")
     List<AttachmentEntity> getFile(@Param("postCode") String postCode);
+
+    List<AttachmentEntity> findByAttachSort(String adCode);
 }

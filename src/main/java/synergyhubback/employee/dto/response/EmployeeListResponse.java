@@ -27,6 +27,7 @@ public class EmployeeListResponse {
                         employee.getPosition().getPosition_name(),
                         employee.getPhone(),
                         employee.getHire_date(),
+                        employee.getEmp_status(),
                         employee.getSocial_security_no()
                 ))
                 .collect(Collectors.toList());

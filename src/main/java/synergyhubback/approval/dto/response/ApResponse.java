@@ -11,9 +11,9 @@ import java.time.LocalDate;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApResponse {
-    @JsonFormat(pattern = "yyyy.MM.dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate apStart;
-    @JsonFormat(pattern = "yyyy.MM.dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate apEnd;
     private final String apContact;
     private final String apReason;

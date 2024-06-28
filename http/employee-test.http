@@ -1,48 +1,139 @@
 ### 사원등록
-POST http://localhost:8080/employee/empRegist
+POST http://localhost:8080/employee/empsRegist
 Content-Type:application/json
 
-{
+[
+  {
+    "emp_code": "",
+    "emp_name": "테스터1",
+    "emp_pass": "",
+    "social_security_no": "111111-2222222",
+    "dept_code": "D5",
+    "position_code": "P5",
+    "title_code": "T6",
+    "hire_date": "2024-06-27",
+    "emp_status": "Y",
+    "detailErdCode": "",
+    "detailErdNum": "",
+    "detailErdTitle": "테스트 인사등록1",
+    "detailEmpCode": ""
+  },
+  {
+    "emp_code": "",
+    "emp_name": "테스터12",
+    "emp_pass": "",
+    "social_security_no": "333333-4444444",
+    "dept_code": "D7",
+    "position_code": "P8",
+    "title_code": "T9",
+    "hire_date": "2024-06-27",
+    "emp_status": "Y",
+    "detailErdCode": "",
+    "detailErdNum": "",
+    "detailErdTitle": "테스트 인사등록1",
+    "detailEmpCode": ""
+  },
+  {
+    "emp_code": "",
+    "emp_name": "테스터13",
+    "emp_pass": "",
+    "social_security_no": "555555-6666666",
+    "dept_code": "D7",
+    "position_code": "P8",
+    "title_code": "T9",
+    "hire_date": "2024-06-27",
+    "emp_status": "Y",
+    "detailErdCode": "",
+    "detailErdNum": "",
+    "detailErdTitle": "테스트 인사등록1",
+    "detailEmpCode": ""
+  }
+]
 
-  "emp_code": "",
-  "emp_name": "이복구",
-  "emp_pass": "",
-  "social_security_no": "111111-2222222",
-  "dept_code": "D5",
-  "position_code": "P5",
-  "title_code": "T6",
-  "hire_date": "2024-06-12",
-  "emp_status": "Y"
-}
+
+
+### 사원등록 상세정보 등록
+POST http://localhost:8080/employee/empRegistDetail
 
 ### 로그인 테스트
 POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2024062",
-  "emp_pass" : "2024062"
+  "emp_code" : "2020011",
+  "emp_pass" : "2020011"
 }
 
 //@emp_code = 2024062
 ### 내정보 조회
 GET http://localhost:8080/employee/myInfo
-Authorization: Bearer eyJkYXRlIjoxNzE5Mjc5MzA3MTYzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTkyODI5MDd9.66fzkLQvlkpgIejhG1sPmYkOlawogicYdj6sJa82eiPiwJ2bmAVU6nPkjaZPqE06IMVB5RO8giRE-w0b3jhc4w
-
+Authorization: Bearer eyJkYXRlIjoxNzE4OTMwNDc2OTg3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDIxLCJleHAiOjE3MTg5MzQwNzZ9.c-t8Yn8KpBQXviAPQI5MJDpEyoxERswBbEolCayIWcQDxQ7uvRWhuc7Py9CwXvdZ74aUzTJwESEHl5Twy0O32Q
 
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard
-Authorization: Bearer eyJkYXRlIjoxNzE4OTM0ODU2NjY1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDIxLCJleHAiOjE3MTg5Mzg0NTZ9.o9fp7DwEpTr5FUsB0T1tnsB275qRcPRlh6l1hn4D_MlTYn3yySYe7kDdWNszBA4hViIKCxyz5YXDVHpF4hL8Cg
+Authorization: Bearer eyJkYXRlIjoxNzE5MzA0MTY2Mzc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MTkzMDc3NjZ9.0ExrgU9p43ELJGjEEZdxS67qCJTQUAvlIzTOfZW0TaCslEcrmlFu1Tx8W3Icv9pXRzIzPjip5A9YBLfqQEjqSA
+
+### 팀원 인사기록카드 조회
+GET http://localhost:8080/employee/teamRecordCard/2021011
+Authorization: Bearer eyJkYXRlIjoxNzE5MzEwMzAyNDAzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MTkzMTM5MDJ9.nsez9CagYHmVpU-5r6irl5kzvb5xtFAmsSpt8lJe-wvQ-fgMg4e-rLsnPd35aHGX2ttsoQIrXfBqrP-QFTQ-Vg
 
 ### 팀원 정보 조회
 GET http://localhost:8080/employee/employeeList
-Authorization: Bearer eyJkYXRlIjoxNzE4ODEyNjc0NjU3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTg4MTYyNzR9.VtwyIYOipD3NrgxYCC3ZiBaFRxdOv8RvZ3Y64ujW8VPpfNySWKJaUAdaXY22fFHwn3NZO-paK3JbN6E6NoyxlA
+Authorization: Bearer eyJkYXRlIjoxNzE5MzEwMzAyNDAzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MTkzMTM5MDJ9.nsez9CagYHmVpU-5r6irl5kzvb5xtFAmsSpt8lJe-wvQ-fgMg4e-rLsnPd35aHGX2ttsoQIrXfBqrP-QFTQ-Vg
+
+### 부서 등록
+POST http://localhost:8080/employee/registDept
+Content-Type:application/json
+
+{
+  "dept_title": "부서생성테스트"
+}
+
+### 부서 상위 하위관계 등록
+POST http://localhost:8080/employee/registDeptRelations
+Content-Type:application/json
+
+{
+  "parentDepartment": {
+    "dept_code": "D22"
+  },
+  "subDepartment": {
+    "dept_code": "D23"
+  }
+}
+
+### 부서 상위 하위관계 수정
+PUT http://localhost:8080/employee/modifyDeptRelations/33
+Content-Type:application/json
+
+{
+  "dept_relations_code": 33,
+  "parentDepartment": {
+    "dept_code": "D22"
+  },
+  "subDepartment": {
+    "dept_code": "D24"
+  }
+}
+
+### 부서 상위 하위관계 삭제
+DELETE http://localhost:8080/employee/deleteDeptRelations
+Content-Type:application/json
+
+{
+  "parentDepartment": {
+    "dept_code": "D22"
+  },
+  "subDepartment": {
+    "dept_code": "D23"
+  }
+}
 
 ### 부서 전체 조회
 GET http://localhost:8080/employee/departments
 
 ### 부서 상세 조회
-GET http://localhost:8080/employee/departmentList/D1
+GET http://localhost:8080/employee/deptDetailList/D1
 
 ### 조직도 전체 조회
 GET http://localhost:8080/employee/org
@@ -51,8 +142,9 @@ GET http://localhost:8080/employee/org
 GET http://localhost:8080/employee/orgDetail/{{emp_code}}
 
 ### 비밀번호 사원코드로 초기화
-PATCH http://localhost:8080/employee/resetEmpPass/2021011
-Authorization: Bearer eyJkYXRlIjoxNzE4OTM1ODkzNzk2LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTg5Mzk0OTN9.yXlDrBV_peVP9znDckR8BAJe9hDusW0y-NTaukLW9llGXlBCtb5lvXkZEFXq98vXCHpu5iH5uoiqeM-Tp15OYQ
+PUT http://localhost:8080/employee/resetEmpPass/2024035
+Authorization: Bearer eyJkYXRlIjoxNzE5Mjk0NTAzODcwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTkyOTgxMDN9.qX90Vu9uJJJ41hLDOGDlKbdcpHpAmWy2xmrRwR5xjycfZLdXFf7fdbHevf9YNXTlEjLH9ALt9xxy4Ix3TBeHiw
+
 
 
 
