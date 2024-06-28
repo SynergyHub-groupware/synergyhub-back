@@ -3,23 +3,9 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2024061",
-  "emp_pass" : "2024062"
+  "emp_code" : "2021067",
+  "emp_pass" : "2021067"
 
-}
-
-
-### 사원등록
-POST http://localhost:8080/employee/empRegist
-Content-Type:application/json
-
-{
-  "emp_code": "2024061",
-  "emp_name": "복구",
-  "emp_pass": "2024061",
-  "social_security_no": "111111-1111111",
-  "hire_date": "2024-06-12",
-  "emp_status": "Y"
 }
 
 ### 회원 주소록 전체 조회
@@ -27,20 +13,47 @@ GET http://localhost:8080/address/select
 
 ### 받은 쪽지 전체 조회
 GET http://localhost:8080/emp/message/receive
-Authorization: Bearer eyJkYXRlIjoxNzE5Mjg3NzUyMTY3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkyOTEzNTJ9.C8bbPSGiKlk0Wanx9hEL0k0HLLiLzGvTxhKoJHvasE_IFcmsRTanLmDDvdTFtQKSOUrhxGZVg04G5bgmd8FYmQ
-
+Authorization: Bearer eyJkYXRlIjoxNzE5Mzg3NTg3MTc1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzOTExODd9.2W0dlF1_3cY0_68-kF3DzN1cqGDiHxcrPC191pGUpuCkbK88z1xeZgsMQ-Q402zZ0qD1hx6q4RyIP4qR7Hzntg
 ### 보낸 쪽지 전체 조회
 GET http://localhost:8080/emp/message/send
-Authorization: Bearer eyJkYXRlIjoxNzE5Mjg3NzUyMTY3LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkyOTEzNTJ9.C8bbPSGiKlk0Wanx9hEL0k0HLLiLzGvTxhKoJHvasE_IFcmsRTanLmDDvdTFtQKSOUrhxGZVg04G5bgmd8FYmQ
+Authorization: Bearer eyJkYXRlIjoxNzE5MzkxNjc2NDYyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzOTUyNzZ9.niBzvc1ktCTtOEtRCBBX90uMLMPBII21ouZinjTRuQ9PpZa4HMdOTwu49WitdZjc_HDuMmIZy9T9kdPa0UkKFA
 
 ### 받은 쪽지 휴지통 PUT
-PUT http://localhost:8080/emp/message/receive/MS72/bin
+PUT http://localhost:8080/emp/message/receive/MS40/bin
 Content-Type: application/json
 
 {
-  "storCode": 5
+  "storCode": 2
 }
 
 ### 휴지통 전체 조회
 GET http://localhost:8080/emp/message/bin
-Authorization: Bearer eyJkYXRlIjoxNzE5MzAxODY4ODE4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYxLCJleHAiOjE3MTkzMDU0Njh9.3Zb1WjuYaMQfdKITOFJRqltOd8VD6gpXDMEae9u2a51Vj3Q_phJ58u4QPIFltXJIhGdp5OZHZEh1uGniwcKhMA
+Authorization: Bearer eyJkYXRlIjoxNzE5MzcwMTg2NjUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzNzM3ODZ9.P0E-tVtS64rPidQUanwPbFQtUTYRUvtynPIx-iwMqPHrsGzsWiwagEC8LR4fUFJSQ5062bbLrtJEueEkoicR2w
+
+### 중요 보관함 전체 조회
+GET http://localhost:8080/emp/message/important
+Authorization: Bearer eyJkYXRlIjoxNzE5Mzg0MDAwNzgxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzODc2MDB9.KcdwXsSFy-9poSbRc_aviihkBZ6Z3NSHZwdlbO_UUrW8pmhWGHp5kxVk7NtJMNeM8fk8PSOxOCy-Wos1nGqrFg
+
+### 업무 보관함 전체 조회
+GET http://localhost:8080/emp/message/work
+Authorization: Bearer eyJkYXRlIjoxNzE5MzcwMTg2NjUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzNzM3ODZ9.P0E-tVtS64rPidQUanwPbFQtUTYRUvtynPIx-iwMqPHrsGzsWiwagEC8LR4fUFJSQ5062bbLrtJEueEkoicR2w
+
+### Rev Msg Detail Get
+GET http://localhost:8080/emp/message/receive/MS72
+
+### Send Msg Detail Get
+GET http://localhost:8080/emp/message/send/MS6
+
+### Send Msg
+POST http://localhost:8080/emp/message/send
+Content-Type: application/json
+
+{
+  "msgTitle": "프로젝트 언제 끝납니까?",
+  "msgCon": "7월 16일이요",
+  "msgStatus": "N",
+  "emerStatus": "N",
+  "empRev": {"emp_code": "2022089"},
+  "empSend": {"emp_code": "2021067"},
+  "storCode": {"storCode": "1"}
+}
