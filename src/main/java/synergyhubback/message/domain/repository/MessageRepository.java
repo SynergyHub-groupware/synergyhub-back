@@ -29,4 +29,9 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query("SELECT m FROM Message m WHERE m.msgCode = :msgCode")
     Message findSendMsgByMsgCode(String msgCode);
+
+    @Query("SELECT MAX(CAST(SUBSTRING(m.msgCode, 3) AS INTEGER )) AS maxMsgNumber FROM Message m WHERE m.msgCode LIKE 'MS%'")
+    String findLastMsgCode();
+
+
 }

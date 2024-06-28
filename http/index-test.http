@@ -43,3 +43,17 @@ GET http://localhost:8080/emp/message/receive/MS72
 
 ### Send Msg Detail Get
 GET http://localhost:8080/emp/message/send/MS6
+
+### Send Msg
+POST http://localhost:8080/emp/message/send
+Content-Type: application/json
+
+{
+  "msgTitle": "프로젝트 언제 끝납니까?",
+  "msgCon": "7월 16일이요",
+  "msgStatus": "N",
+  "emerStatus": "N",
+  "empRev": {"emp_code": "2022089"},
+  "empSend": {"emp_code": "2021067"},
+  "storCode": {"storCode": "1"}
+}
