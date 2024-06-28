@@ -109,6 +109,7 @@ public class MessageService {
         return messageRepository.findSendMsgByMsgCode(msgCode);
     }
 
+    /* old msgCode를 가져와서 비교 후 new msgCode로 교체 */
     private String newMsgCode(String lastMsgCode) {
 
         if (lastMsgCode == null || !lastMsgCode.matches("\\d+")) {
@@ -120,6 +121,7 @@ public class MessageService {
         return "MS" + (lastNum + 1);
     }
 
+    /* Send Msg (Insert) */
     @Transactional
     public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage storCode) {
 
