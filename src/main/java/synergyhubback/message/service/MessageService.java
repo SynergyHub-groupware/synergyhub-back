@@ -149,5 +149,6 @@ public class MessageService {
         System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
         messageRepository.save(message);
+        // 커밋용
     }
 }
