@@ -13,9 +13,11 @@ import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
 import synergyhubback.attendance.dto.request.DefaultScheduleRequest;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
+import synergyhubback.attendance.dto.response.DayOffResponse;
 import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
 import synergyhubback.attendance.dto.response.OverWorkResponse;
 import synergyhubback.attendance.service.AttendanceService;
+import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.employee.service.EmployeeService;
 
 import java.util.HashMap;
@@ -40,9 +42,13 @@ public class AttendanceController {
 
     //출근시간 등록기능
     @Operation(summary = "출근 시간 등록", description = "출근 시간을 등록한다.")
-    @PostMapping("/registStartTime/{empCode}")
-    public ResponseEntity<ResponseMessage> registAttendanceStartTime(@PathVariable int empCode) {
+    @PostMapping("/registStartTime")
+    public ResponseEntity<ResponseMessage> registAttendanceStartTime(@RequestHeader("Authorization") String token) {
         try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+            int empCode = Integer.parseInt(tokenEmpCode);
+
             AttendanceRegistStartTimeRequest updateAttendance = attendanceService.registAttendanceStartTime(empCode);
 
             Map<String, Object> responseMap = new HashMap<>();
@@ -61,9 +67,13 @@ public class AttendanceController {
 
     //퇴근시간 등록기능
     @Operation(summary = "퇴근 시간 등록", description = "퇴근 시간을 등록한다.")
-    @PostMapping("/registEndTime/{empCode}")
-    public ResponseEntity<ResponseMessage> registAttendanceEndTime(@PathVariable int empCode) {
+    @PostMapping("/registEndTime")
+    public ResponseEntity<ResponseMessage> registAttendanceEndTime(@RequestHeader("Authorization") String token) {
         try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+            int empCode = Integer.parseInt(tokenEmpCode);
+
             AttendanceRegistEndTimeRequest updateAttendance = attendanceService.registAttendanceEndTime(empCode);
 
             Map<String, Object> responseMap = new HashMap<>();
@@ -119,7 +129,28 @@ public class AttendanceController {
         }
     }
 
-    // 지정 출퇴근시간 조회
+//    // 지정 출퇴근시간 조회 (개인)
+//    @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
+//    @GetMapping("/allSchedules")
+//    public ResponseEntity<ResponseMessage> findMySchedules(@RequestHeader("Authorization") String token) {
+//
+//        String jwtToken = TokenUtils.getToken(token);
+//        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+//        int empCode = Integer.parseInt(tokenEmpCode);
+//
+//        List<DefaultScheduleResponse> schedules = attendanceService.findMyDefaultSchedules(empCode);
+//        HttpHeaders headers = new HttpHeaders();
+//
+//        Map<String, Object> responseMap = new HashMap<>();
+//        responseMap.put("schedules", schedules);
+//        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+//
+//        return ResponseEntity.ok()
+//                .headers(headers)
+//                .body(responseMessage);
+//    }
+
+    // 지정 출퇴근시간 조회 (단체)
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
     @GetMapping("/allSchedules")
     public ResponseEntity<ResponseMessage> findAllSchedules() {
@@ -178,6 +209,28 @@ public class AttendanceController {
 
     /* ------------------------------------ 근태 기록 ------------------------------------ */
 
+    // 개인별
+    @Operation(summary = "이번 주의 근태 기록 조회", description = "이번 주의 근태 목록을 조회한다.")
+    @GetMapping("/my-current-week")
+    public ResponseEntity<ResponseMessage> getMyAttendancesForCurrentWeek(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<AttendancesResponse> attendancesForCurrentWeek = attendanceService.getMyAttendancesForCurrentWeek(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("attendances", attendancesForCurrentWeek);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "조회 성공", responseMap));
+    }
+
+
+    // 전체
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
     @GetMapping("/all")
     public ResponseEntity<ResponseMessage> findAllAttendances() {
@@ -192,6 +245,20 @@ public class AttendanceController {
                 .headers(headers)
                 .body(responseMessage);
     }
+
+//    //권한에 따른 팀원 조회
+//    public ResponseEntity<ResponseMessage> findMyDepartment() {
+//        List<AttendancesResponse> attendances = attendanceService.findMyDepartment();
+//        HttpHeaders headers = new HttpHeaders();
+//
+//        Map<String, Object> responseMap = new HashMap<>();
+//        responseMap.put("attendances", attendances); // 복수형으로 변경: attendance -> attendances
+//        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+//
+//        return ResponseEntity.ok()
+//                .headers(headers)
+//                .body(responseMessage);
+//    }
 
     @Operation(summary = "이번 주의 근태 기록 조회", description = "이번 주의 근태 목록을 조회한다.")
     @GetMapping("/current-week")
@@ -209,8 +276,13 @@ public class AttendanceController {
 
 
     @Operation(summary = "오늘의 근태 기록 조회", description = "오늘의 근태 기록을 조회한다.")
-    @GetMapping("/today/{empCode}")
-    public ResponseEntity<ResponseMessage> getAttendanceForToday(@PathVariable int empCode) {
+    @GetMapping("/today")
+    public ResponseEntity<ResponseMessage> getAttendanceForToday(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
         AttendancesResponse attendancesForToday = attendanceService.getAttendancesForToday(empCode);
         HttpHeaders headers = new HttpHeaders();
 
@@ -241,10 +313,29 @@ public class AttendanceController {
 
     /* ------------------------------------ 휴가 ------------------------------------ */
 
-    // 휴가 일괄 등록
+    // 휴가 사용
+//    @PutMapping("/useDayOff")
+//    public ResponseEntity<ResponseMessage> useDayOff() {
+//
+//
+//    }
 
     // 휴가 전체 조회
 
     // 휴가 기록 조회
+    @Operation(summary = "휴가 기록 조회", description = "휴가 기록을 조회한다.")
+    @GetMapping("/dayOff")
+    public ResponseEntity<ResponseMessage> findAllDayOff() {
+        List<DayOffResponse> dayOffs = attendanceService.findAllDayOff();
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("dayOffs", dayOffs);
+        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
 
 }

@@ -2,7 +2,13 @@
 GET http://localhost:8080/api/attendance/all
 
 ### 오늘의 근태 기록 조회
-GET http://localhost:8080/api/attendance/today/2024061
+GET http://localhost:8080/api/attendance/today
+Authorization: Bearer eyJkYXRlIjoxNzE5NDczNjc4NTEzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NzcyNzh9.GcXoDam9SoDVXGLScbEDFfSTXxdlHumhEHw-ZSsNQmjQrrxKod17XkaTNIhF695mMgJQpwoTazmi_9EZt8-9xQ
+
+### 금주의 근태 기록 조회
+GET http://localhost:8080/api/attendance/my-current-week
+Authorization: Bearer eyJkYXRlIjoxNzE5NDU2OTQyOTcyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NjA1NDJ9.P386BB4b5L0PLqYHOS3yVjRRdheW6V9SMf5slw-0pJ45N4LdW9N5qlKSheIZ3uvEciYN0UEBlqCFX9_qQLAjFw
+
 
 ### 금주의 근태 기록 조회
 GET http://localhost:8080/api/attendance/current-week
@@ -10,10 +16,13 @@ GET http://localhost:8080/api/attendance/current-week
 ### 월간 근태 기록 조회
 
 ### 출근시간 등록
-POST http://localhost:8080/api/attendance/registStartTime/2020011
+POST http://localhost:8080/api/attendance/registStartTime
+Authorization: Bearer eyJkYXRlIjoxNzE5NDczNjc4NTEzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NzcyNzh9.GcXoDam9SoDVXGLScbEDFfSTXxdlHumhEHw-ZSsNQmjQrrxKod17XkaTNIhF695mMgJQpwoTazmi_9EZt8-9xQ
 
 ### 퇴근시간 등록
-POST http://localhost:8080/api/attendance/registEndTime/2020011
+POST http://localhost:8080/api/attendance/registEndTime
+Authorization: Bearer eyJkYXRlIjoxNzE5NDczNjc4NTEzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NzcyNzh9.GcXoDam9SoDVXGLScbEDFfSTXxdlHumhEHw-ZSsNQmjQrrxKod17XkaTNIhF695mMgJQpwoTazmi_9EZt8-9xQ
+
 
 ### 지정 출/퇴근시간 조회 테스트
 GET http://localhost:8080/api/attendance/test
@@ -54,6 +63,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/api/attendance/DeleteSchedule/3
 
 ### 초과근무 모두 조회
-GET http://localhost:8080/api/attendance/allOverwork
+GET http://localhost:8080/api/attendance/overwork
 
-
+### 휴가기록 모두 조회
+GET http://localhost:8080/api/attendance/dayOff

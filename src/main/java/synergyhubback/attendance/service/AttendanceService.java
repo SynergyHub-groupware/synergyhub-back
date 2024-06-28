@@ -14,6 +14,7 @@ import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
 import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
 import synergyhubback.attendance.dto.request.DayOffBalanceRequest;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
+import synergyhubback.attendance.dto.response.DayOffResponse;
 import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
 import synergyhubback.attendance.dto.response.OverWorkResponse;
 import synergyhubback.common.util.DateUtils;
@@ -57,7 +58,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "00 55 20 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 34 11 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -206,7 +207,20 @@ public class AttendanceService {
         return response;
     }
 
-    /* 금주의 근태 기록 */
+    /* 개인 : 금주의 근태 기록 */
+    @Transactional(readOnly = true)
+    public List<AttendancesResponse> getMyAttendancesForCurrentWeek(int empCode) {
+        LocalDate[] dateRange = DateUtils.getCurrentWeek();
+        LocalDate startDate = dateRange[0];
+        LocalDate endDate = dateRange[1];
+
+        System.out.println(startDate);
+        System.out.println(endDate);
+
+        return attendanceRepository.findByEmpCodeAndInDateRange(empCode, startDate, endDate);
+    }
+
+    /* 전체 : 금주의 근태 기록 */
     @Transactional(readOnly = true)
     public List<AttendancesResponse> getAttendancesForCurrentWeek() {
         LocalDate[] dateRange = DateUtils.getCurrentWeek();
@@ -280,6 +294,11 @@ public class AttendanceService {
                 .collect(Collectors.toList());
     }
 
+    /* 사원별 지정 출퇴근시간 조회 */
+    public List<DefaultScheduleResponse> findMyDefaultSchedules(int empCode) {
+        return null;
+    }
+
     /* 지정 출퇴근시간 수정 */
     @Transactional
     public void updateDefaultSchedule(String deptCode, LocalTime startTime, LocalTime endTime, Employee employee) {
@@ -332,8 +351,9 @@ public class AttendanceService {
                 .collect(Collectors.toList());
     }
 
-    /* ------------------------------------ 휴가 일괄 생성 ------------------------------------ */
+    /* ------------------------------------ 휴가  ------------------------------------ */
 
+    // 휴가 일괄 생성
     @Scheduled(cron = "00 01 21 * * *") // 일자 설정
     @Transactional
     public void createDayOffRecord() {
@@ -357,7 +377,7 @@ public class AttendanceService {
 
             // 부여수, 잔여수, 사용수, 사원코드 설정
             newDayOffBalance.setGranted(15);
-            newDayOffBalance.setRemainnig(15);
+            newDayOffBalance.setRemaining(15);
             newDayOffBalance.setDbUsed(0);
             newDayOffBalance.setEmployee(employee);
 
@@ -370,4 +390,19 @@ public class AttendanceService {
             dayOffBalanceRepository.save(dayOffBalance);
         }
     }
+
+    // 휴가기록 조회
+    public List<DayOffResponse> findAllDayOff() {
+        List<DayOff> dayOffList = dayOffRepository.findAll();
+
+        return dayOffList.stream()
+                .map(DayOffResponse::new)
+                .collect(Collectors.toList());
+    }
+
+//    //권한별 사원 조회
+//    public List<AttendancesResponse> findMyDepartment() {
+//        List<Attendance> attendances = attendanceRepository.find
+//
+//    }
 }

@@ -21,7 +21,7 @@ public class DayOffBalance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int dbCode;                 //휴가관리코드(pk)
     private int granted;                //부여수
-    private int remainnig;              //잔여수
+    private int remaining;              //잔여수
     private int dbUsed;                 //사용수
 
     @ManyToOne
@@ -31,10 +31,10 @@ public class DayOffBalance {
     private LocalDate dbInsertDate;     //부여일자
 
     @Builder
-    public DayOffBalance(int dbCode, int granted, int remainnig, int dbUsed, Employee employee, LocalDate dbInsertDate) {
+    public DayOffBalance(int dbCode, int granted, int remaining, int dbUsed, Employee employee, LocalDate dbInsertDate) {
         this.dbCode = dbCode;
         this.granted = granted;
-        this.remainnig = remainnig;
+        this.remaining = remaining;
         this.dbUsed = dbUsed;
         this.employee = employee;
         this.dbInsertDate = dbInsertDate;

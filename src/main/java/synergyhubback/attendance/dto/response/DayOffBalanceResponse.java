@@ -17,7 +17,7 @@ public class DayOffBalanceResponse {
 
     private int granted;                //부여수
 
-    private int remainnig;              //잔여수
+    private int remaining;              //잔여수
 
     private int dbUsed;                 //사용수
 
@@ -29,7 +29,7 @@ public class DayOffBalanceResponse {
     public DayOffBalanceResponse(DayOffBalance dayOffBalance) {
         this.dbCode = dayOffBalance.getDbCode();
         this.granted = dayOffBalance.getGranted();
-        this.remainnig = dayOffBalance.getRemainnig();
+        this.remaining = dayOffBalance.getRemaining();
         this.dbUsed = dayOffBalance.getDbUsed();
         this.employee = dayOffBalance.getEmployee();
         this.dbInsertDate = dayOffBalance.getDbInsertDate();

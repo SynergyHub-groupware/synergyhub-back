@@ -2,6 +2,7 @@ package synergyhubback.attendance.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,4 +32,15 @@ public class DayOff {
     @JoinColumn(name = "db_code")
     private DayOffBalance dayOffBalance;    //휴가관리코드
 
+    @Builder
+    public DayOff(int doCode, String doName, int doUsed, LocalDate doStartDate, LocalDate doEndDate, LocalTime doStartTime, LocalTime doEndTime, DayOffBalance dayOffBalance) {
+        this.doCode = doCode;
+        this.doName = doName;
+        this.doUsed = doUsed;
+        this.doStartDate = doStartDate;
+        this.doEndDate = doEndDate;
+        this.doStartTime = doStartTime;
+        this.doEndTime = doEndTime;
+        this.dayOffBalance = dayOffBalance;
+    }
 }

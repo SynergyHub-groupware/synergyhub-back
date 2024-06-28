@@ -16,7 +16,7 @@ public class DayOffBalanceRequest {
 
     private int dbCode;                 //휴가관리코드(pk)
     private int granted;                //부여수
-    private int remainnig;              //잔여수
+    private int remaining;              //잔여수
     private int dbUsed;                 //사용수
     private Employee employee;          //사원코드
     private LocalDate dbInsertDate;     //부여일자
@@ -24,13 +24,13 @@ public class DayOffBalanceRequest {
     @JsonCreator
     public DayOffBalanceRequest(@JsonProperty("dbCode") int dbCode,
                                  @JsonProperty("granted") int granted,
-                                 @JsonProperty("remainnig") int remainnig,
+                                 @JsonProperty("remaining") int remaining,
                                  @JsonProperty("dbUsed") int dbUsed,
                                  @JsonProperty("employee") Employee employee,
                                  @JsonProperty("dbInsertDate") LocalDate dbInsertDate) {
         this.dbCode = dbCode;
         this.granted = granted;
-        this.remainnig = remainnig;
+        this.remaining = remaining;
         this.dbUsed = dbUsed;
         this.employee = employee;
         this.dbInsertDate = dbInsertDate;

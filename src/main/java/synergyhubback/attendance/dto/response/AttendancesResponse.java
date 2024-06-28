@@ -32,18 +32,19 @@ public class AttendancesResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endTime;                                            //퇴근시간
 
-    private Employee employee;                                            //사원코드
+    private int empCode;                                            //사원코드
 
     private AttendanceStatus attendanceStatus;                            //근무상태코드
 
     public AttendancesResponse(Attendance attendance) {
         this.atdCode = attendance.getAtdCode();
         this.atdDate = attendance.getAtdDate();
-        this.atdStartTime = attendance.getStartTime();
+        this.atdStartTime = attendance.getAtdStartTime();
         this.atdEndTime = attendance.getAtdEndTime();
         this.startTime = attendance.getStartTime();
         this.endTime = attendance.getEndTime();
         this.attendanceStatus = attendance.getAttendanceStatus();
+        this.empCode = attendance.getEmployee().getEmp_code();
     }
 
 }
