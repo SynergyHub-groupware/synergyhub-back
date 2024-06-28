@@ -1,5 +1,6 @@
 package synergyhubback.common.attachment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class AttachmentEntity {
     private String attachOriginal;
     private String attachSave;
     private String attachUrl;
+    @JsonIgnore
     private String attachSort;
 
     public AttachmentEntity(String attachOriginal, String attachSave, String attachUrl, String attachSort){
