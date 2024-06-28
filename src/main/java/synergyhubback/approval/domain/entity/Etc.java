@@ -14,9 +14,14 @@ import lombok.NoArgsConstructor;
 public class Etc {
     @Id
     private String aeCode;
+    @Column(columnDefinition = "LONGTEXT")
     private String aeCon;
 
     public static Etc of(String aeCode, String aeCon){
         return new Etc(aeCode, aeCon);
+    }
+
+    public void modifyEtc(String aeCon){
+        this.aeCon = aeCon;
     }
 }

@@ -10,10 +10,13 @@ import java.time.LocalDate;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class DocListResponse {
+public class ReceiveListResponse {
     private final String adCode;
     private final String adTitle;
     private final int emp_code;
+    private final String emp_name;
+    private final String dept_title;
+    private final String title_name;
     @JsonFormat(pattern = "yyyy.MM.dd")
     private final LocalDate adReportDate;
     private final String adStatus;
@@ -26,13 +29,18 @@ public class DocListResponse {
     private final String talStatus;
     @JsonFormat(pattern = "yyyy.MM.dd")
     private final LocalDate talDate;
+    private final int empCode;
     private final String empName;
+    private final String talReason;
 
-    public static DocListResponse from(final TrueLine trueLine){
-        return new DocListResponse(
+    public static ReceiveListResponse from(final TrueLine trueLine){
+        return new ReceiveListResponse(
                 trueLine.getDocument().getAdCode(),
                 trueLine.getDocument().getAdTitle(),
                 trueLine.getDocument().getEmployee().getEmp_code(),
+                trueLine.getDocument().getEmployee().getEmp_name(),
+                trueLine.getDocument().getEmployee().getDepartment().getDept_title(),
+                trueLine.getDocument().getEmployee().getTitle().getTitle_name(),
                 trueLine.getDocument().getAdReportDate(),
                 trueLine.getDocument().getAdStatus(),
                 trueLine.getDocument().getForm().getAfCode(),
@@ -43,7 +51,9 @@ public class DocListResponse {
                 trueLine.getTalRole(),
                 trueLine.getTalStatus(),
                 trueLine.getTalDate(),
-                trueLine.getEmployee().getEmp_name()
+                trueLine.getEmployee().getEmp_code(),
+                trueLine.getEmployee().getEmp_name(),
+                trueLine.getTalReason()
         );
     }
 }

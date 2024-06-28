@@ -13,10 +13,11 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AattResponse {
     private final String aattSort;
-    @JsonFormat(pattern = "yyyy.MM.dd HH시 mm분")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private final LocalDateTime aattStart;
-    @JsonFormat(pattern = "yyyy.MM.dd HH시 mm분")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private final LocalDateTime aattEnd;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate aattOccur;
     private final String aattPlace;
     private final String aattCon;

@@ -103,5 +103,8 @@ public class Employee {
         System.out.println("updateRefreshToken");
     }
 
-
+    // 이다정: 서명등록
+    public void signRegist(String emp_sign) {
+        this.emp_sign = emp_sign;
+    }
 }

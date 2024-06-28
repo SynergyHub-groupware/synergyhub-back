@@ -11,11 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
+import synergyhubback.approval.dto.request.FormRegistRequest;
+import synergyhubback.approval.dto.request.StorageListRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
 import synergyhubback.employee.service.EmployeeService;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,11 +35,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ApprovalController {
 
-    @Value("${file.approval-dir}")
-    private String approvalDir;
-
     private final ApprovalService approvalService;
-    private final EmployeeService employeeService;
 
     @GetMapping("/formList")
     public ResponseEntity<List<FormListResponse>> findFormList(){
@@ -49,8 +50,13 @@ public class ApprovalController {
     }
 
     @GetMapping("/formLine")
-    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam(required = false) final Integer lsCode){
+    public ResponseEntity<List<FormLineResponse>> findFormLine(@RequestParam final Integer lsCode){
         final List<FormLineResponse> formLine = approvalService.findFormLine(lsCode);
+        return ResponseEntity.ok(formLine);
+    }
+    @GetMapping("/allLine")
+    public ResponseEntity<List<FormLineResponse>> findAllLine(){
+        final List<FormLineResponse> formLine = approvalService.findAllLine();
         return ResponseEntity.ok(formLine);
     }
 
@@ -78,6 +84,36 @@ public class ApprovalController {
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
+    private final Path signRoot = Paths.get("C:/SynergyHub/Signimgs");
+
+//    @PatchMapping("/uploadImage")
+//    public ResponseEntity<Void> uploadImage(@RequestParam Integer empCode, @RequestParam("image") MultipartFile image){
+//        try {
+//            // 디렉토리가 없으면 생성
+//            if (!Files.exists(signRoot)) Files.createDirectories(signRoot);
+//
+//            // 파일 확장자 추출
+//            String originalFilename = image.getOriginalFilename();
+//            String fileExtension = "";
+//            if (originalFilename != null && originalFilename.contains(".")) {
+//                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+//            }
+//
+//            // 파일 저장
+//            String filename = empCode + fileExtension;
+//            Path filePath = signRoot.resolve(filename);
+//            Files.copy(image.getInputStream(), filePath);
+//
+//            // DB에 이미지명 저장
+//            approvalService.uploadImage(empCode, filename);
+//
+//            return ResponseEntity.ok().build();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
+
     @PostMapping("/regist")
     public ResponseEntity<Void> regist(@RequestParam("document") String documentJson, @RequestParam(value = "files", required = false) MultipartFile[] files, @RequestParam boolean temporary){
         try {
@@ -95,8 +131,8 @@ public class ApprovalController {
     }
 
     @GetMapping("/send/document")
-    public ResponseEntity<List<DocListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
-        final List<DocListResponse> docList = approvalService.findDocList(empCode, status);
+    public ResponseEntity<List<ReceiveListResponse>> findDocList(@RequestParam final Integer empCode, @RequestParam final String status){
+        final List<ReceiveListResponse> docList = approvalService.findDocList(empCode, status);
         return ResponseEntity.ok(docList);
     }
 
@@ -123,18 +159,117 @@ public class ApprovalController {
 
         if (matcher.matches()) {
             String textPart = matcher.group(1);     // 문자열 부분
-            String numberPart = matcher.group(2);   // 숫자 부분
 
+            Object viewDetail = null;
             switch (textPart){
-                case "AP": break;
-                case "AE": break;
-                case "AATT": AattResponse viewDetail = approvalService.findViewDetail(adDetail); break;
-                case "AAPP": break;
+                case "AP": viewDetail = approvalService.findApDetail(adDetail); break;
+                case "AE": viewDetail = approvalService.findAeDetail(adDetail); break;
+                case "AATT": viewDetail = approvalService.findAattDetail(adDetail); break;
+                case "AAPP": viewDetail = approvalService.findAappDetail(adDetail); break;
             }
-        } else {
-            return ResponseEntity.badRequest().body("Invalid adDetail format");
+            return ResponseEntity.ok(viewDetail);
         }
-        
-        return null;
+
+        return ResponseEntity.badRequest().body("Invalid adDetail format");
     }
+
+    @GetMapping("/viewAttach")
+    public ResponseEntity<List<AttachmentResponse>> findAttachList(@RequestParam final String adCode){
+        final List<AttachmentResponse> attachList = approvalService.findAttachList(adCode);
+        return ResponseEntity.ok(attachList);
+    }
+
+    @GetMapping("/downloadAttach")
+    public ResponseEntity<Resource> downloadAttach(@RequestParam String attachOriginal, @RequestParam String attachSave) {
+        Resource file = approvalService.downloadAttach(attachSave);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachOriginal + "\"")
+                .body(file);
+    }
+
+    @DeleteMapping("/document/delete")
+    public ResponseEntity<Void> deleteDocument(@RequestParam final String adCode){
+        approvalService.deleteDocument(adCode);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/modifyStatus")
+    public ResponseEntity<Void> modifyStatus(@RequestParam final String adCode){
+        approvalService.modifyStatus(adCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/receive/document")
+    public ResponseEntity<List<ReceiveListResponse>> findReceiveList(@RequestParam final Integer empCode, @RequestParam final String status){
+        final List<ReceiveListResponse> docList = approvalService.findReceiveList(empCode, status);
+        return ResponseEntity.ok(docList);
+    }
+
+    @PatchMapping("/accept")
+    public ResponseEntity<Void> acceptDocument(@RequestParam final Integer empCode, @RequestParam final String status, @RequestParam final String adCode){
+        approvalService.acceptDocument(empCode, status, adCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/return")
+    public ResponseEntity<Void> returnDocument(@RequestParam final Integer empCode, @RequestParam final String adCode, @RequestBody final String talReason){
+        approvalService.returnDocunet(empCode, adCode, talReason);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/registForm")
+    public ResponseEntity<Void> registForm(@RequestBody final FormRegistRequest formRegistRequest){
+        approvalService.registForm(formRegistRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteForm")
+    public ResponseEntity<Void> deleteForm(@RequestParam final int afCode){
+        approvalService.deleteForm(afCode);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/modifyForm")
+    public ResponseEntity<Void> modifyForm(@RequestBody final FormRegistRequest formRegistRequest, @RequestParam final int afCode){
+        approvalService.modifyForm(formRegistRequest, afCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/registBox")
+    public ResponseEntity<Void> registBox(@RequestBody final BoxRequest boxRequest){
+        approvalService.registBox(boxRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/boxList")
+    public ResponseEntity<List<BoxListResponse>> findBoxList(@RequestParam final Integer empCode){
+        final List<BoxListResponse> boxList = approvalService.findBoxList(empCode);
+        return ResponseEntity.ok(boxList);
+    }
+
+    @PatchMapping("/modifybox")
+    public ResponseEntity<Void> modifybox(@RequestParam int abCode, @RequestBody BoxRequest boxRequest){
+        approvalService.modifybox(abCode, boxRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteBox")
+    public ResponseEntity<Void> deleteBox(@RequestParam final int abCode){
+        approvalService.deleteBox(abCode);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/registDocInStorage")
+    public ResponseEntity<Void> registDocInStorage(@RequestParam String adCode, @RequestParam int abCode){
+        approvalService.registDocInStorage(adCode, abCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/docListInStorage")
+    public ResponseEntity<List<ReceiveListResponse>> findDocListInStorage(@RequestParam int abCode){
+        final List<ReceiveListResponse> docList = approvalService.findDocListInStorage(abCode);
+        return ResponseEntity.ok(docList);
+    }
+
 }
