@@ -844,4 +844,8 @@ public class ApprovalService {
         List<TrueLine> docList = trueLineRepository.findDocListInStorage(abCode);
         return docList.stream().map(ReceiveListResponse::from).toList();
     }
+
+    public void deleteDocInStorage(String adCode, int abCode) {
+        approvalStorageRepository.deleteByDocument_AdCodeAndApprovalBox_AbCode(adCode, abCode);
+    }
 }

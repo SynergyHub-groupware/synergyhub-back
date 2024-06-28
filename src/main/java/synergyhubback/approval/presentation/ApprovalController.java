@@ -272,4 +272,10 @@ public class ApprovalController {
         return ResponseEntity.ok(docList);
     }
 
+    @DeleteMapping("/deleteDocInStorage")
+    public ResponseEntity<Void> deleteDocInStorage(@RequestParam String adCode, @RequestParam int abCode){
+        approvalService.deleteDocInStorage(adCode, abCode);
+        return ResponseEntity.noContent().build();
+    }
+
 }
