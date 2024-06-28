@@ -37,4 +37,9 @@ public class EmployeeRegistRequest {
 
     private final String emp_status;
 
+//    private int detailErdCode;
+    private String detailErdNum;
+    private String detailErdTitle;
+    private int detailEmpCode;
+
 }

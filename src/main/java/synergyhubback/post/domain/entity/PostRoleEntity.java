@@ -1,6 +1,7 @@
 package synergyhubback.post.domain.entity;
 
 import jakarta.persistence.*;
+import synergyhubback.employee.domain.entity.Employee;
 
 @Entity
 @Table(name = "post_role")
@@ -13,8 +14,9 @@ public class PostRoleEntity {
     @OneToOne
     @JoinColumn(name = "Low_Code")
     private LowBoardEntity LowCode;
-//    @OneToOne
-//    private Employee EmpCode;
+    @ManyToOne
+    @JoinColumn(name = "Emp_Code")
+    private Employee EmpCode;
     @Column(name = "pr_admin")
     private char PrAdmin;
 

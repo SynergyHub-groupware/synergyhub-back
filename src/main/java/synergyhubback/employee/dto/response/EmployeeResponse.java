@@ -21,6 +21,7 @@ public class EmployeeResponse {
         private String phone;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate hire_date;
+        private String emp_status;
         private String social_security_no;
 
         public String formatSocialSecurityNo() {

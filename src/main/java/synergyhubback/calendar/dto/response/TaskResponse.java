@@ -26,6 +26,7 @@ public class TaskResponse {
     private final String description;
     private final String owner;
     private final boolean display;
+    private final int empCode;
 
     public static TaskResponse from(Task task) {
         return new TaskResponse(
@@ -38,7 +39,8 @@ public class TaskResponse {
                 task.getPriority(),
                 task.getDescription(),
                 task.getOwner(),
-                task.isDisplay()
+                task.isDisplay(),
+                task.getEmployee().getEmp_code()
         );
     }
 }

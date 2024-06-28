@@ -1,10 +1,7 @@
 package synergyhubback.employee.domain.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
@@ -22,8 +19,24 @@ public class DeptRelations {
     @Id
     private int dept_relations_code;
 
-    private String sup_dept_code;
+    @ManyToOne
+    @JoinColumn(name = "PAR_DEPT_CODE")
+    private Department parentDepartment;
 
-    private String sub_dept_code;
+    @ManyToOne
+    @JoinColumn(name = "SUB_DEPT_CODE")
+    private Department subDepartment;
 
+    public DeptRelations(Department parentDepartment, Department subDepartment) {
+        this.parentDepartment = parentDepartment;
+        this.subDepartment = subDepartment;
+    }
+
+    public void setParentDepartment(Department parentDepartment) {
+        this.parentDepartment = parentDepartment;
+    }
+
+    public void setSubDepartment(Department subDepartment) {
+        this.subDepartment = subDepartment;
+    }
 }

@@ -13,7 +13,7 @@ public class EmpTitleResponse {
 
     private String title_code;
 
-    private String title_name;
+    private String title_name;      //T1,대표 T2,책임자 T4,부서장 T5,팀장 T6,팀원
 
     private String emp_name;
 
