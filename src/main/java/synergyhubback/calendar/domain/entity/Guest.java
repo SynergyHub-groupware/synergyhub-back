@@ -23,11 +23,11 @@ public class Guest {
     private Employee employee;
 
     @ManyToOne
-    @JoinColumn(name = "EVENT_CODE")
+    @JoinColumn(name = "EVENT_CODE", nullable = true)
     private Event event;
 
     @ManyToOne
-    @JoinColumn(name = "TASK_CODE")
+    @JoinColumn(name = "TASK_CODE", nullable = true)
     private Task task;
 
 

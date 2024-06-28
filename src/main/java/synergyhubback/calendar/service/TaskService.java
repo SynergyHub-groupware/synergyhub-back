@@ -25,6 +25,7 @@ public class TaskService {
         Task task = new Task();
         task.setId(generateTaskCode());
         task.setTitle(taskRequest.getTitle());
+        task.setModifiedDate(taskRequest.getModifiedDate());
         task.setStart(taskRequest.getStart());
         task.setEnd(taskRequest.getEnd());
         task.setStatus(taskRequest.getStatus());
