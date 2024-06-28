@@ -24,4 +24,22 @@ public class Form {
 
     @Column(columnDefinition = "LONGTEXT")
     private String afCon;
+
+    public Form(String afName, String afExplain, LineSort lineSort, String afCon){
+        this.afName = afName;
+        this.afExplain = afExplain;
+        this.lineSort = lineSort;
+        this.afCon = afCon;
+    }
+
+    public static Form of(String afName, String afExplain, LineSort lineSort, String afCon){
+        return new Form(afName, afExplain, lineSort, afCon);
+    }
+
+    public void modifyForm(String afName, String afExplain, LineSort lineSort, String afCon){
+        this.afName = afName;
+        this.afExplain = afExplain;
+        this.lineSort = lineSort;
+        this.afCon = afCon;
+    }
 }

@@ -17,4 +17,21 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query("SELECT m FROM Message m WHERE (m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.storCode.storCode = 5")
     List<Message> findByBin_EmpCode(int empCode);
+
+    @Query("SELECT m FROM Message m WHERE (m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.storCode.storCode = 2")
+    List<Message> findByImp_EmpCode(int empCode);
+
+    @Query("SELECT m FROM Message m WHERE (m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.storCode.storCode = 3")
+    List<Message> findByWork_EmpCode(int empCode);
+
+    @Query("SELECT m FROM Message m WHERE m.msgCode = :msgCode")
+    Message findByMsgCode(String msgCode);
+
+    @Query("SELECT m FROM Message m WHERE m.msgCode = :msgCode")
+    Message findSendMsgByMsgCode(String msgCode);
+
+    @Query("SELECT MAX(CAST(SUBSTRING(m.msgCode, 3) AS INTEGER )) AS maxMsgNumber FROM Message m WHERE m.msgCode LIKE 'MS%'")
+    String findLastMsgCode();
+
+
 }

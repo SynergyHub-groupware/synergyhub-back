@@ -35,4 +35,18 @@ public class Document {
     public static Document of(String adCode, String adTitle, Employee employee, LocalDate adReportDate, String adStatus, Form form, String adDetail) {
         return new Document(adCode, adTitle, employee, adReportDate, adStatus, form, adDetail);
     }
+
+    public void modifyAdStatus(String adStatus) {
+        this.adStatus = adStatus;
+    }
+
+    public void modifyDocument(String adTitle, LocalDate adReportDate, String adStatus){
+        this.adTitle = adTitle;
+        this.adReportDate = adReportDate;
+        this.adStatus = adStatus;
+    }
+
+    public void modifyStatus(String adStatus){
+        this.adStatus = adStatus;
+    }
 }

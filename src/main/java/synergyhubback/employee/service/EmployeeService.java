@@ -1,7 +1,6 @@
 package synergyhubback.employee.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,17 +9,17 @@ import synergyhubback.auth.dto.LoginDto;
 import synergyhubback.common.exception.NotFoundException;
 import synergyhubback.employee.domain.entity.*;
 import synergyhubback.employee.domain.repository.*;
-import synergyhubback.employee.dto.request.EmployeeRegistRequest;
+import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
-import synergyhubback.post.service.PostService;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static synergyhubback.common.exception.type.ExceptionCode.NOT_FOUND_REFRESH_TOKEN;
+import static synergyhubback.common.exception.type.ExceptionCode.*;
 
 
 @Service("employeeService")
@@ -36,6 +35,8 @@ public class EmployeeService {
     private final DeptRelationsRepository deptRelationsRepository;
     private final TitleRepository titleRepository;
     private final PositionRepository positionRepository;
+    private final DetailByEmpRegistRepository detailByEmpRegistRepository;
+
 
     @Transactional(readOnly = true)
     public LoginDto findByEmpCode(int emp_code) {
@@ -77,33 +78,45 @@ public class EmployeeService {
         return LoginDto.from(employee);
     }
 
+    public void empsRegist(List<EmployeeRegistRequest> employeeRegistRequests) {
+        for (EmployeeRegistRequest employeeRegistRequest : employeeRegistRequests) {
 
-    public void empRegist(EmployeeRegistRequest employeeRegistRequest) {
+            /* 사원코드 생성 (yyyyMM+1) */
+            String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
+            long count = employeeRepository.countByHireYearMonth(hireYearMonth);
+            String empCode = hireYearMonth + (count + 1);
 
-        String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        long count = employeeRepository.countByHireYearMonth(hireYearMonth);
-        String empCode = hireYearMonth + (count + 1);
+            Department department = departmentRepository.findByDeptCode(employeeRegistRequest.getDept_code());
+            Title title = titleRepository.findByTitleCode(employeeRegistRequest.getTitle_code());
+            Position position = positionRepository.findByPositionCode(employeeRegistRequest.getPosition_code());
 
-        Department department = departmentRepository.findByDeptCode(employeeRegistRequest.getDept_code());
-        Title title = titleRepository.findByTitleCode(employeeRegistRequest.getTitle_code());
-        Position position = positionRepository.findByPositionCode(employeeRegistRequest.getPosition_code());
+            /* Employee 객체 생성 */
+            Employee newEmp = Employee.regist(
+                    Integer.parseInt(empCode),
+                    employeeRegistRequest.getEmp_name(),
+                    passwordEncoder.encode(empCode),
+                    employeeRegistRequest.getSocial_security_no(),
+                    employeeRegistRequest.getHire_date(),
+                    employeeRegistRequest.getEmp_status()
+            );
 
-        final Employee newEmp = Employee.regist(
+            newEmp.setDepartment(department);
+            newEmp.setTitle(title);
+            newEmp.setPosition(position);
 
-                Integer.parseInt(empCode),
-                employeeRegistRequest.getEmp_name(),
-                passwordEncoder.encode(empCode),
-                employeeRegistRequest.getSocial_security_no(),
-                employeeRegistRequest.getHire_date(),
-                employeeRegistRequest.getEmp_status()
-        );
+            /* DetailByEmpRegist 객체 생성 */
+            DetailByEmpRegist detailByEmpRegist = new DetailByEmpRegist(
+                    employeeRegistRequest.getDetailErdNum(),
+                    employeeRegistRequest.getDetailErdTitle(),
+                    newEmp
+            );
 
-        newEmp.setDepartment(department);
-        newEmp.setTitle(title);
-        newEmp.setPosition(position);
+            /* Employee 객체에 DetailByEmpRegist 추가 */
+            newEmp.addEmpRegistDetail(detailByEmpRegist);
 
-        employeeRepository.save(newEmp);
-
+            /* 저장 */
+            employeeRepository.save(newEmp);
+        }
     }
 
     public MyInfoResponse getMyInfo(int empCode) {
@@ -111,9 +124,11 @@ public class EmployeeService {
 
         Employee employee = employeeRepository.findByEmpCode(empCode);
 
+
         return MyInfoResponse.getMyInfo(employee);
 
     }
+
 
     public RecordCardResponse getRecordCard(int empCode) {
 
@@ -126,6 +141,7 @@ public class EmployeeService {
 
         return RecordCardResponse.getRecordCard(employee, schoolInfos, certificates);
     }
+
 
     public EmployeeListResponse employeeList(int empCode) {
 
@@ -140,82 +156,197 @@ public class EmployeeService {
         return EmployeeListResponse.getEmployeeList(employees);
     }
 
+
+    public RecordCardResponse getTeamRecordCard(int logInEmpCode, int empCode) throws IllegalAccessException, NotFoundException {
+
+        Employee logInEmployee = employeeRepository.findByEmpCode(logInEmpCode);
+
+        Employee targetEmployee = employeeRepository.findByEmpCode(empCode);
+
+        if (!isAuthorized(logInEmployee, targetEmployee)) {
+            throw new IllegalAccessException("조회할 권한이 없습니다.");
+        }
+
+        List<SchoolInfo> schoolInfos = schoolInfoRepository.findAllByEmpCode(empCode);
+
+        List<Certificate> certificates = certificateRepository.findAllByEmpCode(empCode);
+
+        return RecordCardResponse.getRecordCard(targetEmployee, schoolInfos, certificates);
+
+    }
+
+    private boolean isAuthorized(Employee logInEmployee, Employee targetEmployee) {
+
+        String logInEmpTitleCode = logInEmployee.getTitle().getTitle_code();
+
+        if (!"T1".equals(logInEmpTitleCode) &&
+                !"T2".equals(logInEmpTitleCode) &&
+                !"T4".equals(logInEmpTitleCode) &&
+                !"T5".equals(logInEmpTitleCode)) {
+            return false;
+        }
+
+        String logInDeptCode = logInEmployee.getDepartment().getDept_code();
+        String targetDeptCode = targetEmployee.getDepartment().getDept_code();
+
+        if (logInDeptCode.equals(targetDeptCode)) {
+            return true;
+        }
+
+        for (DeptRelations relation : logInEmployee.getDepartment().getSubDepartments()) {
+            if (relation.getSubDepartment().getDept_code().equals(targetDeptCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public void registDept(RegistDeptRequest registDeptRequest) {
+
+        String newDeptCode = nextDeptCode();
+
+        Department department = new Department(
+                newDeptCode,
+                registDeptRequest.getDept_title(),
+                LocalDate.now(),
+                null,
+                new HashSet<>(),
+                new HashSet<>()
+        );
+
+        departmentRepository.save(department);
+    }
+
+    private String nextDeptCode() {
+
+        List<Department> allDeptCodes = departmentRepository.findAll();
+
+        int nextNumber = 1;
+        for (Department dept : allDeptCodes) {
+            String numberPart = dept.getDept_code().substring(1);
+            try {
+                int currentNumber = Integer.parseInt(numberPart);
+                if (currentNumber >= nextNumber) {
+                    nextNumber = currentNumber + 1;
+                }
+            } catch (NumberFormatException e) {
+
+            }
+        }
+
+        return "D" + nextNumber;
+    }
+
+    public void registDeptRelations(RegistDeptRelationsRequest registDeptRelationsRequest) {
+
+        Department parentDepartment = registDeptRelationsRequest.getParentDepartment();
+        Department subDepartment = registDeptRelationsRequest.getSubDepartment();
+
+        DeptRelations existingRelation = deptRelationsRepository.findByParentDepartmentAndSubDepartment(parentDepartment, subDepartment);
+
+        if(existingRelation != null) {
+            throw new IllegalArgumentException("이미 등록된 부서 관계 입니다.");
+        }
+
+        DeptRelations deptRelations = new DeptRelations(parentDepartment, subDepartment);
+
+        deptRelationsRepository.save(deptRelations);
+    }
+
+    public void modifyDeptRelations(int dept_relations_code, Department parentDepartment, Department subDepartment) {
+
+        DeptRelations deptRelations = deptRelationsRepository.findById(dept_relations_code)
+                .orElseThrow(() -> new NotFoundException(DEPT_RELATIONS_NOT_FOUND));
+
+        deptRelations.setParentDepartment(parentDepartment);
+        deptRelations.setSubDepartment(subDepartment);
+
+        deptRelationsRepository.save(deptRelations);
+
+    }
+
+    public void deleteDeptRelations(RegistDeptRelationsRequest registDeptRelationsRequest) {
+
+        Department parentDepartment = registDeptRelationsRequest.getParentDepartment();
+
+        Department subDepartment = registDeptRelationsRequest.getSubDepartment();
+
+        DeptRelations deptRelations = deptRelationsRepository.findByParentDepartmentAndSubDepartment(parentDepartment, subDepartment);
+
+        if (deptRelations != null) {
+
+            deptRelationsRepository.delete(deptRelations);
+        }
+
+    }
+
     public List<GetDeptTitleResponse> getDepartments() {
 
-        List<Department> getDepartments = departmentRepository.findAll();
+        List<Department> getDepartments = departmentRepository.findAllAndRelations();
 
         return getDepartments.stream()
-                .map(GetDeptTitleResponse::getDeptTitle)
+                .map(department -> new GetDeptTitleResponse(
+                        department.getDept_code(),
+                        department.getDept_title(),
+                        department.getSubDepartments().stream()
+                                .map(sub -> sub.getSubDepartment().getDept_code())
+                                .collect(Collectors.toList()),
+                        department.getParentDepartments().stream()
+                                .map(par -> par.getParentDepartment().getDept_code())
+                                .collect(Collectors.toList())
+                ))
                 .collect(Collectors.toList());
     }
 
-    public DepartmentResponse getDepartmentList(String dept_code) {
+    public DepartmentResponse getDeptDetailList(String dept_code) {
 
-        List<Department> departmentList = departmentRepository.findAll();
-        List<DeptRelations> relations = deptRelationsRepository.findAll();
-        List<Employee> employees = employeeRepository.findAll();
+        Department department = departmentRepository.findDeptDetailByDeptCode(dept_code);
 
+        String deptManagerName = getDeptManagerName(department);
 
-        List<Employee> statusEmployee = employees.stream()
-                .filter(employee -> "Y".equals(employee.getEmp_status()))
+        List<String> parDeptTitles = department.getParentDepartments().stream()
+                .map(par -> par.getParentDepartment().getDept_title())
                 .collect(Collectors.toList());
 
-        Map<String, String> deptCodeToTitle = departmentList.stream()
-                .collect(Collectors.toMap(Department::getDept_code, Department::getDept_title));
+        List<String> subDeptTitles = department.getSubDepartments().stream()
+                .map(sub -> sub.getSubDepartment().getDept_title())
+                .collect(Collectors.toList());
 
-        Map<String, List<String>> supDeptRelations = relations.stream()
-                .collect(Collectors.groupingBy(
-                        DeptRelations::getSub_dept_code,
-                        Collectors.mapping(DeptRelations::getSup_dept_code, Collectors.toList())
-                ));
+        int numOfTeamMember = getNumOfTeamMembers(department);
 
-        Map<String, List<String>> subDeptRelations = relations.stream()
-                .collect(Collectors.groupingBy(
-                        DeptRelations::getSup_dept_code,
-                        Collectors.mapping(DeptRelations::getSub_dept_code, Collectors.toList())
-                ));
+        List<String> teamMemberNames = getTeamMemberNames(department);
 
-        Map<String, Employee> deptManagers = statusEmployee.stream()
-                .filter(employee -> "T4".equals(employee.getTitle().getTitle_code()))
-                .collect(Collectors.toMap(
-                        employee -> employee.getDepartment().getDept_code(),
-                        employee -> employee,
-                        (existing, replacement) -> existing
-                ));
+        String parentDeptManagerName = deptRelationsRepository.findParentDepartmentManagerBySubDeptCode(department.getDept_code());
 
-        Map<String, List<Employee>> employeesByDept = statusEmployee.stream()
-                .collect(Collectors.groupingBy(employee -> employee.getDepartment().getDept_code()));
+        DeptDetailResponse deptDetailResponse = DeptDetailResponse.getDeptDetail(
+                department,
+                deptManagerName,
+                parDeptTitles,
+                subDeptTitles,
+                numOfTeamMember,
+                teamMemberNames,
+                parentDeptManagerName
+        );
 
-        List<DeptDetailResponse> deptDetails = departmentList.stream()
-                .map(department -> {
-                    Employee deptManager = deptManagers.get(department.getDept_code());
-                    String deptManagerName = deptManager != null ? deptManager.getEmp_name() : null;
-                    List<Employee> deptEmployees = employeesByDept.getOrDefault(department.getDept_code(), List.of());
-                    int numOfTeamMember = deptEmployees.size();
-                    List<String> teamMemberNames = deptEmployees.stream()
-                            .map(Employee::getEmp_name)
-                            .collect(Collectors.toList());
-
-                    List<String> supDeptTitle = supDeptRelations.getOrDefault(department.getDept_code(), List.of()).stream()
-                            .map(deptCodeToTitle::get)
-                            .collect(Collectors.toList());
-
-                    List<String> subDeptTitle = subDeptRelations.getOrDefault(department.getDept_code(), List.of()).stream()
-                            .map(deptCodeToTitle::get)
-                            .collect(Collectors.toList());
-
-                    return DeptDetailResponse.getDeptDetail(department, deptManagerName, supDeptTitle, subDeptTitle, numOfTeamMember, teamMemberNames);
-
-                }).collect(Collectors.toList());
-
-        return new DepartmentResponse(deptDetails);
-
+        return DepartmentResponse.from(List.of(deptDetailResponse));
     }
 
-    public List<OrgResponse> getOrgEmps(
+    private String getDeptManagerName(Department department) {
+        return employeeRepository.findManagerByDeptCode(department.getDept_code());
+    }
+
+    private int getNumOfTeamMembers(Department department) {
+        return employeeRepository.countTeamMembersByDeptCode(department.getDept_code());
+    }
+
+    private List<String> getTeamMemberNames(Department department) {
+        return employeeRepository.findTeamMemberNamesByDeptCode(department.getDept_code());
+    }
 
 
-    ) {
+    public List<OrgResponse> getOrgEmps() {
 
         List<Employee> getOrgEmps = employeeRepository.findAll();
 
@@ -231,17 +362,16 @@ public class EmployeeService {
         return OrgDetailResponse.getOrgDetail(employee);
     }
 
+    public void resetEmpPass(int emp_code) {
 
-    public void resetEmpPass(int empCode) {
+        Employee employee = employeeRepository.findByEmpCode(emp_code);
 
-        Employee employee = employeeRepository.findById(empCode)
-                .orElseThrow(() -> new IllegalArgumentException("사원번호 노 유효"));
-
-        String encodePassword = passwordEncoder.encode(String.valueOf(empCode));
+        String encodePassword = passwordEncoder.encode(String.valueOf(emp_code));
 
         employee.resetPassword(encodePassword);
 
         employeeRepository.save(employee);
     }
+
 
 }

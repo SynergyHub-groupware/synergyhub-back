@@ -42,7 +42,6 @@ public class SendResponse {
                 message.getEmpRev().getPosition().getPosition_name()
         );
     }
-    // MERGE
 
 
 }

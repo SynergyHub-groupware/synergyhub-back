@@ -36,8 +36,8 @@ public class GuestService {
     public Guest updateGuest(String guestCode, GuestUpdateRequest guestUpdateRequest) {
         Guest guest = findById(guestCode).orElseThrow(() -> new RuntimeException("Guest not found"));
         guest.setEmployee(findEmployeeById(guestUpdateRequest.getEmpCode()));
-        guest.setEvent(findEventById(guestUpdateRequest.getEventCode()));
-        guest.setTask(findTaskById(guestUpdateRequest.getTaskCode()));
+        guest.setEvent(guestUpdateRequest.getEventCode() != null ? findEventById(guestUpdateRequest.getEventCode()) : null);
+        guest.setTask(guestUpdateRequest.getTaskCode() != null ? findTaskById(guestUpdateRequest.getTaskCode()) : null);
         return guestRepository.save(guest);
     }
 
@@ -83,8 +83,8 @@ public class GuestService {
     private Guest convertToEntity(GuestCreateRequest guestCreateRequest) {
         Guest guest = new Guest();
         guest.setEmployee(findEmployeeById(guestCreateRequest.getEmpCode()));
-        guest.setEvent(findEventById(guestCreateRequest.getEventCode()));
-        guest.setTask(findTaskById(guestCreateRequest.getTaskCode()));
+        guest.setEvent(guestCreateRequest.getEventCode() != null ? findEventById(guestCreateRequest.getEventCode()) : null);
+        guest.setTask(guestCreateRequest.getTaskCode() != null ? findTaskById(guestCreateRequest.getTaskCode()) : null);
         return guest;
     }
 
@@ -92,8 +92,8 @@ public class GuestService {
     private Guest convertToEntity(GuestUpdateRequest guestUpdateRequest) {
         Guest guest = new Guest();
         guest.setEmployee(findEmployeeById(guestUpdateRequest.getEmpCode()));
-        guest.setEvent(findEventById(guestUpdateRequest.getEventCode()));
-        guest.setTask(findTaskById(guestUpdateRequest.getTaskCode()));
+        guest.setEvent(guestUpdateRequest.getEventCode() != null ? findEventById(guestUpdateRequest.getEventCode()) : null);
+        guest.setTask(guestUpdateRequest.getTaskCode() != null ? findTaskById(guestUpdateRequest.getTaskCode()) : null);
         return guest;
     }
 }
