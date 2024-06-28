@@ -6,10 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.auth.util.TokenUtils;
-import synergyhubback.employee.dto.request.EmployeeRegistRequest;
-import synergyhubback.employee.dto.request.ResetEmpPassRequest;
+import synergyhubback.common.exception.NotFoundException;
+import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
@@ -34,10 +35,10 @@ public class EmployeeController {
     }
 
     /* 사원 등록 */
-    @PostMapping("/empRegist")
-    public ResponseEntity<Void> empRegist (@RequestBody @Valid EmployeeRegistRequest employeeRegistRequest) {
+    @PostMapping("/empsRegist")
+    public ResponseEntity<Void> empsRegist (@RequestBody @Valid List<EmployeeRegistRequest> employeeRegistRequests) {
 
-        employeeService.empRegist(employeeRegistRequest);
+        employeeService.empsRegist(employeeRegistRequests);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -66,7 +67,25 @@ public class EmployeeController {
         RecordCardResponse recordCardResponse = employeeService.getRecordCard(empCode);
 
         return ResponseEntity.ok(recordCardResponse);
+    }
 
+    /* 팀원 인사기록 카드 조회 */
+    @GetMapping("/teamRecordCard/{emp_code}")
+    public ResponseEntity<RecordCardResponse> getTeamRecordCard(@RequestHeader("Authorization") String token, @PathVariable int emp_code) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int logInEmpCode = Integer.parseInt(tokenEmpCode);
+
+
+        try {
+            RecordCardResponse recordCardResponse = employeeService.getTeamRecordCard(logInEmpCode, emp_code);
+            return ResponseEntity.ok(recordCardResponse);
+        } catch (IllegalAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     /* 팀원 정보 조회 */
@@ -85,7 +104,47 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeListResponse);
     }
 
-    /* 부서 전체 조회 */
+    /* 부서 등록 */
+    @PostMapping("/registDept")
+    public ResponseEntity<Void> registDept(@RequestBody @Valid RegistDeptRequest registDeptRequest) {
+
+        employeeService.registDept(registDeptRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /* 부서 상위 하위 관계 등록 */
+    @PostMapping("/registDeptRelations")
+    public ResponseEntity<Void> registDeptRelations(@RequestBody RegistDeptRelationsRequest registDeptRelationsRequest) {
+
+        employeeService.registDeptRelations(registDeptRelationsRequest);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /* 부서 상위 하위 관계 수정 */
+    @PutMapping("/modifyDeptRelations/{dept_relations_code}")
+    public ResponseEntity<Void> modifyDeptRelations(@PathVariable int dept_relations_code, @RequestBody ModifyDeptRelationsRequest modifyRequest) {
+
+        employeeService.modifyDeptRelations(
+                dept_relations_code,
+                modifyRequest.getParentDepartment(),
+                modifyRequest.getSubDepartment());
+
+        return ResponseEntity.ok().build();
+    }
+
+    /* 부서 상위 하위 관계 삭제 */
+    @DeleteMapping("/deleteDeptRelations")
+    public ResponseEntity<Void> deleteDeptRelations(@RequestBody RegistDeptRelationsRequest registDeptRelationsRequest) {
+
+        employeeService.deleteDeptRelations(registDeptRelationsRequest);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    /* 부서 전체 조회(상위,하위 부서 관계 포함) */
     @GetMapping("/departments")
     public ResponseEntity<List<GetDeptTitleResponse>> getDepartments() {
 
@@ -95,10 +154,10 @@ public class EmployeeController {
     }
 
     /* 부서 상세 조회 */
-    @GetMapping("/departmentList/{dept_code}")
+    @GetMapping("/deptDetailList/{dept_code}")
     public ResponseEntity<DepartmentResponse> getDepartmentList(@PathVariable String dept_code) {
 
-        DepartmentResponse departmentResponse = employeeService.getDepartmentList(dept_code);
+        DepartmentResponse departmentResponse = employeeService.getDeptDetailList(dept_code);
 
         return ResponseEntity.ok(departmentResponse);
     }
@@ -122,25 +181,35 @@ public class EmployeeController {
     }
 
     /* 비밀번호 초기화 */
-    @PatchMapping("/resetEmpPass/{emp_code}")
+    @PutMapping("/resetEmpPass/{emp_code}")
     public ResponseEntity<ResetEmpPassRequest> patchEmpPass(@PathVariable int emp_code, @RequestHeader("Authorization") String token) {
-
-        String jwtToken = TokenUtils.getToken(token);
-
-        String tokenDeptCode = TokenUtils.getDeptCode(jwtToken);
-
-        List<String> allowedDeptCodes = List.of("D4", "D5", "D6");      // 인사부서(인사부, 채용팀, 교육개발팀) 인원만 비밀번호 초기화 가능
-
-//        System.out.println("allowedDeptCodes : " + allowedDeptCodes);
-//        System.out.println("tokenDeptCode : " + tokenDeptCode);
-
-//        if(tokenDeptCode == null || !allowedDeptCodes.contains(tokenDeptCode)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
 
         employeeService.resetEmpPass(emp_code);
 
         return ResponseEntity.ok().build();
     }
+
+//    @PatchMapping("/resetEmpPass/{emp_code}")
+//    public ResponseEntity<ResetEmpPassRequest> patchEmpPass(@PathVariable int emp_code, @RequestHeader("Authorization") String token) {
+//
+//        String jwtToken = TokenUtils.getToken(token);
+//        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+//        int empCode = Integer.parseInt(tokenEmpCode);
+//
+//        String tokenDeptCode = TokenUtils.getDeptCode(jwtToken);
+//
+//        List<String> allowedDeptCodes = List.of("D4", "D5", "D6");      // 인사부서(인사부, 채용팀, 교육개발팀) 인원만 비밀번호 초기화 가능
+//                                                                          // 팀 인원이 초기화 해주는걸로 바꿈
+//        System.out.println("allowedDeptCodes : " + allowedDeptCodes);
+//        System.out.println("tokenDeptCode : " + tokenDeptCode);
+//
+//        if(tokenDeptCode == null || !allowedDeptCodes.contains(tokenDeptCode)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+//
+//        employeeService.resetEmpPass(emp_code);
+//
+//        return ResponseEntity.ok().build();
+//    }
 }
 

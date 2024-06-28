@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -52,6 +54,9 @@ public class Employee {
     @JoinColumn(name = "bank_code", referencedColumnName = "bank_code")
     private Bank bank;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private Set<DetailByEmpRegist> empRegistDetails = new HashSet<>();
+
 
     public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
@@ -90,6 +95,9 @@ public class Employee {
         this.bank = bank;
     }
 
+    public void addEmpRegistDetail(DetailByEmpRegist detailByEmpRegist) {
+        empRegistDetails.add(detailByEmpRegist);
+    }
 
     public void resetPassword(String newEmpPass) {
         this.emp_pass = newEmpPass;

@@ -15,4 +15,12 @@ public interface DeptRelationsRepository extends JpaRepository<DeptRelations, In
 //    @Query("SELECT dr FROM DeptRelations dr WHERE dr.sub_dept_code = :deptCode or dr.sup_dept_code = :deptCode")
     List<DeptRelations> findAll();
 
+    /* 상위 부서 부서장 조회 */
+    @Query("SELECT DISTINCT e.emp_name FROM Employee e JOIN e.department d WHERE d.dept_code = " +
+            "(SELECT dr.parentDepartment.dept_code FROM DeptRelations dr WHERE dr.subDepartment.dept_code = :subDeptCode) " +
+            "AND e.title.title_code = 'T4' AND e.emp_status = 'Y'")
+    String findParentDepartmentManagerBySubDeptCode(String subDeptCode);
+
+    DeptRelations findByParentDepartmentAndSubDepartment(Department parentDepartment, Department subDepartment);
+
 }
