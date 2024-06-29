@@ -20,7 +20,7 @@ public class ViewLineResponse {
     private final String titleName;
     private final int empCode;
     private final String empName;
-    private final String empSign;
+    private final int empSign;
     private final String talReason;
 
     public static ViewLineResponse from(final TrueLine trueLine){

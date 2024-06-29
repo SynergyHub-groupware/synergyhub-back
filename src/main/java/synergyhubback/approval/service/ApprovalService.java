@@ -848,4 +848,10 @@ public class ApprovalService {
     public void deleteDocInStorage(String adCode, int abCode) {
         approvalStorageRepository.deleteByDocument_AdCodeAndApprovalBox_AbCode(adCode, abCode);
     }
+
+    public void uploadImage(Integer empCode) {
+        Employee foundEmployee = employeeRepository.findById(empCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + empCode));
+        foundEmployee.signRegist(empCode);
+        employeeRepository.save(foundEmployee);
+    }
 }

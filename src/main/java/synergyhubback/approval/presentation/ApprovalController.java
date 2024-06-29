@@ -86,33 +86,33 @@ public class ApprovalController {
 
     private final Path signRoot = Paths.get("C:/SynergyHub/Signimgs");
 
-//    @PatchMapping("/uploadImage")
-//    public ResponseEntity<Void> uploadImage(@RequestParam Integer empCode, @RequestParam("image") MultipartFile image){
-//        try {
-//            // 디렉토리가 없으면 생성
-//            if (!Files.exists(signRoot)) Files.createDirectories(signRoot);
-//
-//            // 파일 확장자 추출
-//            String originalFilename = image.getOriginalFilename();
-//            String fileExtension = "";
-//            if (originalFilename != null && originalFilename.contains(".")) {
-//                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-//            }
-//
-//            // 파일 저장
-//            String filename = empCode + fileExtension;
-//            Path filePath = signRoot.resolve(filename);
-//            Files.copy(image.getInputStream(), filePath);
-//
-//            // DB에 이미지명 저장
-//            approvalService.uploadImage(empCode, filename);
-//
-//            return ResponseEntity.ok().build();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
+    @PatchMapping("/uploadImage")
+    public ResponseEntity<Void> uploadImage(@RequestParam Integer empCode, @RequestParam("image") MultipartFile image){
+        try {
+            // 디렉토리가 없으면 생성
+            if (!Files.exists(signRoot)) Files.createDirectories(signRoot);
+
+            // 파일 확장자 추출
+            String originalFilename = image.getOriginalFilename();
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 파일 저장
+            String filename = empCode + fileExtension;
+            Path filePath = signRoot.resolve(filename);
+            Files.copy(image.getInputStream(), filePath);
+
+            // DB에 이미지명 저장
+            approvalService.uploadImage(empCode);
+
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
 
     @PostMapping("/regist")
     public ResponseEntity<Void> regist(@RequestParam("document") String documentJson, @RequestParam(value = "files", required = false) MultipartFile[] files, @RequestParam boolean temporary){

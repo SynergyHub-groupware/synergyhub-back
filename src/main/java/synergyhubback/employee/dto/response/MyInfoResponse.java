@@ -29,7 +29,7 @@ public class MyInfoResponse {
     private LocalDate hire_date;
     private LocalDate end_date;
     private String emp_status;
-    private String emp_sign;
+    private int emp_sign;
     private String emp_img;
     private String dept_code;
     private String dept_title;
