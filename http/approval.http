@@ -177,4 +177,4 @@ POST http://localhost:8080/approval/registDocInStorage?adCode=AD1&abCode=6
 GET http://localhost:8080/approval/docListInStorage?abCode=6
 
 ### 개인보관함에서 결재문서 삭제
-DELETE http://localhost:8080/approval/deleteDocInStorage?adCode=AD1&abCode=6
+DELETE http://localhost:8080/approval/deleteDocInStorage?adCode=AD1&abCode=2
