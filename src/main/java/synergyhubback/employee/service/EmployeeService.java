@@ -220,6 +220,12 @@ public class EmployeeService {
         return empTitleList.stream().map(EmpTitleListResponse::from).toList();
     }
 
+    public List<GetPositionNameResponse> getPositionList() {
+        List<Position> empPositionList = positionRepository.findAll();
+
+        return empPositionList.stream().map(GetPositionNameResponse::from).toList();
+    }
+
     public List<OrgResponse> getOrgEmps(
 
 

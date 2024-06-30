@@ -18,7 +18,7 @@ public class GetPositionNameResponse {
     private String position_name;
 
 
-    public static GetPositionNameResponse getPositionName(Position position) {
+    public static GetPositionNameResponse from(Position position) {
 
         return new GetPositionNameResponse(
 

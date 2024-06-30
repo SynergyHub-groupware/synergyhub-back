@@ -29,7 +29,7 @@ public class Employee {
     private LocalDate hire_date;
     private LocalDate end_date;
     private String emp_status;
-    private int emp_sign;
+    private Integer emp_sign;
     private String emp_img;
     private String refreshToken;    // 생성함
 
@@ -104,7 +104,7 @@ public class Employee {
     }
 
     // 이다정: 서명등록
-    public void signRegist(int emp_sign) {
+    public void signRegist(Integer emp_sign) {
         this.emp_sign = emp_sign;
     }
 }
