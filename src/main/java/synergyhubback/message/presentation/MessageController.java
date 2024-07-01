@@ -9,6 +9,7 @@ import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.dto.request.CreateMsgRequest;
 import synergyhubback.message.dto.request.CreateTempRequest;
 import synergyhubback.message.dto.request.RevMsgDelRequest;
+import synergyhubback.message.dto.request.SendMsgDelRequest;
 import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
 
@@ -70,6 +71,15 @@ public class MessageController {
     @PutMapping("/receive/{msgCode}/bin")
     public ResponseEntity<Void> RevMsgDel(@PathVariable String msgCode, @RequestBody RevMsgDelRequest request) {
         messageService.RevMsgDel(msgCode, request.getStorCode());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /* 보낸 쪽지 휴지통 업데이트 (PATCH) */
+    @PutMapping("/send/{msgCode}/bin")
+    public ResponseEntity<Void> sendMsgDel(@PathVariable String msgCode, @RequestBody SendMsgDelRequest request) {
+
+        messageService.SendMsgDel(msgCode, request.getStorCode());
 
         return ResponseEntity.noContent().build();
     }
@@ -157,7 +167,8 @@ public class MessageController {
                     request.getEmerStatus(),
                     request.getEmpRev(),
                     request.getEmpSend(),
-                    request.getStorCode());
+                    request.getRevStor(),
+                    request.getSendStor());
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ResponseMsg(200, "메세지를 전송했습니다.", null));
@@ -179,7 +190,8 @@ public class MessageController {
                     request.getEmerStatus(),
                     request.getEmpRev(),
                     request.getEmpSend(),
-                    request.getStorCode()
+                    request.getRevStor(),
+                    request.getSendStor()
             );
 
             return ResponseEntity.status(HttpStatus.CREATED)

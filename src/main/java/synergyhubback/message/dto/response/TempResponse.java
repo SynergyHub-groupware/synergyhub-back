@@ -22,7 +22,8 @@ public class TempResponse {
     private String emerStatus;
     private int empRev;
     private int empSend;
-    private int storCode;
+    private int revStor;
+    private int sendStor;
     private String revName;
     private String revPosition;
 
@@ -37,7 +38,8 @@ public class TempResponse {
                 message.getEmerStatus(),
                 message.getEmpRev().getEmp_code(),
                 message.getEmpSend().getEmp_code(),
-                message.getStorCode().getStorCode(),
+                message.getRevStor().getStorCode(),
+                message.getSendStor().getStorCode(),
                 message.getEmpRev().getEmp_name(),
                 message.getEmpRev().getPosition().getPosition_name()
         );

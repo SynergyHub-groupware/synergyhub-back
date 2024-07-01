@@ -17,5 +17,6 @@ public class CreateMsgRequest {
     private final String emerStatus;
     private final Employee empRev;
     private final Employee empSend;
-    private final Storage storCode;
+    private final Storage revStor;
+    private final Storage sendStor;
 }

@@ -61,7 +61,7 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    /* 휴지통 PUT 업데이트 로직 */
+    /* 받은 쪽지 휴지통 PUT 업데이트 로직 */
     @Transactional
     public void RevMsgDel(String msgCode, int storCode) {
         Message message = messageRepository.findById(msgCode)
@@ -70,7 +70,21 @@ public class MessageService {
         Storage storage = storageRepository.findById(storCode)
                 .orElseThrow(() -> new IllegalArgumentException("storage not found with storCode : " + storCode ));
 
-        message.setStorCode(storage);
+        message.setRevStor(storage);
+
+        messageRepository.save(message);
+    }
+
+    /* 보낸 쪽지 휴지통 PUT 업데이트 로직 */
+    @Transactional
+    public void SendMsgDel(String msgCode, int storCode) {
+        Message message = messageRepository.findById(msgCode)
+                .orElseThrow(() -> new IllegalArgumentException("message not found with msgCode : " + msgCode));
+
+        Storage storage = storageRepository.findById(storCode)
+                .orElseThrow(() -> new IllegalArgumentException("storage not found with storCode : " + storCode));
+
+        message.setSendStor(storage);
 
         messageRepository.save(message);
     }
@@ -131,9 +145,9 @@ public class MessageService {
         return "MS" + (lastNum + 1);
     }
 
-    /* Send Msg (Insert) */
+//    /* Send Msg (Insert) */
     @Transactional
-    public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage storCode) {
+    public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage revStor, Storage sendStor) {
 
         String lastMsgCode = messageRepository.findLastMsgCode();
         String newMsgCode = newMsgCode(lastMsgCode);
@@ -143,7 +157,8 @@ public class MessageService {
         System.out.println("msgCon = " + msgCon);
         System.out.println("empRev = " + empRev);
         System.out.println("empSend = " + empSend);
-        System.out.println("storCode = " + storCode);
+        System.out.println("revStor = " + revStor);
+        System.out.println("sendStor = " + sendStor);
 
         Message message = Message.create(
                 newMsgCode,
@@ -156,7 +171,8 @@ public class MessageService {
 
         message.setEmpRev(empRev);
         message.setEmpSend(empSend);
-        message.setStorCode(storCode);
+        message.setRevStor(revStor);
+        message.setSendStor(sendStor);
 
         System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
@@ -165,7 +181,7 @@ public class MessageService {
     }
 
     /* Temp Create Msg */
-    public void createTemp(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage storCode) {
+    public void createTemp(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage revStor ,Storage sendStor) {
         String lastMsgCode = messageRepository.findLastMsgCode();
         String newMsgCode = newMsgCode(lastMsgCode);
 
@@ -180,7 +196,8 @@ public class MessageService {
 
         message.setEmpRev(empRev);
         message.setEmpSend(empSend);
-        message.setStorCode(storCode);
+        message.setRevStor(revStor);
+        message.setSendStor(sendStor);
 
         messageRepository.save(message);
     }
@@ -194,4 +211,6 @@ public class MessageService {
             throw new IllegalArgumentException("msgCode가 없음 : " + msgCode);
         }
     }
+
+
 }
