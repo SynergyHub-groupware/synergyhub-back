@@ -61,3 +61,23 @@ Content-Type: application/json
 ### Temp Msg
 GET http://localhost:8080/emp/message/temp
 Authorization: Bearer eyJkYXRlIjoxNzE5Nzk0NTE3MDc2LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjAzOTkzMTd9.jRiWUljXpBYNdhiXaV3bGuqZ8ZOkDJiV_KgGJkKkJgV5RzUw-lWjMvUSa0nGgUPF65ySR_pL2YDygmbB3eHkbw
+
+### Create Temp Msg
+POST http://localhost:8080/emp/message/create/temp
+Content-Type: application/json
+
+{
+  "msgTitle": "임시저장 테스트",
+  "msgCon": "임시저장이 잘 되었을까?",
+  "msgStatus": "N",
+  "emerStatus": "N",
+  "empRev": {
+    "emp_code": "2022089"
+  },
+  "empSend": {
+    "emp_code": "2021067"
+  },
+  "storCode": {
+    "storCode": "4"
+  }
+}

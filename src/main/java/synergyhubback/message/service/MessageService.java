@@ -164,4 +164,24 @@ public class MessageService {
         // 푸쉬용 머지
     }
 
+    /* Temp Create Msg */
+    public void createTemp(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage storCode) {
+        String lastMsgCode = messageRepository.findLastMsgCode();
+        String newMsgCode = newMsgCode(lastMsgCode);
+
+        Message message = Message.create(
+                newMsgCode,
+                LocalDate.now(),
+                msgTitle,
+                msgCon,
+                msgStatus,
+                emerStatus
+        );
+
+        message.setEmpRev(empRev);
+        message.setEmpSend(empSend);
+        message.setStorCode(storCode);
+
+        messageRepository.save(message);
+    }
 }

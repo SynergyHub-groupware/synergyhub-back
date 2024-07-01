@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.dto.request.CreateMsgRequest;
+import synergyhubback.message.dto.request.CreateTempRequest;
 import synergyhubback.message.dto.request.RevMsgDelRequest;
 import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
@@ -166,4 +167,26 @@ public class MessageController {
         }
     }
 
+    /* Temp Message Create (Insert) */
+    @PostMapping("/create/temp")
+    public ResponseEntity<ResponseMsg> createTemp(@RequestBody CreateTempRequest request) {
+
+        try {
+            messageService.createTemp(
+                    request.getMsgTitle(),
+                    request.getMsgCon(),
+                    request.getMsgStatus(),
+                    request.getEmerStatus(),
+                    request.getEmpRev(),
+                    request.getEmpSend(),
+                    request.getStorCode()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "임시저장 되었습니다.", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
+    }
 }
