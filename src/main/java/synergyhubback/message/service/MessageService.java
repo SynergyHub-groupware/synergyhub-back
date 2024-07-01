@@ -98,6 +98,16 @@ public class MessageService {
                 .map(WorkResponse::getWorkMessage)
                 .collect(Collectors.toList());
     }
+    public List<TempResponse> getTempMessage(int empCode) {
+
+        List<Message> tempList = messageRepository.findByTemp_empCode(empCode);
+
+        System.out.println("tempList = " + tempList);
+
+        return tempList.stream()
+                .map(TempResponse::getTempMessage)
+                .collect(Collectors.toList());
+    }
 
     /* Rev Msg By MsgCode */
     public Message findMsgByMsgCode(String msgCode) {
@@ -153,4 +163,5 @@ public class MessageService {
         messageRepository.save(message);
         // 푸쉬용 머지
     }
+
 }

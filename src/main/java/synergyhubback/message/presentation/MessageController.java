@@ -103,6 +103,21 @@ public class MessageController {
         return new ResponseEntity<>(workList, HttpStatus.OK);
     }
 
+    /* 임시 저장 전체 조회 */
+    @GetMapping("/temp")
+    public ResponseEntity<List<TempResponse>> getTempMessage(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<TempResponse> tempList = messageService.getTempMessage(empCode);
+
+        System.out.println("tempList = " + tempList);
+
+        return new ResponseEntity<>(tempList, HttpStatus.OK);
+    }
+
     /* MS 코드에 따라 Rev Detail 조회 */
     @GetMapping("/receive/{msgCode}")
     public ResponseEntity<ReceiveResponse> getMsgByCode(@PathVariable String msgCode) {

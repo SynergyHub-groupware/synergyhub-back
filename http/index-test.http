@@ -57,3 +57,7 @@ Content-Type: application/json
   "empSend": {"emp_code": "2021067"},
   "storCode": {"storCode": "1"}
 }
+
+### Temp Msg
+GET http://localhost:8080/emp/message/temp
+Authorization: Bearer eyJkYXRlIjoxNzE5Nzk0NTE3MDc2LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjAzOTkzMTd9.jRiWUljXpBYNdhiXaV3bGuqZ8ZOkDJiV_KgGJkKkJgV5RzUw-lWjMvUSa0nGgUPF65ySR_pL2YDygmbB3eHkbw
