@@ -184,4 +184,14 @@ public class MessageService {
 
         messageRepository.save(message);
     }
+
+    @Transactional
+    public void deleteMsg(String msgCode) {
+
+        if(messageRepository.existsById(msgCode)) {
+            messageRepository.deleteById(msgCode);
+        } else {
+            throw new IllegalArgumentException("msgCode가 없음 : " + msgCode);
+        }
+    }
 }

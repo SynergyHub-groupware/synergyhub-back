@@ -189,4 +189,16 @@ public class MessageController {
                     .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
         }
     }
+
+    /* 쪽지 완전 삭제 */
+    @DeleteMapping("/bin/{msgCode}")
+    public ResponseEntity<Void> deleteMsg(@PathVariable String msgCode){
+
+        try {
+            messageService.deleteMsg(msgCode);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

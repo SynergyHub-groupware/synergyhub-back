@@ -81,3 +81,6 @@ Content-Type: application/json
     "storCode": "4"
   }
 }
+
+### Delete Msg
+DELETE http://localhost:8080/emp/message/bin/MS84
