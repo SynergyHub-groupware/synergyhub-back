@@ -229,6 +229,27 @@ public class AttendanceController {
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
     }
 
+    // 개인
+    @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
+    @GetMapping("/my-all")
+    public ResponseEntity<ResponseMessage> findAllAttendances(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<AttendancesResponse> attendances = attendanceService.findAllMyAttendances(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("attendances", attendances); // 복수형으로 변경: attendance -> attendances
+        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
 
     // 전체
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")

@@ -23,6 +23,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     @Query("SELECT a FROM Attendance a WHERE a.atdDate BETWEEN :startDate AND :endDate")
     List<AttendancesResponse> findAttendanceInDateRange(@Param("startDate") LocalDate startDate, @Param("endDate")LocalDate endDate);
 
+    //3. 모든 근태 기록 (개인)
+    @Query("SELECT a FROM Attendance a WHERE a.employee.emp_code = :empCode")
+    List<Attendance> findAllByEmpCode(int empCode);
+
     /* 가장 최신 근태 기록 조회 */
     Attendance findTopByOrderByAtdCodeDesc();
 
@@ -31,6 +35,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     /* 오늘의 근태 기록 조회 */
     @Query("SELECT a FROM Attendance a WHERE DATE(a.startTime) = :date")
     Attendance findByStartDate(@Param("date") LocalDate date);
+
 
 
 

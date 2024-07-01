@@ -233,7 +233,21 @@ public class AttendanceService {
         return attendanceRepository.findAttendanceInDateRange(startDate, endDate);
     }
 
-    /* 모든 근태 기록 */
+    /* 개인 : 모든 근태 기록 */
+    public List<AttendancesResponse> findAllMyAttendances(int empCode) {
+        List<Attendance> attendances = attendanceRepository.findAllByEmpCode(empCode);
+
+        System.out.println(attendances);
+
+        return attendances.stream()
+                .map(AttendancesResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    /* 권한별 모든 근태 기록 */
+    
+
+    /* 전체 : 모든 근태 기록 */
     public List<AttendancesResponse> findAllAttendances() {
         List<Attendance> attendances = attendanceRepository.findAll();
 
@@ -254,6 +268,7 @@ public class AttendanceService {
         // 사원 조회
         Employee employee = employeeRepository.findById(empCode)
                 .orElseThrow(() -> new EntityNotFoundException("사원을 찾을 수 없습니다."));
+
 
         // 현재 날짜 계산
         LocalDate currentDate = LocalDate.now();
@@ -399,6 +414,8 @@ public class AttendanceService {
                 .map(DayOffResponse::new)
                 .collect(Collectors.toList());
     }
+
+
 
 //    //권한별 사원 조회
 //    public List<AttendancesResponse> findMyDepartment() {

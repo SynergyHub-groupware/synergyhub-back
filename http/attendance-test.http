@@ -1,14 +1,17 @@
-### 전체 근태 기록 조회
+### 전체 근태 기록 조회(개인)
+GET http://localhost:8080/api/attendance/my-all
+Authorization: Bearer eyJkYXRlIjoxNzE5ODExODE4ODM0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA0MTY2MTh9.fFhehGUNEywEVolCLotGmcm26dU-I6EYr3vC2KNqE0UbFWd8E8_hTs1s6rJCD_hHiNSurKbSgTaPfPsJyE-6Bg
+
+### 전체 근태 기록 조회(전체)
 GET http://localhost:8080/api/attendance/all
 
 ### 오늘의 근태 기록 조회
 GET http://localhost:8080/api/attendance/today
-Authorization: Bearer eyJkYXRlIjoxNzE5NDczNjc4NTEzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NzcyNzh9.GcXoDam9SoDVXGLScbEDFfSTXxdlHumhEHw-ZSsNQmjQrrxKod17XkaTNIhF695mMgJQpwoTazmi_9EZt8-9xQ
+Authorization: Bearer eyJkYXRlIjoxNzE5ODExODE4ODM0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA0MTY2MTh9.fFhehGUNEywEVolCLotGmcm26dU-I6EYr3vC2KNqE0UbFWd8E8_hTs1s6rJCD_hHiNSurKbSgTaPfPsJyE-6Bg
 
 ### 금주의 근태 기록 조회
 GET http://localhost:8080/api/attendance/my-current-week
 Authorization: Bearer eyJkYXRlIjoxNzE5NDU2OTQyOTcyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NjA1NDJ9.P386BB4b5L0PLqYHOS3yVjRRdheW6V9SMf5slw-0pJ45N4LdW9N5qlKSheIZ3uvEciYN0UEBlqCFX9_qQLAjFw
-
 
 ### 금주의 근태 기록 조회
 GET http://localhost:8080/api/attendance/current-week
