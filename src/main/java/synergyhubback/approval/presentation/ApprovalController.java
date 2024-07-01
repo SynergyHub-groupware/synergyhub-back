@@ -179,6 +179,13 @@ public class ApprovalController {
 //        return ResponseEntity.ok(pagingResponse);
 //    }
 
+
+    @GetMapping("/viewInfo")
+    public ResponseEntity<DocumentResponse> findViewInfo(@RequestParam final String adCode){
+        final DocumentResponse viewInfo = approvalService.findViewInfo(adCode);
+        return ResponseEntity.ok(viewInfo);
+    }
+
     @GetMapping("/viewLine")
     public ResponseEntity<List<ViewLineResponse>> findViwLineList(@RequestParam final String adCode){
         final List<ViewLineResponse> viewLineList = approvalService.findViwLineList(adCode);

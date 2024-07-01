@@ -137,6 +137,7 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findDocListInStorage(int abCode);
 
+
 //    @Query(value = "SELECT ab.AB_code, ab.AB_NAME, s.AS_CODE, ad.AD_CODE, ad.AD_TITLE, af.AF_NAME, tal.EMP_CODE, ei.emp_name, tal.TAL_DATE " +
 //            "FROM approval_box ab " +
 //            "JOIN approval_storage s USING (ab_code) " +

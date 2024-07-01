@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -237,7 +238,52 @@ public class ApprovalService {
                     });
                 }
 
-                // 첨부파일 수정 후, 저장 ????
+                // 첨부파일 수정 후, 저장
+                List<AttachmentEntity> attachList = attachmentRepository.findByAttachSort(adCode);
+
+                // 일단 원래 첨부파일 전부 삭제하고
+                if(attachList != null && !attachList.isEmpty()){
+                    attachmentRepository.deleteAll(attachList);         // db에서 삭제
+
+                    for (AttachmentEntity attachment : attachList) {    // 로컬 폴더에서 파일삭제
+                        String attachSave = attachment.getAttachSave();
+                        try {
+                            Path filePath = Paths.get(attachment.getAttachUrl(), attachSave);
+                            Files.delete(filePath);
+                        } catch (Exception e) {
+                            System.err.println("Failed to delete file: " + attachSave);
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // 새로 받아온 첨부파일 다시 저장
+                File uploadDirectory = new File(approvalDir);   // 업로드 디렉토리가 존재하지 않으면 생성합니다.
+                if (!uploadDirectory.exists()) uploadDirectory.mkdirs();
+
+                for (MultipartFile file : files) {
+                    String originalFileName = file.getOriginalFilename();
+                    String saveFileName = generateSaveFileName(originalFileName);
+
+                    // 파일 저장 경로 생성
+                    File destFile = new File(approvalDir + File.separator + saveFileName);
+
+                    // 파일을 로컬에 저장
+                    try {
+                        file.transferTo(destFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // 첨부파일 테이블에 정보 저장
+                    AttachmentEntity newAttachment = AttachmentEntity.of(
+                            originalFileName,
+                            saveFileName,
+                            approvalDir,
+                            adCode
+                    );
+                    attachmentRepository.save(newAttachment);
+                }
 
                 // 임시저장 문서를 상신할 경우, 임시저장 정보 삭제
                 if(temporary == false){
@@ -543,6 +589,12 @@ public class ApprovalService {
 //
 //        return docList.map(DocListResponse::from);
 //    }
+
+
+    public DocumentResponse findViewInfo(String adCode) {
+        Document viewInfo = docRepository.findById(adCode).orElseThrow(() -> new IllegalArgumentException("Invalid adCode:" + adCode));
+        return DocumentResponse.from(viewInfo);
+    }
 
     public List<ViewLineResponse> findViwLineList(final String adCode) {
         List<TrueLine> viewLineList = trueLineRepository.findViewLineList(adCode);
