@@ -17,6 +17,7 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "    FROM TrueLine t2 " +
             "    WHERE t2.document = d " +
             "    AND t2.talStatus = '미결재' " +
+            "    AND t2.talOrder > 0 " +
             ")" +
             "AND d.adStatus = :status " +
             "AND e.emp_code = :empCode " +
@@ -109,6 +110,14 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findReturnReceiveList(Integer empCode);
+
+    @Query("SELECT t FROM TrueLine t " +
+            "JOIN t.document d " +
+            "JOIN d.employee e " +
+            "JOIN d.form f " +
+            "WHERE (t.employee.emp_code = :empCode AND t.talRole = '열람' AND d.adStatus = '완료') " +
+            "OR (t.employee.emp_code = :empCode AND t.talRole = '참조' AND d.adStatus != '임시저장')")
+    List<TrueLine> findReferenceReceiveList(Integer empCode);
 
     @Query("SELECT t FROM TrueLine t " +
             "WHERE t.document.adCode = :adCode " +

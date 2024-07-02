@@ -712,7 +712,7 @@ public class ApprovalService {
         }else if(status.equals("return")){
             docList = trueLineRepository.findReturnReceiveList(empCode);
         }else if(status.equals("reference")){
-
+            docList = trueLineRepository.findReferenceReceiveList(empCode);
         }else{
             docList = trueLineRepository.findWaitingReceiveList(empCode);
         }
