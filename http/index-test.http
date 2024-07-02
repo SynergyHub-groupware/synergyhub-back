@@ -13,13 +13,21 @@ GET http://localhost:8080/address/select
 
 ### 받은 쪽지 전체 조회
 GET http://localhost:8080/emp/message/receive
-Authorization: Bearer eyJkYXRlIjoxNzE5Mzg3NTg3MTc1LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzOTExODd9.2W0dlF1_3cY0_68-kF3DzN1cqGDiHxcrPC191pGUpuCkbK88z1xeZgsMQ-Q402zZ0qD1hx6q4RyIP4qR7Hzntg
+Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
 ### 보낸 쪽지 전체 조회
 GET http://localhost:8080/emp/message/send
-Authorization: Bearer eyJkYXRlIjoxNzE5MzkxNjc2NDYyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzOTUyNzZ9.niBzvc1ktCTtOEtRCBBX90uMLMPBII21ouZinjTRuQ9PpZa4HMdOTwu49WitdZjc_HDuMmIZy9T9kdPa0UkKFA
+Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
 
 ### 받은 쪽지 휴지통 PUT
-PUT http://localhost:8080/emp/message/receive/MS40/bin
+PUT http://localhost:8080/emp/message/receive/MS38/bin
+Content-Type: application/json
+
+{
+  "storCode": 2
+}
+
+### 보낸 쪽지 휴지통 PUT
+PUT http://localhost:8080/emp/message/send/MS6/bin
 Content-Type: application/json
 
 {
@@ -28,15 +36,15 @@ Content-Type: application/json
 
 ### 휴지통 전체 조회
 GET http://localhost:8080/emp/message/bin
-Authorization: Bearer eyJkYXRlIjoxNzE5MzcwMTg2NjUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzNzM3ODZ9.P0E-tVtS64rPidQUanwPbFQtUTYRUvtynPIx-iwMqPHrsGzsWiwagEC8LR4fUFJSQ5062bbLrtJEueEkoicR2w
+Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
 
 ### 중요 보관함 전체 조회
 GET http://localhost:8080/emp/message/important
-Authorization: Bearer eyJkYXRlIjoxNzE5Mzg0MDAwNzgxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzODc2MDB9.KcdwXsSFy-9poSbRc_aviihkBZ6Z3NSHZwdlbO_UUrW8pmhWGHp5kxVk7NtJMNeM8fk8PSOxOCy-Wos1nGqrFg
+Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
 
 ### 업무 보관함 전체 조회
 GET http://localhost:8080/emp/message/work
-Authorization: Bearer eyJkYXRlIjoxNzE5MzcwMTg2NjUyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MTkzNzM3ODZ9.P0E-tVtS64rPidQUanwPbFQtUTYRUvtynPIx-iwMqPHrsGzsWiwagEC8LR4fUFJSQ5062bbLrtJEueEkoicR2w
+Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
 
 ### Rev Msg Detail Get
 GET http://localhost:8080/emp/message/receive/MS72
@@ -55,5 +63,40 @@ Content-Type: application/json
   "emerStatus": "N",
   "empRev": {"emp_code": "2022089"},
   "empSend": {"emp_code": "2021067"},
-  "storCode": {"storCode": "1"}
+  "revStor": {
+    "storCode": 1
+  },
+  "sendStor": {
+    "storCode": 1
+  }
 }
+
+### Temp Msg
+GET http://localhost:8080/emp/message/temp
+Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
+
+### Create Temp Msg
+POST http://localhost:8080/emp/message/create/temp
+Content-Type: application/json
+
+{
+  "msgTitle": "임시저장 테스트99",
+  "msgCon": "임시저장이 잘 되었을까?",
+  "msgStatus": "N",
+  "emerStatus": "N",
+  "empRev": {
+    "emp_code": "2022089"
+  },
+  "empSend": {
+    "emp_code": "2021067"
+  },
+  "revStor": {
+    "storCode": 4
+  },
+  "sendStor": {
+    "storCode": 4
+  }
+}
+
+### Delete Msg
+DELETE http://localhost:8080/emp/message/bin/MS84

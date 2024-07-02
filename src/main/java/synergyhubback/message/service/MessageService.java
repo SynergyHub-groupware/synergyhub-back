@@ -61,7 +61,7 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    /* 휴지통 PUT 업데이트 로직 */
+    /* 받은 쪽지 휴지통 PUT 업데이트 로직 */
     @Transactional
     public void RevMsgDel(String msgCode, int storCode) {
         Message message = messageRepository.findById(msgCode)
@@ -70,7 +70,21 @@ public class MessageService {
         Storage storage = storageRepository.findById(storCode)
                 .orElseThrow(() -> new IllegalArgumentException("storage not found with storCode : " + storCode ));
 
-        message.setStorCode(storage);
+        message.setRevStor(storage);
+
+        messageRepository.save(message);
+    }
+
+    /* 보낸 쪽지 휴지통 PUT 업데이트 로직 */
+    @Transactional
+    public void SendMsgDel(String msgCode, int storCode) {
+        Message message = messageRepository.findById(msgCode)
+                .orElseThrow(() -> new IllegalArgumentException("message not found with msgCode : " + msgCode));
+
+        Storage storage = storageRepository.findById(storCode)
+                .orElseThrow(() -> new IllegalArgumentException("storage not found with storCode : " + storCode));
+
+        message.setSendStor(storage);
 
         messageRepository.save(message);
     }
@@ -98,6 +112,16 @@ public class MessageService {
                 .map(WorkResponse::getWorkMessage)
                 .collect(Collectors.toList());
     }
+    public List<TempResponse> getTempMessage(int empCode) {
+
+        List<Message> tempList = messageRepository.findByTemp_empCode(empCode);
+
+        System.out.println("tempList = " + tempList);
+
+        return tempList.stream()
+                .map(TempResponse::getTempMessage)
+                .collect(Collectors.toList());
+    }
 
     /* Rev Msg By MsgCode */
     public Message findMsgByMsgCode(String msgCode) {
@@ -109,6 +133,7 @@ public class MessageService {
         return messageRepository.findSendMsgByMsgCode(msgCode);
     }
 
+    /* old msgCode를 가져와서 비교 후 new msgCode로 교체 */
     private String newMsgCode(String lastMsgCode) {
 
         if (lastMsgCode == null || !lastMsgCode.matches("\\d+")) {
@@ -120,8 +145,9 @@ public class MessageService {
         return "MS" + (lastNum + 1);
     }
 
+//    /* Send Msg (Insert) */
     @Transactional
-    public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage storCode) {
+    public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage revStor, Storage sendStor) {
 
         String lastMsgCode = messageRepository.findLastMsgCode();
         String newMsgCode = newMsgCode(lastMsgCode);
@@ -131,7 +157,8 @@ public class MessageService {
         System.out.println("msgCon = " + msgCon);
         System.out.println("empRev = " + empRev);
         System.out.println("empSend = " + empSend);
-        System.out.println("storCode = " + storCode);
+        System.out.println("revStor = " + revStor);
+        System.out.println("sendStor = " + sendStor);
 
         Message message = Message.create(
                 newMsgCode,
@@ -144,11 +171,45 @@ public class MessageService {
 
         message.setEmpRev(empRev);
         message.setEmpSend(empSend);
-        message.setStorCode(storCode);
+        message.setRevStor(revStor);
+        message.setSendStor(sendStor);
 
         System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
         messageRepository.save(message);
-        // 커밋용
     }
+
+    /* Temp Create Msg */
+    public void createTemp(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage revStor ,Storage sendStor) {
+        String lastMsgCode = messageRepository.findLastMsgCode();
+        String newMsgCode = newMsgCode(lastMsgCode);
+
+        Message message = Message.create(
+                newMsgCode,
+                LocalDate.now(),
+                msgTitle,
+                msgCon,
+                msgStatus,
+                emerStatus
+        );
+
+        message.setEmpRev(empRev);
+        message.setEmpSend(empSend);
+        message.setRevStor(revStor);
+        message.setSendStor(sendStor);
+
+        messageRepository.save(message);
+    }
+
+    @Transactional
+    public void deleteMsg(String msgCode) {
+
+        if(messageRepository.existsById(msgCode)) {
+            messageRepository.deleteById(msgCode);
+        } else {
+            throw new IllegalArgumentException("msgCode가 없음 : " + msgCode);
+        }
+    }
+
+
 }
