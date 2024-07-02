@@ -24,14 +24,14 @@ public class OverWorkResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endTime;      //종료시간
 
-    private Employee employee;           //사원코드 (추후 fk)
+    private int employee;           //사원코드 (추후 fk)
 
     public OverWorkResponse(OverWork overWork) {
         this.owCode = overWork.getOwCode();
         this.owDate = overWork.getOwDate();
         this.startTime = overWork.getStartTime();
         this.endTime = overWork.getEndTime();
-        this.employee = overWork.getEmployee();
+        this.employee = overWork.getEmployee().getEmp_code();
     }
 
 }

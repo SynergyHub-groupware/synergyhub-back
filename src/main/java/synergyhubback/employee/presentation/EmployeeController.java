@@ -153,6 +153,7 @@ public class EmployeeController {
         return ResponseEntity.ok(getDeptTitleResponse);
     }
 
+
     /* 부서 상세 조회 */
     @GetMapping("/deptDetailList/{dept_code}")
     public ResponseEntity<DepartmentResponse> getDepartmentList(@PathVariable String dept_code) {

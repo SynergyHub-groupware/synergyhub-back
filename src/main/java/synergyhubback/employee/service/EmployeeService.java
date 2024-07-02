@@ -291,10 +291,10 @@ public class EmployeeService {
                         department.getDept_code(),
                         department.getDept_title(),
                         department.getSubDepartments().stream()
-                                .map(sub -> sub.getSubDepartment().getDept_code())
+                                .map(sub -> sub.getSubDepartment().getDept_title())
                                 .collect(Collectors.toList()),
                         department.getParentDepartments().stream()
-                                .map(par -> par.getParentDepartment().getDept_code())
+                                .map(par -> par.getParentDepartment().getDept_title())
                                 .collect(Collectors.toList())
                 ))
                 .collect(Collectors.toList());
