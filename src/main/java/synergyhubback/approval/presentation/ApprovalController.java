@@ -11,16 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.request.FormRegistRequest;
-import synergyhubback.approval.dto.request.StorageListRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.approval.service.ApprovalService;
-import synergyhubback.employee.service.EmployeeService;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,34 +82,6 @@ public class ApprovalController {
     }
 
     private final Path signRoot = Paths.get("C:/SynergyHub/Signimgs");
-
-//    @PatchMapping("/uploadImage")
-//    public ResponseEntity<Void> uploadImage(@RequestParam Integer empCode, @RequestParam("image") MultipartFile image){
-//        try {
-//            // 디렉토리가 없으면 생성
-//            if (!Files.exists(signRoot)) Files.createDirectories(signRoot);
-//
-//            // 파일 확장자 추출
-//            String originalFilename = image.getOriginalFilename();
-//            String fileExtension = "";
-//            if (originalFilename != null && originalFilename.contains(".")) {
-//                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-//            }
-//
-//            // 파일 저장
-//            String filename = empCode + fileExtension;
-//            Path filePath = signRoot.resolve(filename);
-//            Files.copy(image.getInputStream(), filePath);
-//
-//            // DB에 이미지명 저장
-//            approvalService.uploadImage(empCode);
-//
-//            return ResponseEntity.ok().build();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
 
     @PatchMapping("/uploadImage")
     public ResponseEntity<Void> uploadImage(@RequestParam Integer empCode, @RequestParam("image") MultipartFile image) {

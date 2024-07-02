@@ -877,12 +877,9 @@ public class ApprovalService {
 
     public void registDocInStorage(String adCode, int abCode) {
         Document foundDoc = docRepository.findById(adCode).orElseThrow(() -> new RuntimeException("Document not found with adCode: " + adCode));
-        System.out.println("foundDoc = " + foundDoc);
         ApprovalBox foundBox = approvalBoxRepository.findById(abCode).orElseThrow(() -> new RuntimeException("ApprovalBox not found with abCode: " + abCode));
-        System.out.println("foundBox = " + foundBox);
 
         List<ApprovalStorage> foundStorage = approvalStorageRepository.findByDocument_AdCodeAndApprovalBox_AbCode(adCode, abCode);
-        System.out.println("foundStorage = " + foundStorage);
 
         if(foundStorage == null || foundStorage.isEmpty()){
             ApprovalStorage newStorage = ApprovalStorage.of(foundDoc, foundBox);
@@ -906,4 +903,5 @@ public class ApprovalService {
         foundEmployee.signRegist(empCode);
         employeeRepository.save(foundEmployee);
     }
+
 }
