@@ -177,7 +177,6 @@ public class MessageService {
         System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
         messageRepository.save(message);
-        // 푸쉬용 머지
     }
 
     /* Temp Create Msg */
