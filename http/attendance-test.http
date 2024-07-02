@@ -70,3 +70,27 @@ GET http://localhost:8080/api/attendance/overwork
 
 ### 휴가기록 모두 조회
 GET http://localhost:8080/api/attendance/dayOff
+
+### 휴가기록 개인별 조회
+GET http://localhost:8080/api/attendance/my-dayOff
+Authorization: Bearer eyJkYXRlIjoxNzE5ODk5MTU4Mzc2LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA1MDM5NTh9.SHw7V6sGPiRCyOxzVpWcJAKO919TzFIOX49UqyRoaNOrBbpgS00j05eCiRovuMCrwfHH4fz3nZN3Dh4vVlW0dQ
+
+### 개인 휴가보유 내역 조회
+GET http://localhost:8080/api/attendance/my-dayOffBalance
+Authorization: Bearer eyJkYXRlIjoxNzE5OTA5OTAxOTY5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA1MTQ3MDF9.5wwbAjiKbLGvk3j2gOt8ulx8yXRB74zS8LkDhYN1VKWAcbPMosWdpA39_GMQ4GJjMtCPzUNzwqZT7APMTr0dcg
+
+### 휴가 등록
+POST http://localhost:8080/api/attendance/registDayOff
+Content-Type: application/json
+
+{
+  "doReportDate": "2024-07-02",
+  "doName": "연차",
+  "doUsed": 1.0,
+  "doStartDate": "2024-07-04",
+  "doEndDate": "2024-07-04",
+  "doStartTime": "09:00:00",
+  "doEndTime": "18:00:00",
+  "employee":
+  { "emp_code": 2024062 }
+}

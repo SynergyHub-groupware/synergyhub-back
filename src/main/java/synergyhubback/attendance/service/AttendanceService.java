@@ -9,14 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.attendance.domain.entity.*;
 import synergyhubback.attendance.domain.repository.*;
-import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
-import synergyhubback.attendance.dto.request.AttendanceRegistRequest;
-import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
-import synergyhubback.attendance.dto.request.DayOffBalanceRequest;
-import synergyhubback.attendance.dto.response.AttendancesResponse;
-import synergyhubback.attendance.dto.response.DayOffResponse;
-import synergyhubback.attendance.dto.response.DefaultScheduleResponse;
-import synergyhubback.attendance.dto.response.OverWorkResponse;
+import synergyhubback.attendance.dto.request.*;
+import synergyhubback.attendance.dto.response.*;
 import synergyhubback.common.util.DateUtils;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
@@ -94,7 +88,7 @@ public class AttendanceService {
 
             // 지정 출퇴근시간 설정
             if (selectDept != null) {
-                if(selectEmpCode != null) {
+                if (selectEmpCode != null) {
                     newAttendanceRequest.setAtdStartTime(selectEmpCode.getAtdStartTime());
                     newAttendanceRequest.setAtdEndTime(selectEmpCode.getAtdEndTime());
                 } else {
@@ -245,7 +239,7 @@ public class AttendanceService {
     }
 
     /* 권한별 모든 근태 기록 */
-    
+
 
     /* 전체 : 모든 근태 기록 */
     public List<AttendancesResponse> findAllAttendances() {
@@ -391,9 +385,9 @@ public class AttendanceService {
             }
 
             // 부여수, 잔여수, 사용수, 사원코드 설정
-            newDayOffBalance.setGranted(15);
-            newDayOffBalance.setRemaining(15);
-            newDayOffBalance.setDbUsed(0);
+            newDayOffBalance.setGranted(15.0);
+            newDayOffBalance.setRemaining(15.0);
+            newDayOffBalance.setDbUsed(0.0);
             newDayOffBalance.setEmployee(employee);
 
             // 부여날짜 설정
@@ -406,7 +400,7 @@ public class AttendanceService {
         }
     }
 
-    // 휴가기록 조회
+    // 휴가기록 조회 : 전체
     public List<DayOffResponse> findAllDayOff() {
         List<DayOff> dayOffList = dayOffRepository.findAll();
 
@@ -415,11 +409,93 @@ public class AttendanceService {
                 .collect(Collectors.toList());
     }
 
+    // 휴가기록 조회 : 개인
+    public List<DayOffResponse> findAllDayOffByEmpCode(int empCode) {
+        List<DayOff> dayOffList = dayOffRepository.findAllByEmpCode(empCode);
 
+        return dayOffList.stream()
+                .map(DayOffResponse::new)
+                .collect(Collectors.toList());
+    }
 
-//    //권한별 사원 조회
-//    public List<AttendancesResponse> findMyDepartment() {
-//        List<Attendance> attendances = attendanceRepository.find
-//
-//    }
+    // 단일 휴가기록 조회 : 개인
+    public DayOffResponse findDayOffResearch(int empCode, String doStartDate) {
+        DayOff dayOff = dayOffRepository.findByEmpCode(empCode, doStartDate);
+
+        DayOffResponse response = new DayOffResponse(dayOff);
+
+        return response;
+    }
+
+    // 보유 휴가 조회 : 개인
+    public DayOffBalanceResponse findAllDayOffBalanceByEmpCode(int empCode) {
+        DayOffBalance dayOffBalanceList = dayOffBalanceRepository.findAllByEmpCode(empCode);
+
+        DayOffBalanceResponse response = new DayOffBalanceResponse(dayOffBalanceList);
+
+        return response;
+    }
+
+    @Transactional
+// 휴가 등록
+    public void registDayOff(LocalDate doReportDate,
+                             String doName, Double doUsed,
+                             LocalDate doStartDate, LocalDate doEndDate,
+                             LocalTime doStartTime, LocalTime doEndTime,
+                             Employee employee) {
+
+        // 보유 휴가 조회
+        DayOffBalance myDayOffBalance = dayOffRepository.findMyDayOffBalanceByEmpCode(employee.getEmp_code());
+
+        /* 휴가 기록 저장 */
+        DayOff dayOff = DayOff.builder()
+                .doReportDate(doReportDate)
+                .doName(doName)
+                .doUsed(doUsed)
+                .doStartDate(doStartDate)
+                .doEndDate(doEndDate)
+                .doStartTime(doStartTime)
+                .doEndTime(doEndTime)
+                .granted(myDayOffBalance.getGranted())
+                .dbUsed(myDayOffBalance.getDbUsed())
+                .remaining(myDayOffBalance.getRemaining())
+                .employee(employee)
+                .build();
+
+        dayOffRepository.save(dayOff);
+
+        /* 기록 남긴 후, 보유 휴가 수정 */
+
+        // 1. 부여 연차 수정
+        if (doUsed == 1) {
+            myDayOffBalance.modifyGranted(1);
+        } else if (doUsed == 0.5) {
+            myDayOffBalance.modifyGranted(0.5);
+        } else if (doUsed == 0.25) {
+            myDayOffBalance.modifyGranted(0.25);
+        }
+
+        // 2. 사용 연차 수정
+        if (doUsed == 1) {
+            myDayOffBalance.modifyDbUsed(1);
+        } else if (doUsed == 0.5) {
+            myDayOffBalance.modifyDbUsed(0.5);
+        } else if (doUsed == 0.25) {
+            myDayOffBalance.modifyDbUsed(0.25);
+        }
+
+        // 3. 잔여 연차 수정
+        if (doUsed == 1) {
+            myDayOffBalance.modifyRemaining(1);
+        } else if (doUsed == 0.5) {
+            myDayOffBalance.modifyRemaining(0.5);
+        } else if (doUsed == 0.25) {
+            myDayOffBalance.modifyRemaining(0.25);
+        }
+
+        // 변경사항을 데이터베이스에 반영
+        dayOffBalanceRepository.save(myDayOffBalance);
+    }
+
 }
+
