@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.message.domain.entity.Message;
-import synergyhubback.message.dto.request.CreateMsgRequest;
-import synergyhubback.message.dto.request.CreateTempRequest;
-import synergyhubback.message.dto.request.RevMsgDelRequest;
-import synergyhubback.message.dto.request.SendMsgDelRequest;
+import synergyhubback.message.dto.request.*;
 import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
 
@@ -212,5 +209,14 @@ public class MessageController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /* 쪽지 읽음 처리 */
+    @PatchMapping("/{msgCode}/read")
+    public ResponseEntity<Void> changeStatusByReadMsg(@PathVariable String msgCode) {
+
+        messageService.changeStatusByReadMsg(msgCode);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -10,10 +10,12 @@ import synergyhubback.message.domain.repository.MessageRepository;
 import synergyhubback.message.domain.repository.MsgEmpRepository;
 import synergyhubback.message.domain.repository.StorageRepository;
 import synergyhubback.message.dto.request.CreateMsgRequest;
+import synergyhubback.message.dto.request.UpdateStatusRequest;
 import synergyhubback.message.dto.response.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("messageService")
@@ -212,4 +214,18 @@ public class MessageService {
     }
 
 
+    public void changeStatusByReadMsg(String msgCode) {
+
+        Optional<Message> optional = messageRepository.findById(msgCode);
+
+        if (optional.isPresent()) {
+
+            Message message = optional.get();
+            message.setMsgStatus("Y");  // 읽음 상태로 변경
+            messageRepository.save(message);
+
+        } else {
+            throw new IllegalArgumentException("쪽지를 찾을 수 없습니다. " + msgCode);
+        }
+    }
 }

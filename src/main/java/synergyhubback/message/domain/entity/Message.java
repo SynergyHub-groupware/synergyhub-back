@@ -46,7 +46,7 @@ public class Message {
         this.revStor = revStor;
     }
     public void setSendStor(Storage sendStor) { this.sendStor = sendStor;}
-
+    public void setMsgStatus(String msgStatus) { this.msgStatus = msgStatus; }
     public Message(String msgCode, LocalDate sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus){
         this.msgCode = msgCode;
         this.sendDate = sendDate;

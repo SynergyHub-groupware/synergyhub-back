@@ -100,3 +100,6 @@ Content-Type: application/json
 
 ### Delete Msg
 DELETE http://localhost:8080/emp/message/bin/MS84
+
+### Update MsgStatus
+PATCH http://localhost:8080/emp/message/MS74/read
