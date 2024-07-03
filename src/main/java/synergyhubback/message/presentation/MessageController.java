@@ -265,4 +265,13 @@ public class MessageController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachOriginal + "\"")
                 .body(file);
     }
+
+    /* 중요 보관함 이동 처리 */
+    @PutMapping("/toImp/{msgCode}")
+    public ResponseEntity<Void> moveToImp(@PathVariable String msgCode, @RequestBody MsgToImpRequest request) {
+
+        messageService.moveToImp(msgCode, request.getStorCode());
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -321,4 +321,18 @@ public class MessageService {
             throw new RuntimeException("File not found : " + attachSave, e);
         }
     }
+
+    @Transactional
+    public void moveToImp(String msgCode, int storCode) {
+
+        Message message = messageRepository.findById(msgCode)
+                .orElseThrow(() -> new IllegalArgumentException("message not found with msgCode : " + msgCode));
+
+        Storage storage = storageRepository.findById(storCode)
+                .orElseThrow(() -> new IllegalArgumentException("storage not found with storCode : " + storCode));
+
+        message.setRevStor(storage);
+
+        messageRepository.save(message);
+    }
 }
