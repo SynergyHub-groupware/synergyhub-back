@@ -312,6 +312,11 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    public List<SimpleDeptsResponse> getSimpleDepts() {
+        List<Department> simpleDepts = departmentRepository.findAll();
+        return simpleDepts.stream().map(SimpleDeptsResponse::from).toList();
+    }
+
     public DepartmentResponse getDeptDetailList(String dept_code) {
 
         Department department = departmentRepository.findDeptDetailByDeptCode(dept_code);
@@ -384,6 +389,5 @@ public class EmployeeService {
 
         employeeRepository.save(employee);
     }
-
 
 }

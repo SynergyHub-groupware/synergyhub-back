@@ -2,7 +2,7 @@
 GET http://localhost:8080/approval/formList
 
 ### 결재양식기본내용 조회
-GET http://localhost:8080/approval/formContent?afCode=12
+GET http://localhost:8080/approval/formContent?afCode=13
 
 ### 결재라인 특정 조회
 GET http://localhost:8080/approval/formLine?lsCode=4

@@ -265,6 +265,7 @@ public class ApprovalController {
 
     @DeleteMapping("/deleteBox")
     public ResponseEntity<Void> deleteBox(@RequestParam final int abCode){
+        System.out.println("abCode = " + abCode);
         approvalService.deleteBox(abCode);
         return ResponseEntity.noContent().build();
     }

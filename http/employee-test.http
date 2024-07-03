@@ -132,6 +132,9 @@ Content-Type:application/json
 ### 부서 전체 조회
 GET http://localhost:8080/employee/departments
 
+### 부서 전체 단순 조회 : 이다정
+GET http://localhost:8080/employee/simpleDepts
+
 ### 부서 상세 조회
 GET http://localhost:8080/employee/deptDetailList/D1
 

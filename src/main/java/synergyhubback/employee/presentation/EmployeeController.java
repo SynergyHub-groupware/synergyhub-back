@@ -153,6 +153,12 @@ public class EmployeeController {
         return ResponseEntity.ok(getDeptTitleResponse);
     }
 
+    /* 부서 전체 단순 조회 : 이다정 */
+    @GetMapping("simpleDepts")
+    public ResponseEntity<List<SimpleDeptsResponse>> getSimpleDepts(){
+        List<SimpleDeptsResponse> simpleDepts = employeeService.getSimpleDepts();
+        return ResponseEntity.ok(simpleDepts);
+    }
 
     /* 부서 상세 조회 */
     @GetMapping("/deptDetailList/{dept_code}")

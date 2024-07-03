@@ -45,6 +45,11 @@ public class Department {
         this.subDepartments = subDepartments;
     }
 
+    private Department(String dept_code, String dept_title){
+        this.dept_code = dept_code;
+        this.dept_title = dept_title;
+    }
+
     public void setParentDepartment(Department parentDepartment) {
         // 기존의 parentDepartments를 업데이트할 수도 있어야 함
         this.parentDepartments.add(new DeptRelations(parentDepartment, this));
