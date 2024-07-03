@@ -17,8 +17,10 @@ import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
+import synergyhubback.post.dto.request.BoardRequest;
 import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
+import synergyhubback.post.dto.request.PostRoleRequest;
 import synergyhubback.post.service.PostService;
 
 import java.io.File;
@@ -28,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -41,6 +44,28 @@ public class PostController {
 
     private final PostService postService;
 
+    @PostMapping("/boardCreate")
+    public ResponseEntity<LowBoardEntity> boardCreate(@RequestBody BoardRequest boardRequest) {
+
+        return ResponseEntity.ok(postService.boardCreate(boardRequest));
+    }
+    @PostMapping("/PostRoleCreate")
+    public ResponseEntity<String> postRoleCreate(@RequestBody List<PostRoleRequest> updatedRoles) {
+//        PostRoleRequest readPostRoleRequest = payload.get("readPostRoleRequest");
+//        PostRoleRequest writePostRoleRequest = payload.get("writePostRoleRequest");
+//        PostRoleRequest adminPostRoleRequest = payload.get("adminPostRoleRequest");
+//
+//        System.out.println("readPostRoleRequest : " + readPostRoleRequest);
+//        System.out.println("writePostRoleRequest : " + writePostRoleRequest);
+//        System.out.println("adminPostRoleRequest : " + adminPostRoleRequest);
+
+        try {
+            postService.createRoles(updatedRoles);
+            return ResponseEntity.ok("Roles created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while creating roles: " + e.getMessage());
+        }
+    }
     @GetMapping("/ReadyPost/{empCode}")
     public ResponseEntity<List<PostRequest>> ReadyPost(@PathVariable int empCode) {
         return ResponseEntity.ok(postService.ReadyPost(empCode));

@@ -3,8 +3,11 @@ package synergyhubback.post.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
@@ -12,18 +15,19 @@ import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.post.domain.entity.*;
-import synergyhubback.post.domain.repository.CommentRepository;
-import synergyhubback.post.domain.repository.PostRepository;
+import synergyhubback.post.domain.repository.*;
 import synergyhubback.post.domain.type.PostCommSet;
+import synergyhubback.post.dto.request.BoardRequest;
 import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
-import synergyhubback.post.dto.response.CommonResponse;
+import synergyhubback.post.dto.request.PostRoleRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +40,12 @@ public class PostService {
     private CommentRepository commentRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private LowBoardRepository lowBoardRepository;
+    @Autowired
+    private PostRoleRepository postRoleRepository;
+    @Autowired
+    private BoardRepository boardRepository;
 
     public PostEntity LastPost() {
         return postRepository.LastPost();
@@ -52,6 +62,7 @@ public class PostService {
 
     @Transactional
     public PostEntity insertPost(PostRequest newPost) {
+        System.out.println(newPost);
         // PostRequest 에서 필요한 필드를 추출하여 PostEntity 객체를 생성
         PostEntity postEntity = new PostEntity();
         postEntity.setPostCode(newPost.getPostCode());
@@ -194,4 +205,113 @@ public class PostService {
                 .map(PostEntity::toPostRequest)
                 .collect(Collectors.toList());
     }
+
+    public LowBoardEntity boardCreate(BoardRequest boardRequest) {
+        System.out.println("boardRequest:" + boardRequest);
+        // 보드 코드 가져오기
+        int boardCode = boardRequest.getBoardCode();
+
+        // 보드 코드로 BoardEntity 검색
+        BoardEntity boardEntity = boardRepository.findByBoardCode(boardCode);
+
+        // 보드 엔티티가 존재하지 않으면 예외 처리
+//        if (boardEntity == null) {
+//            throw new IllegalArgumentException("해당 코드의 보드가 존재하지 않습니다: " + boardCode);
+//        }
+
+        // LowBoardEntity 생성 및 설정
+        LowBoardEntity board = new LowBoardEntity();
+        board.setLowBoardName(boardRequest.getLowName());
+        board.setBoardCode(boardEntity);
+
+        // LowBoardEntity 저장
+        return lowBoardRepository.save(board);
+    }
+
+    public void createRoles(List<PostRoleRequest> updatedRoles) {
+        for (PostRoleRequest role : updatedRoles) {
+            PostRoleEntity postRole = new PostRoleEntity();
+            postRole.setPrWriteRole(role.getPrWriteRole());
+            LowBoardEntity lowBoardEntity = new LowBoardEntity(); // Assuming constructor with ID
+            lowBoardEntity.setLowBoardCode(role.getLowCode());
+            postRole.setLowCode(lowBoardEntity);
+            Employee employee = new Employee();
+            employee.setEmp_code(role.getEmpCode());
+
+            postRole.setEmpCode(employee);
+            postRole.setPrAdmin(role.getPrAdmin());
+            postRoleRepository.save(postRole);
+        }
+
+    }
+//    @Transactional
+//    public List<PostRoleRequest> postRoleCreate(Map<String, PostRoleRequest> updatedRoles) {
+//        List<PostRoleEntity> entitiesToSave = new ArrayList<>();
+//        System.out.println("start");
+//        System.out.println("start");
+//        System.out.println("start");
+//        System.out.println("start");
+//        System.out.println("start");
+//        System.out.println("start");
+//        System.out.println("start");
+//        System.out.println("start");
+//        // Create and populate readpostRole
+////        PostRoleEntity readpostRole = new PostRoleEntity();
+////        readpostRole.setPrAdmin(readPostRoleRequest.getPrAdmin());
+////        LowBoardEntity lowBoardEntity = new LowBoardEntity(); // Assuming constructor with ID
+////        lowBoardEntity.setLowBoardCode(readPostRoleRequest.getLowCode());
+////        readpostRole.setLowCode(lowBoardEntity); // Assuming constructor with ID
+////        Employee employee = new Employee();
+////        employee.setEmp_code(readPostRoleRequest.getEmpCode());
+////        readpostRole.setEmpCode(employee); // Assuming constructor with ID
+////        readpostRole.setPrWriteRole(readPostRoleRequest.getPrWriteRole());
+////        entitiesToSave.add(readpostRole);
+////
+////        // Create and populate writepostRole
+////        PostRoleEntity writepostRole = new PostRoleEntity();
+////        writepostRole.setPrAdmin(writePostRoleRequest.getPrAdmin());
+////        LowBoardEntity lowBoardEntity2 = new LowBoardEntity(); // Assuming constructor with ID
+////        lowBoardEntity2.setLowBoardCode(writePostRoleRequest.getLowCode());
+////        writepostRole.setLowCode(lowBoardEntity2); // Assuming constructor with ID
+////        Employee employee2 = new Employee();
+////        employee.setEmp_code(writePostRoleRequest.getEmpCode());
+////        writepostRole.setEmpCode(employee2); // Assuming constructor with ID
+////        writepostRole.setPrWriteRole(writePostRoleRequest.getPrWriteRole());
+////        entitiesToSave.add(writepostRole);
+////
+////        // Create and populate adminpostRole
+////        PostRoleEntity adminpostRole = new PostRoleEntity();
+////        adminpostRole.setPrAdmin(adminPostRoleRequest.getPrAdmin());
+////        LowBoardEntity lowBoardEntity3 = new LowBoardEntity(); // Assuming constructor with ID
+////        lowBoardEntity3.setLowBoardCode(adminPostRoleRequest.getLowCode());
+////        adminpostRole.setLowCode(lowBoardEntity3); // Assuming constructor with ID
+////        Employee employee3 = new Employee();
+////        employee3.setEmp_code(adminPostRoleRequest.getEmpCode());
+////        adminpostRole.setEmpCode(employee3); // Assuming constructor with ID
+////        adminpostRole.setPrWriteRole(adminPostRoleRequest.getPrWriteRole());
+////        entitiesToSave.add(adminpostRole);
+//
+//        PostRoleEntity postRole = new PostRoleEntity();
+//        postRole.setPrAdmin(updatedRoles.get("readPostRole").getPrAdmin());
+//        postRole.setPrWriteRole(updatedRoles.get("readPostRole").getPrWriteRole());
+//        postRole.setLowCode(updatedRoles.get());
+//
+//        System.out.println(entitiesToSave);
+//        // Save entities to database
+//        List<PostRoleEntity> savedEntities = postRoleRepository.saveAll(entitiesToSave);
+//
+//        // Convert entities back to DTOs and return
+//        List<PostRoleRequest> response = new ArrayList<>();
+//        for (PostRoleEntity entity : savedEntities) {
+//            PostRoleRequest dto = new PostRoleRequest();
+//            dto.setPrWriteRole(entity.getPrWriteRole());
+//            dto.setLowCode(entity.getLowCode().getLowBoardCode()); // Assuming getId method exists
+//            dto.setEmpCode(entity.getEmpCode().getEmp_code()); // Assuming getId method exists
+//            dto.setPrAdmin(entity.getPrAdmin());
+//            response.add(dto);
+//        }
+//
+//        return response;
+//    }
 }
+

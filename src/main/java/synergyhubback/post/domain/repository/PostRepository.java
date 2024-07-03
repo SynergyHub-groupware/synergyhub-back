@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.PostRequest;
+import synergyhubback.post.dto.request.PostRoleRequest;
 
 import java.util.List;
 
@@ -73,4 +74,5 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     @Query("SELECT p from PostEntity p where p.EmpCode.emp_code = :empCode ORDER BY p.PostCode DESC")
     List<PostEntity> ReadyPost(@Param("emp_code") int empCode);
+
 }
