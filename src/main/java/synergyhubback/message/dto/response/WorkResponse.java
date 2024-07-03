@@ -22,7 +22,8 @@ public class WorkResponse {
     private String emerStatus;
     private int empRev;
     private int empSend;
-    private int storCode;
+    private int revStor;
+    private int sendStor;
     private String sendName;
     private String sendPosition;
     private String revName;
@@ -38,7 +39,8 @@ public class WorkResponse {
                 message.getEmerStatus(),
                 message.getEmpRev().getEmp_code(),
                 message.getEmpSend().getEmp_code(),
-                message.getStorCode().getStorCode(),
+                message.getRevStor().getStorCode(),
+                message.getSendStor().getStorCode(),
                 message.getEmpSend().getEmp_name(),
                 message.getEmpSend().getPosition().getPosition_name(),
                 message.getEmpRev().getEmp_name(),

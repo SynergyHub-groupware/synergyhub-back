@@ -3,9 +3,12 @@ package synergyhubback.post.domain.repository;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import synergyhubback.post.domain.entity.*;
+import synergyhubback.post.domain.type.PostCommSet;
+import synergyhubback.post.dto.request.PostRequest;
 
 import java.util.List;
 
@@ -24,10 +27,10 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Query("select p from PostSortEntity p ")
     List<PostSortEntity> getAllPostSortList();
 
-    @Query("select p from PostEntity p where p.LowBoardCode.LowBoardCode=:lowCode")
+    @Query("select p from PostEntity p where p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D'")
     List<PostEntity> InboardList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
-    @Query("SELECT p FROM PostEntity p WHERE p.FixStatus = 'Y' AND p.LowBoardCode.LowBoardCode = :lowCode ORDER BY p.PostCode DESC")
+    @Query("SELECT p FROM PostEntity p WHERE p.FixStatus = 'Y' AND p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
     List<PostEntity> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
     @Query("SELECT p FROM PostEntity p WHERE p.PostCode=:postCode ")
@@ -38,4 +41,36 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     @Query("select l from LowBoardEntity l")
     List<LowBoardEntity> getAllLowBoard();
+
+    @Query("SELECT p FROM PostEntity p WHERE p.PostName LIKE CONCAT('%', :searchWord, '%') OR p.PostCon LIKE CONCAT('%', :searchWord, '%') AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
+    List<PostEntity> postSearch(String searchWord);
+
+    @Query("select p from PostEntity p where p.PostCode = :postCode")
+    PostEntity findByPostCode(String postCode);
+
+    @Modifying
+    @Query("DELETE FROM CommentEntity c WHERE c.CommCode = :commCode")
+    Integer  deleteComment(@Param("CommCode") String commCode);
+
+    @Modifying
+    @Query("UPDATE CommentEntity c SET c.CommCon = :commCon WHERE c.CommCode = :commCode")
+    Integer updateComment(@Param("commCode") String commCode, @Param("commCon") String commCon);
+
+    @Modifying
+    @Query("UPDATE PostEntity p SET p.PostName = :postName, p.PostCon = :postCon, p.LowBoardCode.LowBoardCode = :lowBoardCode, p.postCommSet = :postCommSet, p.FixStatus = :fixStatus, p.NoticeStatus = :noticeStatus, p.PsCode.PsCode = :psCode WHERE p.PostCode = :postCode")
+    Integer postUpdate(String postCode, String postName, String postCon, int lowBoardCode, PostCommSet postCommSet, char fixStatus, char noticeStatus, int psCode);
+
+    @Modifying
+    @Query("DELETE FROM AttachmentEntity a WHERE a.attachSort = :postCode")
+    void deleteFile(@Param("postCode") String postCode);
+
+    @Modifying
+    @Query("UPDATE PostEntity p SET p.FixStatus='D' WHERE p.PostCode = :postCode")
+    Integer postDelete(@Param("postCode") String postCode);
+
+    @Query("SELECT p FROM PostEntity p WHERE p.FixStatus <> 'D' ORDER BY p.PostCode ")
+    List<PostEntity> AllPostList(Pageable pageable);
+
+    @Query("SELECT p from PostEntity p where p.EmpCode.emp_code = :empCode ORDER BY p.PostCode DESC")
+    List<PostEntity> ReadyPost(@Param("emp_code") int empCode);
 }

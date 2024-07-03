@@ -21,13 +21,15 @@ public class DeptDetailResponse {
 
     private String dept_title;
 
-    private List<String> sup_dept_title;
+    private List<String> par_dept_title;        // 상위 부서
 
-    private List<String> sub_dept_title;
+    private List<String> sub_dept_title;        // 하위 부서
 
-    private int numOfTeamMember;
+    private int numOfTeamMember;        // 팀원 수
 
-    private List<String> teamMemberName;
+    private List<String> teamMemberName;        //팀원 이름
+
+    private String parentDeptManagerName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate creation_date;
@@ -36,17 +38,18 @@ public class DeptDetailResponse {
     private LocalDate end_date;
 
 
-    public static DeptDetailResponse getDeptDetail(Department department, String deptManagerName, List<String> supDeptTitles, List<String> subDeptTitles, int numOfTeamMember, List<String> teamMemberName) {
+    public static DeptDetailResponse getDeptDetail(Department department, String deptManagerName, List<String> parDeptTitles, List<String> subDeptTitles, int numOfTeamMember, List<String> teamMemberName, String parentDeptManagerName) {
 
         return new DeptDetailResponse(
 
                 department.getDept_code(),
                 deptManagerName,
                 department.getDept_title(),
-                supDeptTitles,
+                parDeptTitles,
                 subDeptTitles,
                 numOfTeamMember,
                 teamMemberName,
+                parentDeptManagerName,
                 department.getCreation_date(),
                 department.getEnd_date()
 

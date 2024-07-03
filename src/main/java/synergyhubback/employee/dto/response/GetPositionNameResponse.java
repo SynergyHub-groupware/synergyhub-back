@@ -22,8 +22,8 @@ public class GetPositionNameResponse {
 
         return new GetPositionNameResponse(
 
-            position.getPosition_code(),
-            position.getPosition_name()
+                position.getPosition_code(),
+                position.getPosition_name()
 
         );
     }

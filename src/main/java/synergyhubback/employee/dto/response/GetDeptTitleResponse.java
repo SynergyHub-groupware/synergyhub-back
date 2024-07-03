@@ -6,6 +6,8 @@ import lombok.Setter;
 import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,13 +17,8 @@ public class GetDeptTitleResponse {
 
     private String dept_title;
 
-    public static GetDeptTitleResponse getDeptTitle(Department department) {
+    private List<String> subDeptTitles;
 
-        return new GetDeptTitleResponse(
+    private List<String> parDeptTitles;
 
-                department.getDept_code(),
-                department.getDept_title()
-
-        );
-    }
 }

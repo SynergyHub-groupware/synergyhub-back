@@ -26,14 +26,33 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Employee findByEmpCode(int empCode);
 
     /* 팀원 정보 조회 */
-    @Query("SELECT e FROM Employee e WHERE e.department.dept_code = :deptCode")
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code = :deptCode AND e.emp_status = 'Y'")
     List<Employee> findAllByDeptCode(@Param("deptCode") String deptCode);
 
     /* 사원코드로 부서코드 조회 */
     @Query("SELECT e.department.dept_code FROM Employee e WHERE e.emp_code = :empCode")
     String findDeptCodeByEmpCode(@Param("empCode") int empCode);
 
+    @Query("SELECT e.emp_name FROM Employee e JOIN e.title t WHERE e.department.dept_code = :deptCode AND t.title_code = 'T4'")
+    default String findManagerByDeptCode(String deptCode) {
+        List<String> results = findManagersByDeptCode(deptCode);
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    @Query("SELECT e.emp_name FROM Employee e JOIN e.title t WHERE e.department.dept_code = :deptCode AND t.title_code = 'T4' AND e.emp_status = 'Y'")
+    List<String> findManagersByDeptCode(String deptCode);
+
+    @Query("SELECT COUNT(e) FROM Employee e WHERE e.department.dept_code = :deptCode AND e.emp_status = 'Y'")
+    int countTeamMembersByDeptCode(String deptCode);
+
+    @Query("SELECT e.emp_name FROM Employee e WHERE e.department.dept_code = :deptCode")
+    List<String> findTeamMemberNamesByDeptCode(String deptCode);
+
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code = :deptCode AND e.emp_status = 'Y'")
+    List<Employee> findAllActiveByDeptCode(@Param("deptCode") String deptCode);
+
     /* 사원코드로 이름 조회 : 이다정 */
     @Query("SELECT e.emp_name FROM Employee e WHERE e.emp_code = :empCode")
     String findEmpNameById(int empCode);
+// 제발요
 }
