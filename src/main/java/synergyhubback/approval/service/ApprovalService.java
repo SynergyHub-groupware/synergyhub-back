@@ -436,17 +436,39 @@ public class ApprovalService {
                 String ttl = docRepository.findAdTitleById(documentCode);
 
                 // 결재라인에서 첫번째 결재자 받아오기
-                Employee receiver = TrueLineList.get(0).getEmployee();
+                List<TrueLine> filteredTrueLineList = TrueLineList.stream().filter(line -> line.getTalOrder() != 0).toList();
+                Employee receiver = filteredTrueLineList.get(0).getEmployee();
 
                 String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
+                String getUrl = "/approval/view/" + documentCode;
 
+                // 첫번째 결재자한테 피드 보내기
                 Pheed newPheed = Pheed.of(
                         pheedContent,
                         LocalDateTime.now(), "N", "N",
                         documentCode,
-                        receiver
+                        receiver,
+                        getUrl
                 );
                 pheedRepository.save(newPheed);
+
+                // 모든 참조자한테 피드 보내기
+                List<TrueLine> referTrueLineList = TrueLineList.stream().filter(line -> line.getTalRole().equals("참조")).toList();
+                for(TrueLine line : referTrueLineList){
+                    Employee refer = line.getEmployee();
+                    String referName = employeeRepository.findEmpNameById(refer.getEmp_code());
+
+                    String pheedContent1 = writer + "님이 '" + ttl + "' 결재를 상신하였습니다. " + referName + "님은 '참조자'로써 해당 결재를 확인하실 수 있습니다.";
+
+                    Pheed newPheed1 = Pheed.of(
+                            pheedContent1,
+                            LocalDateTime.now(), "N", "N",
+                            documentCode,
+                            refer,
+                            getUrl
+                    );
+                    pheedRepository.save(newPheed1);
+                }
             }
 
             if (temporary) {  // 임시저장
@@ -752,27 +774,54 @@ public class ApprovalService {
         String writerName = employeeRepository.findEmpNameById(writerCode);     // 작성자 이름 조회
         Employee writer = employeeRepository.findById(writerCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + writerCode));
 
+        List<TrueLine> findTrueLineList = trueLineRepository.findByDocument_AdCode(adCode);
+        List<TrueLine> readTrueLineList = findTrueLineList.stream().filter(line -> line.getTalRole().equals("열람")).toList();
+
         if(foundAdStatus.equals("대기")){                         // 결재가 시작되었을때 전송
+            // 작성자한테 보내는 피드
             String pheedContent1 = "'" + ttl + "' 결재가 시작되었습니다.";
+            String getUrl = "/approval/view/" + adCode;
             Pheed newPheed1 = Pheed.of(
                     pheedContent1,
                     LocalDateTime.now(), "N", "N",
                     adCode,
-                    writer
+                    writer,
+                    getUrl
             );
             pheedRepository.save(newPheed1);
         }
 
         String foundAdStatus2 = docRepository.findAdStatusById(adCode); // 결재 승인 후에 문서 상태 조회
         if(foundAdStatus2.equals("완료")){     // 결재가 완료되었을때 전송
+            // 작성자한테 보내는 피드
             String pheedContent2 = "'" + ttl + "' 결재가 완료되었습니다.";
+            String getUrl = "/approval/view/" + adCode;
             Pheed newPheed2 = Pheed.of(
                     pheedContent2,
                     LocalDateTime.now(), "N", "N",
                     adCode,
-                    writer
+                    writer,
+                    getUrl
             );
             pheedRepository.save(newPheed2);
+
+            // 열람자한테 보내는 피드
+            for(TrueLine line: readTrueLineList){
+                Employee reader = line.getEmployee();
+                String readerName = employeeRepository.findEmpNameById(reader.getEmp_code());
+
+                String pheedContent0 = writerName + "님의 '" + ttl + "' 결재가 완료되었습니다. " + readerName + "님은 '열람자'로써 해당 결재를 확인하실 수 있습니다.";
+
+                Pheed newPheed0 = Pheed.of(
+                        pheedContent0,
+                        LocalDateTime.now(), "N", "N",
+                        adCode,
+                        reader,
+                        getUrl
+                );
+                pheedRepository.save(newPheed0);
+            }
+
         }
 
         // 다음 결재자한테 보내기
@@ -781,11 +830,13 @@ public class ApprovalService {
             Employee nextApprover = afterList.get(0).getEmployee();                // 다음 결재자 중 첫번째 결재자 조회
 
             String pheedContent3 = writerName + "님이 상신한 '" + ttl + "' 결재가 대기중입니다.";
+            String getUrl = "/approval/view/" + adCode;
             Pheed newPheed3 = Pheed.of(
                     pheedContent3,
                     LocalDateTime.now(), "N", "N",
                     adCode,
-                    nextApprover
+                    nextApprover,
+                    getUrl
             );
             pheedRepository.save(newPheed3);
         }
@@ -808,12 +859,14 @@ public class ApprovalService {
         Employee receiver = employeeRepository.findById(writerCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + writerCode));
 
         String pheedContent = turnedEmployee + "님이 '" + ttl + "' 결재를 반려하였습니다.";
+        String getUrl = "/approval/view/" + adCode;
 
         Pheed newPheed = Pheed.of(
                 pheedContent,
                 LocalDateTime.now(), "N", "N",
                 adCode,
-                receiver
+                receiver,
+                getUrl
         );
         pheedRepository.save(newPheed);
     }

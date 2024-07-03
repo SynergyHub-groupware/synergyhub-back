@@ -71,6 +71,7 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "    FROM TrueLine t2 " +
             "    WHERE t2.document = d " +
             "    AND t2.talStatus = '미결재' " +
+            "    AND t2.talOrder > 0 " +
             ")" +
             "AND t.employee.emp_code = :empCode " +
             "AND (d.adStatus = '대기' OR d.adStatus = '진행중') " +
@@ -111,12 +112,32 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findReturnReceiveList(Integer empCode);
 
+//    @Query("SELECT t FROM TrueLine t " +
+//            "JOIN t.document d " +
+//            "JOIN d.employee e " +
+//            "JOIN d.form f " +
+//            "WHERE (t.employee.emp_code = :empCode AND t.talRole = '열람' AND d.adStatus = '완료') " +
+//            "OR (t.employee.emp_code = :empCode AND t.talRole = '참조' AND d.adStatus != '임시저장') " +
+//            "ORDER BY d.adReportDate DESC, " +
+//            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+
     @Query("SELECT t FROM TrueLine t " +
             "JOIN t.document d " +
             "JOIN d.employee e " +
             "JOIN d.form f " +
-            "WHERE (t.employee.emp_code = :empCode AND t.talRole = '열람' AND d.adStatus = '완료') " +
-            "OR (t.employee.emp_code = :empCode AND t.talRole = '참조' AND d.adStatus != '임시저장')")
+            "WHERE d.adCode IN (" +
+            "    SELECT d2.adCode FROM TrueLine t2 " +
+            "    JOIN t2.document d2 " +
+            "    WHERE (t2.employee.emp_code = :empCode AND t2.talRole = '열람' AND d2.adStatus = '완료') " +
+            "    OR (t2.employee.emp_code = :empCode AND t2.talRole = '참조' AND d2.adStatus != '임시저장')" +
+            ") " +
+            "AND t.talOrder = (" +
+            "    SELECT MAX(t3.talOrder) FROM TrueLine t3 " +
+            "    WHERE t3.document.adCode = d.adCode " +
+            "    AND t3.talStatus != '미결재'" +
+            ") " +
+            "ORDER BY d.adReportDate DESC, " +
+            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findReferenceReceiveList(Integer empCode);
 
     @Query("SELECT t FROM TrueLine t " +
