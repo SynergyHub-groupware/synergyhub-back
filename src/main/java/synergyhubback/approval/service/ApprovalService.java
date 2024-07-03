@@ -16,7 +16,6 @@ import synergyhubback.approval.domain.repository.*;
 import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.request.FormRegistRequest;
-import synergyhubback.approval.dto.request.StorageListRequest;
 import synergyhubback.approval.dto.response.*;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
@@ -31,7 +30,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -102,6 +100,7 @@ public class ApprovalService {
     @Transactional
     public void regist(DocRegistRequest docRegistRequest, MultipartFile[] files, @RequestParam boolean temporary) {
         String adCode = docRegistRequest.getAdCode();
+        System.out.println("adCode = " + adCode);
         String adDetail = docRegistRequest.getAdDetail();
 
         if (adCode != null && !adCode.isEmpty()) {
@@ -289,6 +288,45 @@ public class ApprovalService {
                 if(temporary == false){
                     int abCode = 1; // 임시저장
                     approvalStorageRepository.deleteByDocument_AdCodeAndApprovalBox_AbCode(adCode, abCode);
+
+                    // 피드
+                    int writerCode = docRepository.findEmployeeEmpCodeById(adCode); // 결재문서코드로 작성자 empCode 조회
+                    String writer = employeeRepository.findEmpNameById(writerCode); // 작성자 이름 조회
+                    String ttl = docRepository.findAdTitleById(adCode);             // 결재문서 제목 조회
+
+                    List<TrueLine> filteredTrueLineList = docRegistRequest.getTrueLineList().stream().filter(line -> line.getTalOrder() != 0).toList();
+                    Employee receiver = filteredTrueLineList.get(0).getEmployee();  // 결재라인에서 첫번째 결재자 받아오기
+
+                    String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
+                    String getUrl = "/approval/view/" + adCode;
+
+                    // 첫번째 결재자한테 피드 보내기
+                    Pheed newPheed = Pheed.of(
+                            pheedContent,
+                            LocalDateTime.now(), "N", "N",
+                            adCode,
+                            receiver,
+                            getUrl
+                    );
+                    pheedRepository.save(newPheed);
+
+                    // 모든 참조자한테 피드 보내기
+                    List<TrueLine> referTrueLineList = docRegistRequest.getTrueLineList().stream().filter(line -> line.getTalRole().equals("참조")).toList();
+                    for(TrueLine line : referTrueLineList){
+                        Employee refer = line.getEmployee();
+                        String referName = employeeRepository.findEmpNameById(refer.getEmp_code());
+
+                        String pheedContent1 = writer + "님이 '" + ttl + "' 결재를 상신하였습니다. " + referName + "님은 '참조자'로써 해당 결재를 확인하실 수 있습니다.";
+
+                        Pheed newPheed1 = Pheed.of(
+                                pheedContent1,
+                                LocalDateTime.now(), "N", "N",
+                                adCode,
+                                refer,
+                                getUrl
+                        );
+                        pheedRepository.save(newPheed1);
+                    }
                 }
             }
         } else {
