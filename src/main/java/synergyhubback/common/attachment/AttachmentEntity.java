@@ -31,6 +31,10 @@ public class AttachmentEntity {
         return new AttachmentEntity(attachOriginal, attachSave, attachUrl, attachSort);
     }
 
+    public void modifyAttachment(String attachOriginal, String attachSave){
+        this.attachOriginal = attachOriginal;
+        this.attachSave = attachSave;
+    }
 }
 
 
