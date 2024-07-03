@@ -104,25 +104,16 @@ public class AttendanceController {
     public ResponseEntity<ResponseMessage> registDefaultSchedule(@RequestBody DefaultScheduleRequest request) {
         try {
             // Null 체크 추가
-            if (request.getDeptCode() == null) {
-                throw new IllegalArgumentException("DeptTitle이 null입니다.");
+            if (request.getParTitle() == null && request.getSubTitle() == null && request.getDeptTitle() == null) {
+                throw new IllegalArgumentException("부서나 팀 중 하나는 반드시 선택해야합니다.");
             } else if (request.getAtdStartTime() == null) {
-                throw new IllegalArgumentException("StartTime이 null입니다.");
+                throw new IllegalArgumentException("지정 출근시간을 설정해야합니다.");
             } else if (request.getAtdEndTime() == null) {
-                throw new IllegalArgumentException("endTime이 null입니다.");
-            }
-
-            // 존재 여부 체크
-            List<DefaultSchedule> existingSchedules = attendanceService.findDefaultSchedules(
-                    request.getDeptCode(), request.getParsedStartTime(), request.getParsedEndTime());
-            if (!existingSchedules.isEmpty()) {
-                return ResponseEntity
-                        .status(HttpStatus.CONFLICT)
-                        .body(new ResponseMessage(409, "이미 등록되어 있습니다.", null));
+                throw new IllegalArgumentException("지정 퇴근시간을 설정해야합니다.");
             }
 
             // 지정 출퇴근시간 등록
-            attendanceService.registDefaultSchedule(request.getDeptCode(), request.getParsedStartTime(), request.getParsedEndTime(), request.getEmployee());
+            attendanceService.registDefaultSchedule(request);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -159,6 +150,7 @@ public class AttendanceController {
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
     @GetMapping("/allSchedules")
     public ResponseEntity<ResponseMessage> findAllSchedules() {
+
         List<DefaultScheduleResponse> schedules = attendanceService.findAllDefaultSchedules();
         HttpHeaders headers = new HttpHeaders();
 
@@ -178,7 +170,7 @@ public class AttendanceController {
     public ResponseEntity<ResponseMessage> updateDefaultSchedule(@RequestBody DefaultScheduleRequest request) {
         try {
             // Null 체크 추가
-            if (request.getDeptCode() == null) {
+            if (request.getDeptTitle() == null) {
                 throw new IllegalArgumentException("DeptTitle이 null입니다.");
             } else if (request.getAtdStartTime() == null) {
                 throw new IllegalArgumentException("StartTime이 null입니다.");
@@ -187,7 +179,7 @@ public class AttendanceController {
             }
 
             // 출퇴근시간 수정
-            attendanceService.updateDefaultSchedule(request.getDeptCode(), request.getParsedStartTime(), request.getParsedEndTime(), request.getEmployee());
+            attendanceService.updateDefaultSchedule(request.getDeptTitle(), request.getAtdStartTime(), request.getAtdEndTime(), request.getEmployee());
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -401,20 +393,6 @@ public class AttendanceController {
             } else if (request.getDoName() == null) {
                 throw new IllegalArgumentException("휴가 종류를 입력하지 않았습니다.");
             }
-
-//            // Date 형식의 날짜를 문자열로 변환
-//            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//            LocalDate startDate = request.getDoStartDate(); // 날짜 객체
-//            String formattedDate = startDate.format(dateFormatter); // 날짜 객체를 문자열로 변환
-//
-//            // 존재 여부 체크
-//            DayOffResponse existingDayOff = attendanceService.findDayOffResearch(
-//                    request.getEmployee().getEmp_code(), formattedDate);
-//            if (existingDayOff != null) {
-//                return ResponseEntity
-//                        .status(HttpStatus.CONFLICT)
-//                        .body(new ResponseMessage(409, "이미 등록된 내역이 있습니다.", null));
-//            }
 
             // 휴가 등록
             attendanceService.registDayOff(

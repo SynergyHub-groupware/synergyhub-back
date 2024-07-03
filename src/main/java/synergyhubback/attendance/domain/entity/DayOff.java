@@ -23,7 +23,7 @@ public class DayOff {
     private int doCode;                     //휴가기록코드(pk)
     private LocalDate doReportDate;         //신청일자
     private String doName;                  //휴가명
-    private Double doUsed;                     //신청일수
+    private Double doUsed;                  //신청일수
     private LocalDate doStartDate;          //시작일자
     private LocalDate doEndDate;            //종료일자
     private LocalTime doStartTime;          //시작시간

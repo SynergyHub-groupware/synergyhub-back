@@ -44,10 +44,15 @@ POST http://localhost:8080/api/attendance/registSchedule
 Content-Type: application/json
 
 {
-  "deptTitle": "D3",
+  "dsStartDate": "2024-07-03",
+  "dsEndDate": "2024-07-03",
   "atdStartTime": "09:00:00",
   "atdEndTime": "18:00:00",
-  "employee": null
+  "parTitle": "경영지원부",
+  "subTitle": "인사부",
+  "deptTitle": "채용팀",
+  "employee":
+    { "emp_code": 2021011 }
 }
 
 ### 지정 출/퇴근시간 수정
@@ -84,11 +89,11 @@ POST http://localhost:8080/api/attendance/registDayOff
 Content-Type: application/json
 
 {
-  "doReportDate": "2024-07-02",
+  "doReportDate": "2024-07-03",
   "doName": "연차",
   "doUsed": 1.0,
   "doStartDate": "2024-07-04",
-  "doEndDate": "2024-07-04",
+  "doEndDate": "2024-07-05",
   "doStartTime": "09:00:00",
   "doEndTime": "18:00:00",
   "employee":

@@ -12,13 +12,18 @@ import synergyhubback.attendance.domain.repository.*;
 import synergyhubback.attendance.dto.request.*;
 import synergyhubback.attendance.dto.response.*;
 import synergyhubback.common.util.DateUtils;
+import synergyhubback.employee.domain.entity.Department;
+import synergyhubback.employee.domain.entity.DeptRelations;
 import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.repository.DepartmentRepository;
+import synergyhubback.employee.domain.repository.DeptRelationsRepository;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,11 +40,14 @@ public class AttendanceService {
     private final AttendanceStatusRepository attendanceStatusRepository;
     private final DayOffRepository dayOffRepository;
     private final DayOffBalanceRepository dayOffBalanceRepository;
+    private final DeptRelationsRepository deptRelationsRepository;
+    private final DepartmentRepository departmentRepository;
 
     public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository,
                              EmployeeRepository employeeRepository, DefaultScheduleRepository defaultScheduleRepository,
                              OverWorkRepository overWorkRepository, AttendanceStatusRepository attendanceStatusRepository,
-                             DayOffRepository dayOffRepository, DayOffBalanceRepository dayOffBalanceRepository) {
+                             DayOffRepository dayOffRepository, DayOffBalanceRepository dayOffBalanceRepository,
+                             DeptRelationsRepository deptRelationsRepository, DepartmentRepository departmentRepository) {
 
         this.modelMapper = modelMapper;
         this.attendanceRepository = attendanceRepository;
@@ -49,10 +57,12 @@ public class AttendanceService {
         this.attendanceStatusRepository = attendanceStatusRepository;
         this.dayOffRepository = dayOffRepository;
         this.dayOffBalanceRepository = dayOffBalanceRepository;
+        this.deptRelationsRepository = deptRelationsRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "30 34 11 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 11 20 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -60,6 +70,7 @@ public class AttendanceService {
         List<Employee> employees = employeeRepository.findAll();
 
         for (Employee employee : employees) {
+
             // 사원의 최신 근무기록 조회
             Attendance latestAttendance = attendanceRepository.findTopByOrderByAtdCodeDesc();
 
@@ -70,32 +81,217 @@ public class AttendanceService {
             LocalDate currentDate = LocalDate.now();
             newAttendanceRequest.setAtdDate(currentDate);
 
-            // 사원의 지정 출퇴근시간 조회
-            String deptCode = employee.getDepartment().getDept_code();
-
-            // 1. 부서 정보 조회
-            DefaultSchedule selectDept = defaultScheduleRepository.findWithDeptCodeAndNullEmployee(deptCode);
-
-            // 2. 사원코드 조회
-            DefaultSchedule selectEmpCode = defaultScheduleRepository.findByEmployee(employee);
-
             // 근무일지 코드 생성
-            if (latestAttendance != null) {
-                newAttendanceRequest.setAtdCode(latestAttendance.getAtdCode() + 1);
-            } else {
-                newAttendanceRequest.setAtdCode(1);
-            }
+            int atdCode = 1; // 기본값으로 설정
 
-            // 지정 출퇴근시간 설정
-            if (selectDept != null) {
-                if (selectEmpCode != null) {
-                    newAttendanceRequest.setAtdStartTime(selectEmpCode.getAtdStartTime());
-                    newAttendanceRequest.setAtdEndTime(selectEmpCode.getAtdEndTime());
-                } else {
-                    newAttendanceRequest.setAtdStartTime(selectDept.getAtdStartTime());
-                    newAttendanceRequest.setAtdEndTime(selectDept.getAtdEndTime());
+            if (latestAttendance != null) {
+                atdCode = latestAttendance.getAtdCode() + 1;
+            }
+            newAttendanceRequest.setAtdCode(atdCode);
+
+            // 지정 날짜가 있는지 조회
+            List<DefaultSchedule> defaultScheduleByDate = defaultScheduleRepository.findByDate(currentDate);
+
+            System.out.println("지정 날짜가 있는 지정 출퇴근시간" + defaultScheduleByDate);
+
+            if (!defaultScheduleByDate.isEmpty()) {
+
+                // 사원의 직책 정보 조회
+                String empTitle = employee.getTitle().getTitle_code();
+
+                // 직책이 책임자라면
+                if(empTitle.equals("T2")) {
+
+                    // 사원의 부서 정보 조회
+                    Department department = employee.getDepartment();
+                    String deptCode = department.getDept_code();
+
+                    Department departmentTitle = departmentRepository.findByDeptCode(deptCode);
+                    String deptTitle = departmentTitle.getDept_title();
+
+                    System.out.println("팀명 : " + deptTitle);
+
+                    // 사원의 지정 출퇴근시간 조회
+                    DefaultSchedule scheduleByEmpCode = defaultScheduleRepository.findByEmployeeAndDate(employee, currentDate);
+
+                    // 사원번호가 존재한다면
+                    if (scheduleByEmpCode != null) {
+                        newAttendanceRequest.setAtdStartTime(scheduleByEmpCode.getAtdStartTime());
+                        newAttendanceRequest.setAtdEndTime(scheduleByEmpCode.getAtdEndTime());
+
+                    //사원번호가 존재하지 않는다면
+                    } else {
+
+                        // 사원번호가 존재하지 않는 오늘 날짜의 리스트 조회
+                        List<DefaultSchedule> scheduleByEmpCodeIsNull = defaultScheduleRepository.findByEmployeeIsNullAndDate(currentDate);
+
+                        System.out.println("사원번호가 존재하지 않는 오늘 날짜의 리스트 조회 : " + scheduleByEmpCodeIsNull);
+
+
+                        // 사원의 부서 및 하위 부서에 따른 지정 출퇴근시간 조회
+                        DefaultSchedule matchingSchedule = null;
+
+                        for (DefaultSchedule schedule : scheduleByEmpCodeIsNull) {
+                            if (schedule.getDeptTitle() != null && schedule.getDeptTitle().equals(deptTitle)) {
+                                matchingSchedule = schedule;
+                                break;
+                            }
+                        }
+
+                        if (matchingSchedule != null) {
+                            newAttendanceRequest.setAtdStartTime(matchingSchedule.getAtdStartTime());
+                            newAttendanceRequest.setAtdEndTime(matchingSchedule.getAtdEndTime());
+                        } else {
+                            // 지정 출퇴근시간이 없을 경우 기본값 설정
+                            newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));    // 오전 09:00 으로 설정
+                            newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
+                        }
+                    }
+
+                // 직책이 부서장이라면
+                } else if (empTitle.equals("T4")) {
+                    // 사원의 부서 정보 조회
+                    Department department = employee.getDepartment();
+                    String deptCode = department.getDept_code();
+
+                    Department departmentTitle = departmentRepository.findByDeptCode(deptCode);
+                    String deptTitle = departmentTitle.getDept_title();
+
+                    System.out.println("팀명 : " + deptTitle);
+
+                    // 사원의 하위 부서 정보 조회
+                    String parTitle = null;
+
+                    DeptRelations subDeptRelations = deptRelationsRepository.findBySubDeptCode(deptCode);
+
+                    if (subDeptRelations != null) {
+                        Department subDepartment = subDeptRelations.getParentDepartment();
+                        parTitle = subDepartment.getDept_title();
+                    }
+
+                    System.out.println("상위 부서 : " + parTitle);
+
+                    // 사원의 지정 출퇴근시간 조회
+                    DefaultSchedule scheduleByEmpCode = defaultScheduleRepository.findByEmployeeAndDate(employee, currentDate);
+
+                    // 사원번호가 존재한다면
+                    if (scheduleByEmpCode != null) {
+                        newAttendanceRequest.setAtdStartTime(scheduleByEmpCode.getAtdStartTime());
+                        newAttendanceRequest.setAtdEndTime(scheduleByEmpCode.getAtdEndTime());
+
+                        //사원번호가 존재하지 않는다면
+                    } else {
+
+                        // 사원번호가 존재하지 않는 오늘 날짜의 리스트 조회
+                        List<DefaultSchedule> scheduleByEmpCodeIsNull = defaultScheduleRepository.findByEmployeeIsNullAndDate(currentDate);
+
+                        System.out.println("사원번호가 존재하지 않는 오늘 날짜의 리스트 조회 : " + scheduleByEmpCodeIsNull);
+
+
+                        // 사원의 부서 및 하위 부서에 따른 지정 출퇴근시간 조회
+                        DefaultSchedule matchingSchedule = null;
+
+                        for (DefaultSchedule schedule : scheduleByEmpCodeIsNull) {
+                            if (schedule.getParTitle().equals(parTitle)) {
+                                matchingSchedule = schedule;
+                                break;
+                            }
+                        }
+
+                        if (matchingSchedule != null) {
+                            newAttendanceRequest.setAtdStartTime(matchingSchedule.getAtdStartTime());
+                            newAttendanceRequest.setAtdEndTime(matchingSchedule.getAtdEndTime());
+                        } else {
+                            // 지정 출퇴근시간이 없을 경우 기본값 설정
+                            newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));    // 오전 09:00 으로 설정
+                            newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
+                        }
+                    }
+
+                // 직책이 팀장이거나 팀원이라면
+                } else if (empTitle.equals("T5") || empTitle.equals("T6")) {
+
+                    // 사원의 부서 정보 조회
+                    Department department = employee.getDepartment();
+                    String deptCode = department.getDept_code();
+
+                    Department departmentTitle = departmentRepository.findByDeptCode(deptCode);
+                    String deptTitle = departmentTitle.getDept_title();
+
+                    System.out.println("팀명 : " + deptTitle);
+
+                    // 사원의 하위 부서 정보 조회
+                    String subTitle = null;
+                    String parTitle = null;
+
+                    DeptRelations subDeptRelations = deptRelationsRepository.findBySubDeptCode(deptCode);
+
+                    if (subDeptRelations != null) {
+                        Department subDepartment = subDeptRelations.getParentDepartment();
+                        subTitle = subDepartment.getDept_title();
+                        String subCode = subDepartment.getDept_code();
+
+                        if(subDepartment.getParentDepartments() != null) {
+                            DeptRelations parDeptRelations = deptRelationsRepository.findBySubDeptCode(subCode);
+
+                            if (parDeptRelations != null) {
+                                Department parentDepartment = parDeptRelations.getParentDepartment();
+                                parTitle = parentDepartment.getDept_title();
+                            }
+                        }
+                    }
+
+                    System.out.println("하위 부서 (사원 팀의 상위 부서): " + subTitle);
+                    System.out.println("상위 부서 (하위 부서의 상위 부서): " + parTitle);
+
+                    // 사원의 지정 출퇴근시간 조회
+                    DefaultSchedule scheduleByEmpCode = defaultScheduleRepository.findByEmployeeAndDate(employee, currentDate);
+
+                    // 사원번호가 존재한다면
+                    if (scheduleByEmpCode != null) {
+                        newAttendanceRequest.setAtdStartTime(scheduleByEmpCode.getAtdStartTime());
+                        newAttendanceRequest.setAtdEndTime(scheduleByEmpCode.getAtdEndTime());
+
+                        //사원번호가 존재하지 않는다면
+                    } else {
+
+                        // 사원번호가 존재하지 않는 오늘 날짜의 리스트 조회
+                        List<DefaultSchedule> scheduleByEmpCodeIsNull = defaultScheduleRepository.findByEmployeeIsNullAndDate(currentDate);
+
+                        System.out.println("사원번호가 존재하지 않는 오늘 날짜의 리스트 조회 : " + scheduleByEmpCodeIsNull);
+
+
+                        // 사원의 부서 및 하위 부서에 따른 지정 출퇴근시간 조회
+                        DefaultSchedule matchingSchedule = null;
+
+                        for (DefaultSchedule schedule : scheduleByEmpCodeIsNull) {
+                            if (schedule.getDeptTitle() != null && schedule.getDeptTitle().equals(deptTitle)) {
+                                matchingSchedule = schedule;
+                                break;
+                            } else if (schedule.getDeptTitle() == null && schedule.getSubTitle() != null && schedule.getSubTitle().equals(subTitle)) {
+                                matchingSchedule = schedule;
+                                break;
+                            } else if (schedule.getDeptTitle() == null && schedule.getSubTitle() == null && schedule.getParTitle() != null &&schedule.getParTitle().equals(parTitle)) {
+                                matchingSchedule = schedule;
+                                break;
+                            }
+                        }
+
+                        // matchingSchedule가 null이 아닌 경우에만 지정 출퇴근시간을 설정
+                        if (matchingSchedule != null) {
+                            newAttendanceRequest.setAtdStartTime(matchingSchedule.getAtdStartTime());
+                            newAttendanceRequest.setAtdEndTime(matchingSchedule.getAtdEndTime());
+                        } else {
+                            // 지정 출퇴근시간이 없을 경우 기본값 설정
+                            newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));    // 오전 09:00 으로 설정
+                            newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
+                        }
+                    }
+
                 }
+
             } else {
+                // 지정 날짜에 대한 지정 출퇴근시간이 없을 경우 기본값 설정
                 newAttendanceRequest.setAtdStartTime(LocalTime.of(9, 0));    // 오전 09:00 으로 설정
                 newAttendanceRequest.setAtdEndTime(LocalTime.of(18, 0));    // 오후 06:00 으로 설정
             }
@@ -113,6 +309,7 @@ public class AttendanceService {
             attendanceRepository.save(newAttendance);
         }
     }
+
 
 
     @Transactional
@@ -278,20 +475,66 @@ public class AttendanceService {
 
     /* 지정 출퇴근시간 등록 */
     @Transactional
-    public void registDefaultSchedule(String deptCode, LocalTime atdStartTime, LocalTime atdEndTime, Employee employee) {
+    public void registDefaultSchedule(DefaultScheduleRequest request) {
+
+        // 지정 출퇴근시간 조회
+        List<DefaultSchedule> defaultSchedulesList = defaultScheduleRepository.findAll();
+
+        /* 기존 내역 있는지 조회 */
+
+        // 이미 존재하는 상위 부서(parTitle)가 있으면 에러
+        List<DefaultSchedule> conflictingSchedules = defaultSchedulesList.stream()
+                .filter(defaultSchedule -> defaultSchedule.getParTitle().equals(request.getParTitle()))
+                .toList();
+        if (!conflictingSchedules.isEmpty()) {
+            throw new RuntimeException("해당 상위 부서가 이미 존재합니다.");
+        }
+
+        // 이미 존재하는 상위 부서 and 하위 부서(subTitle)가 있으면 에러
+        conflictingSchedules = defaultSchedulesList.stream()
+                .filter(defaultSchedule -> defaultSchedule.getParTitle().equals(request.getParTitle()) &&
+                        defaultSchedule.getSubTitle().equals(request.getSubTitle()))
+                .toList();
+        if (!conflictingSchedules.isEmpty()) {
+            throw new RuntimeException("해당 상위 부서와 하위 부서가 이미 존재합니다.");
+        }
+
+        // 이미 존재하는 상위 부서 and 하위 부서 and 팀(deptTitle)이 있으면 에러
+        conflictingSchedules = defaultSchedulesList.stream()
+                .filter(defaultSchedule -> defaultSchedule.getParTitle().equals(request.getParTitle()) &&
+                        defaultSchedule.getSubTitle().equals(request.getSubTitle()) &&
+                        defaultSchedule.getDeptTitle().equals(request.getDeptTitle()))
+                .toList();
+        if (!conflictingSchedules.isEmpty()) {
+            throw new RuntimeException("해당 상위 부서, 하위 부서, 팀이 이미 존재합니다.");
+        }
+
+        // 이미 존재하는 사원(emp_Name)이 있으면 에러
+        conflictingSchedules = defaultSchedulesList.stream()
+                .filter(defaultSchedule -> defaultSchedule.getEmployee().getEmp_name().equals(request.getEmployee().getEmp_name()))
+                .toList();
+        if (!conflictingSchedules.isEmpty()) {
+            throw new RuntimeException("해당 사원이 이미 존재합니다.");
+        }
+
+
         DefaultSchedule defaultSchedule = DefaultSchedule.builder()
-                .deptCode(deptCode)
-                .atdStartTime(atdStartTime)
-                .atdEndTime(atdEndTime)
-                .employee(employee)
+                .dsStartDate(request.getDsStartDate())
+                .dsEndDate(request.getDsEndDate())
+                .atdStartTime(request.getAtdStartTime())
+                .atdEndTime(request.getAtdEndTime())
+                .parTitle(request.getParTitle())
+                .subTitle(request.getSubTitle())
+                .deptTitle(request.getDeptTitle())
+                .employee(request.getEmployee())
                 .build();
 
         defaultScheduleRepository.save(defaultSchedule);
     }
 
     /* 파라미터를 통한 지정 출퇴근시간 조회 */
-    public List<DefaultSchedule> findDefaultSchedules(String deptCode, LocalTime startTime, LocalTime endTime) {
-        return defaultScheduleRepository.findByDeptCodeAndAtdStartTimeAndAtdEndTime(deptCode, startTime, endTime);
+    public List<DefaultSchedule> findDefaultSchedules(String deptTitle, LocalTime startTime, LocalTime endTime) {
+        return defaultScheduleRepository.findByDeptTitleAndAtdStartTimeAndAtdEndTime(deptTitle, startTime, endTime);
     }
 
     /* 모든 지정 출퇴근시간 조회 */
@@ -310,10 +553,10 @@ public class AttendanceService {
 
     /* 지정 출퇴근시간 수정 */
     @Transactional
-    public void updateDefaultSchedule(String deptCode, LocalTime startTime, LocalTime endTime, Employee employee) {
+    public void updateDefaultSchedule(String deptTitle, LocalTime startTime, LocalTime endTime, Employee employee) {
 
         // deptCode와 employee의 empCode가 모두 일치하는 첫 번째 DefaultSchedule 조회
-        DefaultSchedule deptSchedule = defaultScheduleRepository.findByDeptCodeAndEmployee(deptCode, employee);
+        DefaultSchedule deptSchedule = defaultScheduleRepository.findByDeptTitleAndEmployee(deptTitle, employee);
 
         if (deptSchedule != null) {
             // empCode와 deptCode 모두 일치하는 경우 단일 엔티티 업데이트
@@ -323,7 +566,7 @@ public class AttendanceService {
         } else {
             // empCode와 deptCode 모두 일치하는 DefaultSchedule이 없는 경우
             // deptCode에 해당하는 모든 DefaultSchedule 조회
-            List<DefaultSchedule> deptSchedules = defaultScheduleRepository.findAllByDeptCode(deptCode);
+            List<DefaultSchedule> deptSchedules = defaultScheduleRepository.findAllByDeptTitle(deptTitle);
 
             if (!deptSchedules.isEmpty()) {
                 // deptCode에 해당하는 모든 DefaultSchedule 일괄 업데이트
@@ -437,12 +680,24 @@ public class AttendanceService {
     }
 
     @Transactional
-// 휴가 등록
+    // 휴가 등록
     public void registDayOff(LocalDate doReportDate,
                              String doName, Double doUsed,
                              LocalDate doStartDate, LocalDate doEndDate,
                              LocalTime doStartTime, LocalTime doEndTime,
                              Employee employee) {
+
+        // 휴가 기록 조회
+        List<DayOff> myDayOff = dayOffRepository.findDoByStartDateOrDoEndDate(doStartDate, doEndDate);
+
+
+        // 이미 있는 내역이라면 에러
+        List<DayOff> conflictingDayOffs = myDayOff.stream()
+                .filter(dayOff -> dayOff.getDoStartDate().equals(doStartDate) || dayOff.getDoEndDate().equals(doEndDate))
+                .toList();
+        if (!conflictingDayOffs.isEmpty()) {
+            throw new RuntimeException("신청한 일자가 이미 존재합니다.");
+        }
 
         // 보유 휴가 조회
         DayOffBalance myDayOffBalance = dayOffRepository.findMyDayOffBalanceByEmpCode(employee.getEmp_code());
@@ -466,30 +721,17 @@ public class AttendanceService {
 
         /* 기록 남긴 후, 보유 휴가 수정 */
 
-        // 1. 부여 연차 수정
         if (doUsed == 1) {
             myDayOffBalance.modifyGranted(1);
-        } else if (doUsed == 0.5) {
-            myDayOffBalance.modifyGranted(0.5);
-        } else if (doUsed == 0.25) {
-            myDayOffBalance.modifyGranted(0.25);
-        }
-
-        // 2. 사용 연차 수정
-        if (doUsed == 1) {
             myDayOffBalance.modifyDbUsed(1);
-        } else if (doUsed == 0.5) {
-            myDayOffBalance.modifyDbUsed(0.5);
-        } else if (doUsed == 0.25) {
-            myDayOffBalance.modifyDbUsed(0.25);
-        }
-
-        // 3. 잔여 연차 수정
-        if (doUsed == 1) {
             myDayOffBalance.modifyRemaining(1);
         } else if (doUsed == 0.5) {
+            myDayOffBalance.modifyGranted(0.5);
+            myDayOffBalance.modifyDbUsed(0.5);
             myDayOffBalance.modifyRemaining(0.5);
         } else if (doUsed == 0.25) {
+            myDayOffBalance.modifyGranted(0.25);
+            myDayOffBalance.modifyDbUsed(0.25);
             myDayOffBalance.modifyRemaining(0.25);
         }
 
