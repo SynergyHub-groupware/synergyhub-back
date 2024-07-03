@@ -255,6 +255,12 @@ public class EmployeeService {
         deptRelationsRepository.save(deptRelations);
     }
 
+    public List<EmpTitleListResponse> getEmpTitleList() {
+        List<Title> empTitleList = titleRepository.findAll();
+
+        return empTitleList.stream().map(EmpTitleListResponse::from).toList();
+    }
+
     public List<GetPositionNameResponse> getPositionList() {
         List<Position> empPositionList = positionRepository.findAll();
 
