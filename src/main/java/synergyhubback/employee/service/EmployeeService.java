@@ -255,6 +255,12 @@ public class EmployeeService {
         deptRelationsRepository.save(deptRelations);
     }
 
+    public List<GetPositionNameResponse> getPositionList() {
+        List<Position> empPositionList = positionRepository.findAll();
+
+        return empPositionList.stream().map(GetPositionNameResponse::from).toList();
+    }
+
     public void modifyDeptRelations(int dept_relations_code, Department parentDepartment, Department subDepartment) {
 
         DeptRelations deptRelations = deptRelationsRepository.findById(dept_relations_code)
