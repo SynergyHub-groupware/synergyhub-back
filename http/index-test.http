@@ -57,8 +57,8 @@ POST http://localhost:8080/emp/message/send
 Content-Type: application/json
 
 {
-  "msgTitle": "프로젝트 언제 끝납니까?",
-  "msgCon": "7월 16일이요",
+  "msgTitle": "확인용?",
+  "msgCon": "이번에는?",
   "msgStatus": "N",
   "emerStatus": "N",
   "empRev": {"emp_code": "2022089"},
@@ -103,3 +103,20 @@ DELETE http://localhost:8080/emp/message/bin/MS84
 
 ### Update MsgStatus
 PATCH http://localhost:8080/emp/message/MS74/read
+
+### File Regist
+POST http://localhost:8080/emp/message/attach
+Content-Type: application/json
+
+{
+  "originalFileName" : "hello",
+  "saveFileName" : "안녕?",
+  "messageDir" : "어쩌구",
+  "message" : "ms91"
+}
+
+### Find File By msgCode
+GET http://localhost:8080/emp/message/findAttach/MS93
+
+### Download File
+GET http://localhost:8080/emp/message/download/attach

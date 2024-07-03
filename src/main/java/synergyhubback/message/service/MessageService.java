@@ -1,21 +1,31 @@
 package synergyhubback.message.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import synergyhubback.common.attachment.AttachmentEntity;
+import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.domain.entity.Storage;
 import synergyhubback.message.domain.repository.MessageRepository;
 import synergyhubback.message.domain.repository.MsgEmpRepository;
 import synergyhubback.message.domain.repository.StorageRepository;
-import synergyhubback.message.dto.request.CreateMsgRequest;
-import synergyhubback.message.dto.request.UpdateStatusRequest;
 import synergyhubback.message.dto.response.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service("messageService")
@@ -23,9 +33,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageService {
 
+    @Value("${file.message-dir}")
+    private String messageDir;
+
     private final MessageRepository messageRepository;
     private final StorageRepository storageRepository;
     private final MsgEmpRepository msgEmpRepository;
+    private final AttachmentRepository attachmentRepository;
 
     /* emp_code를 찾아서 받은 쪽지 리스트 조회 */
     public List<ReceiveResponse> getReceiveMessage(int empCode) {
@@ -147,6 +161,7 @@ public class MessageService {
         return "MS" + (lastNum + 1);
     }
 
+    /* Send Msg (Insert) */
 //    /* Send Msg (Insert) */
     @Transactional
     public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage revStor, Storage sendStor) {
@@ -179,6 +194,19 @@ public class MessageService {
         System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
         messageRepository.save(message);
+    }
+
+
+    // UUID로 아이디 저장
+    private String uniqueSaveFileName(String originalFileName) {
+
+        String uuid = UUID.randomUUID().toString();
+        String extension = "";
+
+        int dotIndex = originalFileName.lastIndexOf('.');
+        if (dotIndex > 0) extension = originalFileName.substring(dotIndex);
+
+        return uuid + extension;
     }
 
     /* Temp Create Msg */
@@ -226,6 +254,71 @@ public class MessageService {
 
         } else {
             throw new IllegalArgumentException("쪽지를 찾을 수 없습니다. " + msgCode);
+        }
+    }
+
+    /* 파일 저장 API */
+    public void registAttach(MultipartFile[] files) {
+
+        /* 가장 최근에 저장한 msgCode 가져오기 */
+        Message message = messageRepository.findByRecentMsg();
+
+        /* 파일 저장 */
+        File uploadDir = new File(messageDir);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        for (MultipartFile file : files) {
+
+            String originalFileName = file.getOriginalFilename();
+            String saveFileName = uniqueSaveFileName(originalFileName);
+
+            File destFile = new File(messageDir + File.separator + saveFileName);
+
+            try {
+                file.transferTo(destFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            AttachmentEntity attachment = AttachmentEntity.create(
+                    originalFileName,
+                    saveFileName,
+                    messageDir,
+                    message.getMsgCode()
+            );
+
+            System.out.println("originalFileName = " + originalFileName);
+            System.out.println("saveFileName = " + saveFileName);
+            System.out.println("messageDir = " + messageDir);
+            System.out.println("message.getMsgCode() = " + message.getMsgCode());
+
+            attachmentRepository.save(attachment);
+        }
+
+    }
+
+    /* 쪽지에 저장된 파일 찾기 */
+    public List<AttachResponse> findAttachment(String msgCode) {
+        List<AttachmentEntity> attachList = attachmentRepository.findByMsgCode(msgCode);
+
+        return attachList.stream().map(AttachResponse::find).toList();
+    }
+
+    /* 파일 저장 로직 */
+    public Resource downloadMsgAttach(String attachSave) {
+        try {
+            Path filePath = Paths.get(messageDir).resolve(attachSave).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new RuntimeException("File not found " + attachSave);
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("File not found : " + attachSave, e);
         }
     }
 }

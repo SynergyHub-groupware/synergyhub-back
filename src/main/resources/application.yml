@@ -30,6 +30,7 @@ image:
 
 file:
   approval-dir: C:/SynergyHub/approval
+  message-dir: C:/SynergyHub/message
 
 
 server:

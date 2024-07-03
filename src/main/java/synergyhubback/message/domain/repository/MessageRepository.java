@@ -35,4 +35,7 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query("SELECT m FROM Message m WHERE (m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.sendStor.storCode = 4")
     List<Message> findByTemp_empCode(int empCode);
+
+    @Query(value = "SELECT m FROM Message m ORDER BY CAST(SUBSTRING(m.msgCode, 3) AS INTEGER ) DESC LIMIT 1")
+    Message findByRecentMsg();
 }

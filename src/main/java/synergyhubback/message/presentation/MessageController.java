@@ -1,11 +1,18 @@
 package synergyhubback.message.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import synergyhubback.auth.util.TokenUtils;
+import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.message.domain.entity.Message;
+import synergyhubback.message.domain.entity.Storage;
 import synergyhubback.message.dto.request.*;
 import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
@@ -175,8 +182,28 @@ public class MessageController {
         }
     }
 
+    /* Attachment File Insert */
+    @PostMapping("/attach")
+    public ResponseEntity<ResponseMsg> registAttach(@RequestParam(value = "files", required = false) MultipartFile[] files) {
+
+        try {
+
+            if (files == null) {
+                files = new MultipartFile[0];
+            }
+
+            messageService.registAttach(files);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "파일 저장 완료", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
+    }
+
     /* Temp Message Create (Insert) */
-    @PostMapping("/create/temp")
+    @PostMapping( "/create/temp")
     public ResponseEntity<ResponseMsg> createTemp(@RequestBody CreateTempRequest request) {
 
         try {
@@ -218,5 +245,24 @@ public class MessageController {
         messageService.changeStatusByReadMsg(msgCode);
 
         return ResponseEntity.noContent().build();
+    }
+
+    /* 쪽지에 저장된 파일 찾기 */
+    @GetMapping("/findAttach/{msgCode}")
+    public ResponseEntity<List<AttachResponse>> findAttachment(@PathVariable String msgCode) {
+        List<AttachResponse> attachList = messageService.findAttachment(msgCode);
+
+        return ResponseEntity.ok(attachList);
+    }
+
+    /* 쪽지에 저장된 파일 다운로드 */
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadMsgAttach(@RequestParam String attachOriginal, @RequestParam String attachSave) {
+
+        Resource file = messageService.downloadMsgAttach(attachSave);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachOriginal + "\"")
+                .body(file);
     }
 }
