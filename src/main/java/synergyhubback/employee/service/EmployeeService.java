@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.auth.dto.LoginDto;
 import synergyhubback.common.exception.NotFoundException;
 import synergyhubback.employee.domain.entity.*;
@@ -383,6 +384,69 @@ public class EmployeeService {
         employee.resetPassword(encodePassword);
 
         employeeRepository.save(employee);
+    }
+
+    public List<EmployeeResponse> findMyTeamMate (int empCode) {
+
+        MyInfoResponse myInfo = getMyInfo(empCode);
+
+        String myEmpTitle = myInfo.getTitle_code();
+        System.out.println("나의 직책 : " + myEmpTitle);
+        
+        String myDeptCode = myInfo.getDept_code();
+        System.out.println("나의 부서/팀 : " + myDeptCode);
+
+        if(myEmpTitle.equals("T1")) {
+
+            List<Employee> employees = employeeRepository.findAll();
+
+            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
+
+        } else if(myEmpTitle.equals("T2") && myDeptCode.equals("D2")) {
+
+            List<Employee> employees = employeeRepository.findByD2();
+            System.out.println("찾은 팀원 : " + employees);
+
+            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
+
+        } else if(myEmpTitle.equals("T2") && myDeptCode.equals("D3")) {
+
+            List<Employee> employees = employeeRepository.findByD3();
+            System.out.println("찾은 팀원 : " + employees);
+
+            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
+
+        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D7")) {
+
+            List<Employee> employees = employeeRepository.findByD7();
+            System.out.println("찾은 팀원 : " + employees);
+
+            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
+
+
+        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D10")) {
+
+        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D4")) {
+
+        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D13")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D8")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D9")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D11")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D5")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D6")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D14")) {
+
+        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D15")) {
+
+        }
+
+        return null;
     }
 
 

@@ -20,9 +20,9 @@ public class DayOffBalance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int dbCode;                 //휴가관리코드(pk)
-    private int granted;                //부여수
-    private int remaining;              //잔여수
-    private int dbUsed;                 //사용수
+    private Double granted;                //부여수
+    private Double remaining;              //잔여수
+    private Double dbUsed;                 //사용수
 
     @ManyToOne
     @JoinColumn(name = "emp_code")
@@ -31,7 +31,7 @@ public class DayOffBalance {
     private LocalDate dbInsertDate;     //부여일자
 
     @Builder
-    public DayOffBalance(int dbCode, int granted, int remaining, int dbUsed, Employee employee, LocalDate dbInsertDate) {
+    public DayOffBalance(int dbCode, Double granted, Double remaining, Double dbUsed, Employee employee, LocalDate dbInsertDate) {
         this.dbCode = dbCode;
         this.granted = granted;
         this.remaining = remaining;
@@ -39,4 +39,22 @@ public class DayOffBalance {
         this.employee = employee;
         this.dbInsertDate = dbInsertDate;
     }
+
+    /* 수정 메소드 */
+
+    // 부여수
+    public void modifyGranted(double granted) {
+        this.granted -= granted;
+    }
+
+    // 사용수
+    public void modifyDbUsed(double dbUsed) {
+        this.dbUsed += dbUsed;
+    }
+
+    // 잔여수
+    public void modifyRemaining(double remaining) {
+        this.remaining -= remaining;
+    }
+
 }

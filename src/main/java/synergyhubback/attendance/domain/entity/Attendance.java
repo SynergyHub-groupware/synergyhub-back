@@ -28,24 +28,33 @@ public class Attendance {
     private LocalTime endTime;          //퇴근시간
 
     @ManyToOne
+    @JoinColumn(name = "ats_code")
+    private AttendanceStatus attendanceStatus;  //근무상태코드 (추후 fk)
+
+    @OneToOne
+    @JoinColumn(name = "ow_code")
+    private OverWork overWork;          //초과근무코드
+
+    @ManyToOne
     @JoinColumn(name = "emp_code")
     private Employee employee;          //사원코드
 
-    @ManyToOne
-    @JoinColumn(name = "ats_code")
-    private AttendanceStatus attendanceStatus;                //근무상태코드 (추후 fk)
-
-
     @Builder
-    public Attendance(int atdCode, LocalDate atdDate, LocalTime atdStartTime, LocalTime atdEndTime, LocalTime startTime, LocalTime endTime, Employee employee, AttendanceStatus attendanceStatus) {
+    public Attendance(int atdCode, LocalDate atdDate,
+                      LocalTime atdStartTime, LocalTime atdEndTime,
+                      LocalTime startTime, LocalTime endTime,
+                      AttendanceStatus attendanceStatus, OverWork overWork,
+                      Employee employee) {
+
         this.atdCode = atdCode;
         this.atdDate = atdDate;
         this.atdStartTime = atdStartTime;
         this.atdEndTime = atdEndTime;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.employee = employee;
         this.attendanceStatus = attendanceStatus;
+        this.overWork = overWork;
+        this.employee = employee;
     }
 
     // 출근시간 업데이트
@@ -57,4 +66,15 @@ public class Attendance {
     public void updateEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
+
+    // 근무상태 업데이트
+    public void updateAttendanceStatus(AttendanceStatus attendanceStatus) {
+        this.attendanceStatus = attendanceStatus;
+    }
+
+    // 초과근무 업데이트
+    public void updateOverWork(OverWork overWork) {
+        this.overWork = overWork;
+    }
+
 }
