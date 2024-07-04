@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.attendance.domain.entity.DayOff;
 import synergyhubback.attendance.domain.entity.DefaultSchedule;
-import synergyhubback.attendance.dto.request.AttendanceRegistEndTimeRequest;
-import synergyhubback.attendance.dto.request.AttendanceRegistStartTimeRequest;
-import synergyhubback.attendance.dto.request.DayOffRequest;
-import synergyhubback.attendance.dto.request.DefaultScheduleRequest;
+import synergyhubback.attendance.dto.request.*;
 import synergyhubback.attendance.dto.response.*;
 import synergyhubback.attendance.service.AttendanceService;
 import synergyhubback.auth.util.TokenUtils;
@@ -124,27 +121,6 @@ public class AttendanceController {
                     .body(new ResponseMessage(500, "서버 오류: " + e.getMessage(), null));
         }
     }
-
-//    // 지정 출퇴근시간 조회 (개인)
-//    @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
-//    @GetMapping("/allSchedules")
-//    public ResponseEntity<ResponseMessage> findMySchedules(@RequestHeader("Authorization") String token) {
-//
-//        String jwtToken = TokenUtils.getToken(token);
-//        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
-//        int empCode = Integer.parseInt(tokenEmpCode);
-//
-//        List<DefaultScheduleResponse> schedules = attendanceService.findMyDefaultSchedules(empCode);
-//        HttpHeaders headers = new HttpHeaders();
-//
-//        Map<String, Object> responseMap = new HashMap<>();
-//        responseMap.put("schedules", schedules);
-//        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
-//
-//        return ResponseEntity.ok()
-//                .headers(headers)
-//                .body(responseMessage);
-//    }
 
     // 지정 출퇴근시간 조회 (단체)
     @Operation(summary = "전체 근태 기록 조회", description = "전체 근태 목록을 조회한다.")
@@ -299,6 +275,33 @@ public class AttendanceController {
     }
 
     /* ------------------------------------ 초과근무 ------------------------------------ */
+
+    // 지정 출퇴근시간 등록
+    @Operation(summary = "초과근무 등록", description = "초과근무를 등록한다.")
+    @PostMapping(value = "/registOverWork", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseMessage> registOverWork(@RequestBody OverWorkRequest request) {
+        try {
+            // Null 체크 추가
+            if (request.getOwStartTime() == null) {
+                throw new IllegalArgumentException("시작시간을 설정해야합니다.");
+            } else if (request.getOwEndTime() == null) {
+                throw new IllegalArgumentException("퇴근시간을 설정해야합니다.");
+            } else if (request.getEmployee() == null) {
+                throw new IllegalArgumentException("사원을 설정해야합니다.");
+            }
+
+            // 초과근무 등록
+            attendanceService.registOverWork(request);
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new ResponseMessage(200, "초과근무 등록 성공", null));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage(500, "서버 오류: " + e.getMessage(), null));
+        }
+    }
 
     @Operation(summary = "초과근무 기록 조회", description = "초과근무 기록을 조회한다.")
     @GetMapping("/overwork")

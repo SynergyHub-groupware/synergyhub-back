@@ -66,24 +66,67 @@ public class DayOffResponse {
         this.dbUsed = dayOff.getDbUsed();
         this.empCode = dayOff.getEmployee().getEmp_code();
         this.empName = dayOff.getEmployee().getEmp_name();
-        this.deptTitle = dayOff.getEmployee().getDepartment().getDept_title();
 
         // 상위부서명 가져오기
-        StringBuilder parentDeptTitles = new StringBuilder();
-        Set<DeptRelations> parentDepartments = dayOff.getEmployee().getDepartment().getParentDepartments();
-        for (DeptRelations deptRelation : parentDepartments) {
-            parentDeptTitles.append(deptRelation.getParentDepartment().getDept_title()).append(", ");
-            // 상위부서의 상위부서명 가져오기
-            for (DeptRelations grandParentRelation : deptRelation.getParentDepartment().getParentDepartments()) {
-                this.parTitle = grandParentRelation.getParentDepartment().getDept_title();
+        if (dayOff.getEmployee().getTitle().getTitle_code().equals("T1") || dayOff.getEmployee().getTitle().getTitle_code().equals("T2")) {
+
+            // 팀명
+            this.deptTitle = null;
+
+            // 하위부서
+            this.subTitle = null; // 하위부서는 null로 설정
+
+            // 상위부서
+            this.parTitle = dayOff.getEmployee().getDepartment().getDept_title(); // 현재 부서를 상위부서로 설정
+
+        }  else if (dayOff.getEmployee().getTitle().getTitle_code().equals("T4")) {
+
+            // 팀명
+            this.deptTitle = null; // 팀명은 null로 설정
+
+            // 하위부서
+            this.subTitle = null;
+
+            StringBuilder parentDeptTitles = new StringBuilder();
+            Set<DeptRelations> parentDepartments = dayOff.getEmployee().getDepartment().getParentDepartments();
+            for (DeptRelations deptRelation : parentDepartments) {
+                parentDeptTitles.append(deptRelation.getParentDepartment().getDept_title()).append(", ");
             }
-        }
 
-        if (parentDeptTitles.length() > 2) {
-            parentDeptTitles.setLength(parentDeptTitles.length() - 2); // 마지막 쉼표와 공백 제거
-        }
+            if (parentDeptTitles.length() > 2) {
+                parentDeptTitles.setLength(parentDeptTitles.length() - 2); // 마지막 쉼표와 공백 제거
+            } else if (parentDeptTitles.length() == 1) {
+                parentDeptTitles.setLength(parentDeptTitles.length());
+            }
 
-        this.subTitle = parentDeptTitles.toString();
+            // 상위부서
+            this.parTitle = dayOff.getEmployee().getDepartment().getDept_title();
+
+        } else if (dayOff.getEmployee().getTitle().getTitle_code().equals("T5") || dayOff.getEmployee().getTitle().getTitle_code().equals("T6")) {
+
+            // 팀명
+            this.deptTitle = dayOff.getEmployee().getDepartment().getDept_title();
+
+            StringBuilder parentDeptTitles = new StringBuilder();
+            Set<DeptRelations> parentDepartments = dayOff.getEmployee().getDepartment().getParentDepartments();
+            for (DeptRelations deptRelation : parentDepartments) {
+                parentDeptTitles.append(deptRelation.getParentDepartment().getDept_title()).append(", ");
+                // 상위부서의 상위부서명 가져오기
+                for (DeptRelations grandParentRelation : deptRelation.getParentDepartment().getParentDepartments()) {
+
+                    // 상위부서
+                    this.parTitle = grandParentRelation.getParentDepartment().getDept_title();
+                }
+            }
+            if (parentDeptTitles.length() > 2) {
+                parentDeptTitles.setLength(parentDeptTitles.length() - 2); // 마지막 쉼표와 공백 제거
+            } else if (parentDeptTitles.length() == 1) {
+                parentDeptTitles.setLength(parentDeptTitles.length());
+            }
+
+            // 하위부서
+            this.subTitle = parentDeptTitles.toString();
+        }
     }
 
 }

@@ -54,6 +54,7 @@ public class AppConfig {
                         .endTime(((AttendanceRegistRequest) request.getSource()).getEndTime())
                         .employee(((AttendanceRegistRequest) request.getSource()).getEmployee())
                         .attendanceStatus(((AttendanceRegistRequest) request.getSource()).getAttendanceStatus())
+                        .overWork(((AttendanceRegistRequest) request.getSource()).getOverWork())
                         .build());
         return modelMapper;
     }

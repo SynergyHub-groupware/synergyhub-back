@@ -34,11 +34,8 @@ public class DefaultScheduleResponse {
     private LocalTime atdEndTime;
 
     private String parTitle;
-
     private String subTitle;
-
     private String deptTitle;
-
     private String empName;
 
     public DefaultScheduleResponse(DefaultSchedule defaultSchedule) {
