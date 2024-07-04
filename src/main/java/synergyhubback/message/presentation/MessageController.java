@@ -247,6 +247,15 @@ public class MessageController {
         return ResponseEntity.noContent().build();
     }
 
+    /* 쪽지 읽지 않음 처리 */
+    @PatchMapping("/{msgCode}/unread")
+    public ResponseEntity<Void> changeStatusByUnreadMsg(@PathVariable String msgCode) {
+
+        messageService.changeStatusByUnreadMsg(msgCode);
+
+        return ResponseEntity.noContent().build();
+    }
+
     /* 쪽지에 저장된 파일 찾기 */
     @GetMapping("/findAttach/{msgCode}")
     public ResponseEntity<List<AttachResponse>> findAttachment(@PathVariable String msgCode) {
@@ -273,5 +282,32 @@ public class MessageController {
         messageService.moveToImp(msgCode, request.getStorCode());
 
         return ResponseEntity.noContent().build();
+    }
+
+    /* Receive Msg Status 모두 Y로 업데이트 */
+    @PutMapping("/receive/updateStatus")
+    public ResponseEntity<String> updateRevMsgStatus(@RequestBody List<String> msgCodes) {
+
+        try {
+            messageService.updateRevMsgStatus(msgCodes);
+
+            return ResponseEntity.ok("Receive Msg Status Update Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fail to update Rev Msg Status" + e.getMessage());
+        }
+    }
+
+    @PutMapping("/receive/updateRevStor")
+    public ResponseEntity<String> updateAllRevMsgToBin(@RequestBody List<String> msgCodes) {
+
+        try {
+            messageService.updateAllRevMsgToBin(msgCodes);
+
+            return ResponseEntity.ok("Receive Msg Status Update Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fail to update Rev Msg Status" + e.getMessage());
+        }
     }
 }

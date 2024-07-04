@@ -1,6 +1,7 @@
 package synergyhubback.message.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import synergyhubback.message.domain.entity.Message;
@@ -11,6 +12,11 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query("SELECT m FROM Message m WHERE m.empRev.emp_code = :empCode and m.revStor.storCode = 1")
     List<Message> findByEmpRev_EmpCode(int empCode);
+
+    @Modifying
+    @Query("UPDATE Message m SET m.msgStatus = 'Y' WHERE m.msgCode IN :msgCodes")
+    void updateMsgStatusByMsgCodes(@Param("msgCodes") List<String> msgCodes);
+    List<Message> findByMsgCodeIn(List<String> msgCodes);
 
     @Query("SELECT m FROM Message m WHERE m.empSend.emp_code = :empCode AND m.sendStor.storCode = 1")
     List<Message> findByEmpSend_EmpCode(int empCode);
@@ -38,4 +44,6 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query(value = "SELECT m FROM Message m ORDER BY CAST(SUBSTRING(m.msgCode, 3) AS INTEGER ) DESC LIMIT 1")
     Message findByRecentMsg();
+
+
 }

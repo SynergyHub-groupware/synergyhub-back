@@ -116,7 +116,7 @@ Content-Type: application/json
 }
 
 ### Find File By msgCode
-GET http://localhost:8080/emp/message/findAttach/MS93
+GET http://localhost:8080/emp/message/findAttach/MS76
 
 ### Download File
 GET http://localhost:8080/emp/message/download/attach
@@ -128,3 +128,18 @@ Content-Type: application/json
 {
   "storCode": 2
 }
+
+### Rev Msg Status Update
+PUT http://localhost:8080/emp/message/receive/updateStatus
+Content-Type: application/json
+
+["MS11", "MS2"]
+
+### msgStatus Unread Update
+PATCH http://localhost:8080/emp/message/MS48/unread
+
+### revStor Update
+PUT http://localhost:8080/emp/message/receive/updateRevStor
+Content-Type: application/json
+
+["MS74", "MS75"]

@@ -162,7 +162,6 @@ public class MessageService {
     }
 
     /* Send Msg (Insert) */
-//    /* Send Msg (Insert) */
     @Transactional
     public void createMessage(String msgTitle, String msgCon, String msgStatus, String emerStatus, Employee empRev, Employee empSend, Storage revStor, Storage sendStor) {
 
@@ -257,6 +256,21 @@ public class MessageService {
         }
     }
 
+    public void changeStatusByUnreadMsg(String msgCode) {
+
+        Optional<Message> optional = messageRepository.findById(msgCode);
+
+        if (optional.isPresent()) {
+
+            Message message = optional.get();
+            message.setMsgStatus("N");  // 읽지 않음 상태로 변경
+            messageRepository.save(message);
+
+        } else  {
+            throw new IllegalArgumentException("쪽지를 찾을 수 없습니다. " + msgCode);
+        }
+    }
+
     /* 파일 저장 API */
     public void registAttach(MultipartFile[] files) {
 
@@ -336,5 +350,29 @@ public class MessageService {
         messageRepository.save(message);
     }
 
-    // commit
+    /* Rev Msg Status 전체 Y 업데이트 */
+    @Transactional
+    public void updateRevMsgStatus(List<String> msgCodes) {
+
+        List<Message> msgToUpdate = messageRepository.findByMsgCodeIn(msgCodes);
+        msgToUpdate.forEach(msg -> msg.setMsgStatus("Y"));
+
+        messageRepository.saveAll(msgToUpdate);
+    }
+
+
+    public void updateAllRevMsgToBin(List<String> msgCodes) {
+
+        List<Message> revMsgToUpdate = messageRepository.findByMsgCodeIn(msgCodes);
+
+        revMsgToUpdate.forEach(msg -> {
+
+            Storage storage = new Storage();
+            storage.setStorCode(5);
+            msg.setRevStor(storage);
+
+            messageRepository.save(msg);
+        });
+
+    }
 }
