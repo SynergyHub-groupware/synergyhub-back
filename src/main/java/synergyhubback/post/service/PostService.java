@@ -3,11 +3,8 @@ package synergyhubback.post.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
@@ -24,10 +21,7 @@ import synergyhubback.post.dto.request.PostRoleRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -229,7 +223,29 @@ public class PostService {
     }
 
     public void createRoles(List<PostRoleRequest> updatedRoles) {
+        System.out.println("updatedRoles:" + updatedRoles);
+
+        // Map을 사용하여 empCode를 기준으로 중복된 데이터를 필터링하고 Y가 많은 것을 선택
+        Map<Integer, PostRoleRequest> uniqueRolesMap = new HashMap<>();
         for (PostRoleRequest role : updatedRoles) {
+            int empCode = role.getEmpCode();
+            if (!uniqueRolesMap.containsKey(empCode)) {
+                uniqueRolesMap.put(empCode, role);
+            } else {
+                // 기존에 있는 데이터와 비교하여 Y가 많은 것을 선택
+                PostRoleRequest existingRole = uniqueRolesMap.get(empCode);
+                if (role.getPrWriteRole() == 'Y') {
+                    existingRole.setPrWriteRole('Y');
+                }
+                if (role.getPrAdmin() == 'Y') {
+                    existingRole.setPrAdmin('Y');
+                }
+            }
+        }
+
+        // 중복 제거된 데이터를 PostRoleEntity로 변환하여 저장
+        List<PostRoleEntity> postRolesToSave = new ArrayList<>();
+        for (PostRoleRequest role : uniqueRolesMap.values()) {
             PostRoleEntity postRole = new PostRoleEntity();
             postRole.setPrWriteRole(role.getPrWriteRole());
             LowBoardEntity lowBoardEntity = new LowBoardEntity(); // Assuming constructor with ID
@@ -237,12 +253,24 @@ public class PostService {
             postRole.setLowCode(lowBoardEntity);
             Employee employee = new Employee();
             employee.setEmp_code(role.getEmpCode());
-
             postRole.setEmpCode(employee);
             postRole.setPrAdmin(role.getPrAdmin());
-            postRoleRepository.save(postRole);
+            postRolesToSave.add(postRole);
         }
 
+        // 저장
+        for (PostRoleEntity postRole : postRolesToSave) {
+            postRoleRepository.save(postRole);
+        }
+    }
+
+    public int boardUpdate(BoardRequest boardRequest, int lowCode) {
+        String boardName = boardRequest.getLowName();
+        return lowBoardRepository.boardUpdate(boardName, lowCode);
+    }
+
+    public Integer boardDelete(int lowCode) {
+        return lowBoardRepository.boardDelete(lowCode);
     }
 //    @Transactional
 //    public List<PostRoleRequest> postRoleCreate(Map<String, PostRoleRequest> updatedRoles) {

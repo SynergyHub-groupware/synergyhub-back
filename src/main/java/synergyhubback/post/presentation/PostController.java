@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -46,9 +45,22 @@ public class PostController {
 
     @PostMapping("/boardCreate")
     public ResponseEntity<LowBoardEntity> boardCreate(@RequestBody BoardRequest boardRequest) {
+        System.out.println("boardRequest : " + boardRequest);
 
         return ResponseEntity.ok(postService.boardCreate(boardRequest));
     }
+    @PutMapping("/boardUpdate/{lowCode}")
+    public ResponseEntity<Integer> boardUpdate(@RequestBody BoardRequest boardRequest, @PathVariable("lowCode") int lowCode) {
+        System.out.println("boardRequest : " + boardRequest);
+        System.out.println("lowCode : " + lowCode);
+        return ResponseEntity.ok(postService.boardUpdate(boardRequest, lowCode));
+    }
+    @PutMapping("/boardDelete/{lowCode}")
+    public ResponseEntity<Integer> boardDelete(@PathVariable("lowCode") int lowCode) {
+        System.out.println("lowCode : " + lowCode);
+        return ResponseEntity.ok(postService.boardDelete(lowCode));
+    }
+
     @PostMapping("/PostRoleCreate")
     public ResponseEntity<String> postRoleCreate(@RequestBody List<PostRoleRequest> updatedRoles) {
 //        PostRoleRequest readPostRoleRequest = payload.get("readPostRoleRequest");
