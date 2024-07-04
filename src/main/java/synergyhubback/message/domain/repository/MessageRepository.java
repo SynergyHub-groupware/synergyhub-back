@@ -18,10 +18,10 @@ public interface MessageRepository extends JpaRepository<Message, String> {
     @Query("SELECT m FROM Message m WHERE (m.empRev.emp_code = :empCode AND m.revStor.storCode = 5) OR (m.empSend.emp_code = :empCode AND m.sendStor.storCode = 5)")
     List<Message> findByBin_EmpCode(int empCode);
 
-    @Query("SELECT m FROM Message m WHERE ((m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.revStor.storCode = 2) OR ((m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.sendStor.storCode = 2)")
+    @Query("SELECT m FROM Message m WHERE ( m.empRev.emp_code = :empCode AND m.revStor.storCode = 2)")
     List<Message> findByImp_EmpCode(int empCode);
 
-    @Query("SELECT m FROM Message m WHERE ((m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.revStor.storCode = 3) OR ((m.empSend.emp_code = :empCode OR m.empRev.emp_code = :empCode) AND m.sendStor.storCode = 3)")
+    @Query("SELECT m FROM Message m WHERE ( m.empRev.emp_code = :empCode AND m.revStor.storCode = 3)")
     List<Message> findByWork_EmpCode(int empCode);
 
     @Query("SELECT m FROM Message m WHERE m.msgCode = :msgCode")

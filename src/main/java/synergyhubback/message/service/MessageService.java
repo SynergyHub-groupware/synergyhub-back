@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -179,7 +179,7 @@ public class MessageService {
 
         Message message = Message.create(
                 newMsgCode,
-                LocalDate.now(),
+                LocalDateTime.now(),
                 msgTitle,
                 msgCon,
                 msgStatus,
@@ -216,7 +216,7 @@ public class MessageService {
 
         Message message = Message.create(
                 newMsgCode,
-                LocalDate.now(),
+                LocalDateTime.now(),
                 msgTitle,
                 msgCon,
                 msgStatus,

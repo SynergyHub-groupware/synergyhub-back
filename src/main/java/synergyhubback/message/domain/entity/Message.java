@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import synergyhubback.employee.domain.entity.Employee;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "message")
@@ -18,7 +18,7 @@ public class Message {
 
     @Id
     private String msgCode;
-    private LocalDate sendDate;
+    private LocalDateTime sendDate;
     private String msgTitle;
     private String msgCon;
     private String msgStatus;
@@ -47,7 +47,7 @@ public class Message {
     }
     public void setSendStor(Storage sendStor) { this.sendStor = sendStor;}
     public void setMsgStatus(String msgStatus) { this.msgStatus = msgStatus; }
-    public Message(String msgCode, LocalDate sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus){
+    public Message(String msgCode, LocalDateTime sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus){
         this.msgCode = msgCode;
         this.sendDate = sendDate;
         this.msgTitle = msgTitle;
@@ -56,7 +56,7 @@ public class Message {
         this.emerStatus = emerStatus;
     }
 
-    public static Message create(String msgCode, LocalDate sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus) {
+    public static Message create(String msgCode, LocalDateTime sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus) {
 
         return new Message(
                 msgCode,
