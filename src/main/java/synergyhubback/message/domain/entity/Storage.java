@@ -17,5 +17,7 @@ public class Storage {
     private int storCode;
     private String storName;
 
-
+    public void setStorCode(int storCode) {
+        this.storCode = storCode;
+    }
 }

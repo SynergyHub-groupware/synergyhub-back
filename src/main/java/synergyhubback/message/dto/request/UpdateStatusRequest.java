@@ -5,9 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RevMsgDelRequest {
+public class UpdateStatusRequest {
 
-    private String msgCode;
-    private int storCode;
-
+    private String msgStatus;
 }

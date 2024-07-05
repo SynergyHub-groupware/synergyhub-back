@@ -16,4 +16,7 @@ public interface AttachmentRepository extends JpaRepository<AttachmentEntity, Lo
     List<AttachmentEntity> findByAttachSort(String adCode);
 
     void deleteByAttachSort(String adCode);
+
+    @Query("SELECT a FROM AttachmentEntity a WHERE a.attachSort = :msgCode")
+    List<AttachmentEntity> findByMsgCode(String msgCode);
 }
