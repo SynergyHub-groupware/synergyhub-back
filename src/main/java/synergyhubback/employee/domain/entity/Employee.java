@@ -120,4 +120,7 @@ public class Employee {
     }
 
 
+    public void setEmpCode(int empCode) {
+        this.emp_code = empCode;
+    }
 }

@@ -21,6 +21,7 @@ import synergyhubback.post.dto.request.BoardRequest;
 import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.response.CommonResponse;
 import synergyhubback.post.dto.response.PostResponse;
 import synergyhubback.post.service.PostService;
 
@@ -80,11 +81,13 @@ public class PostController {
         }
     }
     @GetMapping("/ReadyPost/{empCode}")
-    public ResponseEntity<List<PostRequest>> ReadyPost(@PathVariable int empCode) {
+    public ResponseEntity<List<PostRequest>> ReadyPost(@PathVariable("empCode") int empCode) {
+        System.out.println("임시저장 기동");
         return ResponseEntity.ok(postService.ReadyPost(empCode));
     }
     @PutMapping("/postDelete/{postCode}")
     public ResponseEntity<Integer> postDelete(@PathVariable String postCode) {
+        System.out.println("postCode : " + postCode);
         return ResponseEntity.ok(postService.postDelete(postCode));
     }
 
@@ -191,8 +194,16 @@ public class PostController {
     }
 
     @GetMapping("/commentList/{postCode}")
-    public ResponseEntity<List<CommentEntity>> getCommentList(@PathVariable String postCode) {
+    public ResponseEntity<List<CommonResponse>> getCommentList(@PathVariable String postCode) {
         return ResponseEntity.ok(postService.getCommentList(postCode));
+    }
+    @PutMapping("/commentEdit/{commCode}")
+    public ResponseEntity<Integer> commentEdit(@PathVariable String commCode, @RequestBody CommontRequest commontRequest) {
+        return ResponseEntity.ok(postService.commentEdit(commCode, commontRequest));
+    }
+    @PutMapping("/commentDelete/{commCode}")
+    public ResponseEntity<Integer> commentDelete(@PathVariable String commCode) {
+        return ResponseEntity.ok(postService.commentDelete(commCode));
     }
 
     @GetMapping("/downloadFile/{fileName}")
@@ -226,9 +237,9 @@ public class PostController {
 
 
     @GetMapping("/getDetail/{postCode}")
-    public ResponseEntity<PostEntity> callGETDetail(@PathVariable("postCode") String postCode) {
+    public ResponseEntity<PostResponse> callGETDetail(@PathVariable("postCode") String postCode) {
         System.out.println("callGETDetail stared");
-        PostEntity post = postService.getDetail(postCode);
+        PostResponse post = postService.getDetail(postCode);
         System.out.println(post);
         post.setPostCommSet(PostCommSet.fromValue(post.getPostCommSet().getValue())); // 이 부분 확인
         return ResponseEntity.ok(post);
@@ -305,6 +316,7 @@ public class PostController {
                                         @RequestParam(value = "fixStatus", defaultValue = "N") char fixStatus,
                                         @RequestParam(value = "noticeStatus", defaultValue = "N") char noticeStatus,
                                         @RequestParam("psCode") int psCode,
+                                        @RequestParam("empCode") int empCode,
                                         Model model) {
         // 상품 정보 저장
         System.out.println("게시글 등록 메소드 작동시작");
@@ -316,6 +328,7 @@ public class PostController {
         System.out.println(fixStatus);
         System.out.println(noticeStatus);
         System.out.println(psCode);
+        System.out.println(empCode);
         PostCommSet commSet = PostCommSet.fromValue(postCommSet);
         System.out.println(commSet);
 
@@ -333,6 +346,7 @@ public class PostController {
         newPost.setNoticeStatus(noticeStatus);
         newPost.setLowBoardCode(lowBoardCode);
         newPost.setPsCode(psCode);
+        newPost.setEmpCode(empCode);
         System.out.println(lowBoardCode);
 
         System.out.println("newPost" + newPost);

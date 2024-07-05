@@ -18,6 +18,7 @@ import synergyhubback.post.dto.request.BoardRequest;
 import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.response.CommonResponse;
 import synergyhubback.post.dto.response.PostResponse;
 
 import java.time.LocalDate;
@@ -68,6 +69,9 @@ public class PostService {
         postEntity.setNoticeStatus(newPost.getNoticeStatus());
         postEntity.setLowBoardCode(newPost.getLowBoardCode());
         postEntity.setPsCode(newPost.getPsCode());
+        Employee employee =new Employee();
+        employee.setEmpCode(newPost.getEmpCode());
+        postEntity.setEmpCode(employee);
         LocalDate now = LocalDate.now();
         postEntity.setPostDate(now);
         // 나머지 필드들도 동일한 방식으로 설정
@@ -108,7 +112,7 @@ public class PostService {
         return postRepository.InboardPinList(pageable, lowBoardCode);
     }
 
-    public PostEntity getDetail(String postCode) {
+    public PostResponse getDetail(String postCode) {
         return postRepository.getDetail(postCode);
     }
 
@@ -116,7 +120,7 @@ public class PostService {
         return attachmentRepository.getFile(postCode);
     }
 
-    public List<CommentEntity> getCommentList(String postCode) {
+    public List<CommonResponse> getCommentList(String postCode) {
         return postRepository.getCommentList(postCode);
     }
 
@@ -195,10 +199,8 @@ public class PostService {
 
     @Transactional
     public List<PostRequest> ReadyPost(int empCode) {
-        List<PostEntity> postEntities = postRepository.ReadyPost(empCode);
-        return postEntities.stream()
-                .map(PostEntity::toPostRequest)
-                .collect(Collectors.toList());
+        return   postRepository.ReadyPost(empCode);
+
     }
 
     public LowBoardEntity boardCreate(BoardRequest boardRequest) {
@@ -272,6 +274,14 @@ public class PostService {
 
     public Integer boardDelete(int lowCode) {
         return lowBoardRepository.boardDelete(lowCode);
+    }
+@Transactional
+    public Integer commentEdit(String commCode, CommontRequest commontRequest) {
+        return postRepository.commentEdit(commCode, commontRequest.getCommCon());
+    }
+@Transactional
+    public Integer commentDelete(String commCode) {
+        return postRepository.commentDelete(commCode);
     }
 //    @Transactional
 //    public List<PostRoleRequest> postRoleCreate(Map<String, PostRoleRequest> updatedRoles) {

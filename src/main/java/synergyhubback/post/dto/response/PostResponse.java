@@ -22,6 +22,8 @@ public class PostResponse {
     private PostCommSet postCommSet;
     private char FixStatus;
     private char NoticeStatus;
+    private int EmpCode;
+    private String EmpName;
 
     public PostResponse(PostEntity postEntity) {
         this.PostCode = postEntity.getPostCode();
@@ -32,5 +34,7 @@ public class PostResponse {
         this.postCommSet = postEntity.getPostCommSet();
         this.FixStatus = postEntity.getFixStatus();
         this.NoticeStatus = postEntity.getNoticeStatus();
+        this.EmpCode = postEntity.getEmpCode().getEmp_code();
+        this.EmpName = postEntity.getEmpCode().getEmp_name();
     }
 }

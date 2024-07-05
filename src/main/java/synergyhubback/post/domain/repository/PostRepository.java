@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
+import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.response.CommonResponse;
 import synergyhubback.post.dto.response.PostResponse;
 
 import java.util.List;
@@ -36,10 +38,10 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     List<PostEntity> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
     @Query("SELECT p FROM PostEntity p WHERE p.PostCode=:postCode ")
-    PostEntity getDetail(@Param("postCode") String postCode);
+    PostResponse getDetail(@Param("postCode") String postCode);
 
-    @Query("select c from CommentEntity c where c.PostCode.PostCode = :postCode")
-    List<CommentEntity> getCommentList(@Param("postCode") String postCode);
+    @Query("select c from CommentEntity c  where c.PostCode.PostCode = :postCode and c.CommStatus <> 'D'")
+    List<CommonResponse> getCommentList(@Param("postCode") String postCode);
 
     @Query("select l from LowBoardEntity l")
     List<LowBoardEntity> getAllLowBoard();
@@ -74,6 +76,13 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     List<PostResponse> AllPostList(Pageable pageable);
 
     @Query("SELECT p from PostEntity p where p.EmpCode.emp_code = :empCode ORDER BY p.PostCode DESC")
-    List<PostEntity> ReadyPost(@Param("emp_code") int empCode);
+    List<PostRequest> ReadyPost(@Param("emp_code") int empCode);
 
+    @Modifying
+    @Query("update CommentEntity c set c.CommCon = :commCon where c.CommCode = :commCode")
+    Integer commentEdit(@Param("commCode") String commCode, @Param("commCon") String commCon);
+
+    @Modifying
+    @Query("update CommentEntity c set c.CommStatus='D' where c.CommCode = :commCode")
+    Integer commentDelete(String commCode);
 }
