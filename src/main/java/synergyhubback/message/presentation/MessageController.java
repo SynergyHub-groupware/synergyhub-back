@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.dto.request.CreateMsgRequest;
+import synergyhubback.message.dto.request.CreateTempRequest;
 import synergyhubback.message.dto.request.RevMsgDelRequest;
+import synergyhubback.message.dto.request.SendMsgDelRequest;
 import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
 
@@ -73,6 +75,15 @@ public class MessageController {
         return ResponseEntity.noContent().build();
     }
 
+    /* 보낸 쪽지 휴지통 업데이트 (PATCH) */
+    @PutMapping("/send/{msgCode}/bin")
+    public ResponseEntity<Void> sendMsgDel(@PathVariable String msgCode, @RequestBody SendMsgDelRequest request) {
+
+        messageService.SendMsgDel(msgCode, request.getStorCode());
+
+        return ResponseEntity.noContent().build();
+    }
+
     /* 중요 보관함 전체 조회 */
     @GetMapping("/important")
     public ResponseEntity<List<ImpResponse>> getImpMessage (@RequestHeader("Authorization") String token) {
@@ -101,6 +112,21 @@ public class MessageController {
         System.out.println("workList : controller : " + workList);
 
         return new ResponseEntity<>(workList, HttpStatus.OK);
+    }
+
+    /* 임시 저장 전체 조회 */
+    @GetMapping("/temp")
+    public ResponseEntity<List<TempResponse>> getTempMessage(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<TempResponse> tempList = messageService.getTempMessage(empCode);
+
+        System.out.println("tempList = " + tempList);
+
+        return new ResponseEntity<>(tempList, HttpStatus.OK);
     }
 
     /* MS 코드에 따라 Rev Detail 조회 */
@@ -141,7 +167,8 @@ public class MessageController {
                     request.getEmerStatus(),
                     request.getEmpRev(),
                     request.getEmpSend(),
-                    request.getStorCode());
+                    request.getRevStor(),
+                    request.getSendStor());
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ResponseMsg(200, "메세지를 전송했습니다.", null));
@@ -151,4 +178,39 @@ public class MessageController {
         }
     }
 
+    /* Temp Message Create (Insert) */
+    @PostMapping("/create/temp")
+    public ResponseEntity<ResponseMsg> createTemp(@RequestBody CreateTempRequest request) {
+
+        try {
+            messageService.createTemp(
+                    request.getMsgTitle(),
+                    request.getMsgCon(),
+                    request.getMsgStatus(),
+                    request.getEmerStatus(),
+                    request.getEmpRev(),
+                    request.getEmpSend(),
+                    request.getRevStor(),
+                    request.getSendStor()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "임시저장 되었습니다.", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
+    }
+
+    /* 쪽지 완전 삭제 */
+    @DeleteMapping("/bin/{msgCode}")
+    public ResponseEntity<Void> deleteMsg(@PathVariable String msgCode){
+
+        try {
+            messageService.deleteMsg(msgCode);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

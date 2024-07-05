@@ -1,20 +1,18 @@
 package synergyhubback.attendance.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import synergyhubback.attendance.domain.entity.DefaultSchedule;
+import synergyhubback.employee.domain.entity.Department;
+import synergyhubback.employee.domain.entity.DeptRelations;
 import synergyhubback.employee.domain.entity.Employee;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -23,7 +21,11 @@ public class DefaultScheduleResponse {
 
     private int dsCode;
 
-    private String deptTitle;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dsStartDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dsEndDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime atdStartTime;
@@ -31,16 +33,25 @@ public class DefaultScheduleResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime atdEndTime;
 
-    private Integer empCode;
+    private String parTitle;
+    private String subTitle;
+    private String deptTitle;
+    private String empName;
 
     public DefaultScheduleResponse(DefaultSchedule defaultSchedule) {
         this.dsCode = defaultSchedule.getDsCode();
-        this.deptTitle = defaultSchedule.getDeptCode();
+        this.dsStartDate = defaultSchedule.getDsStartDate();
+        this.dsEndDate = defaultSchedule.getDsEndDate();
         this.atdStartTime = defaultSchedule.getAtdStartTime();
         this.atdEndTime = defaultSchedule.getAtdEndTime();
+        this.parTitle = defaultSchedule.getParTitle();
+        this.subTitle = defaultSchedule.getSubTitle();
+        this.deptTitle = defaultSchedule.getDeptTitle();
 
-        // Null-safe access using Optional
         Optional<Employee> optionalEmployee = Optional.ofNullable(defaultSchedule.getEmployee());
-        this.empCode = optionalEmployee.map(Employee::getEmp_code).orElse(null); // 기본값으로 null 설정
+        this.empName = optionalEmployee.map(emp -> emp.getEmp_name() != null ? emp.getEmp_name() : "").orElse("");
     }
+
+
+
 }

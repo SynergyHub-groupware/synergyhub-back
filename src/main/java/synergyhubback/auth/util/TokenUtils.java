@@ -54,6 +54,20 @@ public class TokenUtils {
 
     }
 
+    /* 새로 추가함 : 박은비 */
+    /* 액세스 토큰에서 title_code 값 추출 */
+    public static String getTitleCode(String accessToken) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(createSignature())
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody()
+
+                .get("title_code", String.class);
+
+    }
+
     // yml 파일에서 secretKey 값을 jwtSecretKey에 설정
     @Value("${jwt.secret}")
     public void setJwtSecretKey(String jwtSecretKey) {
