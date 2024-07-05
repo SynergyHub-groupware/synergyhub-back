@@ -27,4 +27,6 @@ public interface DocRepository extends JpaRepository<Document, String> {
 
     @Query("SELECT d.adStatus FROM Document d WHERE d.adCode = :adCode")
     String findAdStatusById(String adCode);
+
+    Boolean existsByForm_AfCode(int afCode);
 }

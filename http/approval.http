@@ -150,6 +150,9 @@ Content-Type: application/json
   }
 }
 
+### 결재양식 사용여부 조회
+GET http://localhost:8080/approval/checkIsForm?afCode=14
+
 ### 보관함 등록
 POST http://localhost:8080/approval/registBox
 Content-Type: application/json
