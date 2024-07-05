@@ -136,7 +136,7 @@ GET http://localhost:8080/employee/departments
 GET http://localhost:8080/employee/simpleDepts
 
 ### 부서 상세 조회
-GET http://localhost:8080/employee/deptDetailList/D1
+GET http://localhost:8080/employee/deptDetailList/D2
 
 ### 직급 전체 조회
 GET http://localhost:8080/employee/empPositions
@@ -151,6 +151,9 @@ GET http://localhost:8080/employee/orgDetail/{{emp_code}}
 PUT http://localhost:8080/employee/resetEmpPass/2024035
 Authorization: Bearer eyJkYXRlIjoxNzE5Mjk0NTAzODcwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTkyOTgxMDN9.qX90Vu9uJJJ41hLDOGDlKbdcpHpAmWy2xmrRwR5xjycfZLdXFf7fdbHevf9YNXTlEjLH9ALt9xxy4Ix3TBeHiw
 
+### 내 팀 사원 조회
+GET http://localhost:8080/employee/findMyTeamMate
+Authorization: Bearer eyJkYXRlIjoxNzIwMDkyNDA1ODQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA2OTcyMDV9.zsewjEugU9QzBX2gQg_iFIhB6Jev7D09I6fgBCKv_1SHEg_ycujmSRoplmMCD15C34-w36vidIVZljJN7ZzbeA
 
 
 

@@ -2,19 +2,24 @@ package synergyhubback.employee.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
+import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -211,6 +216,26 @@ public class EmployeeController {
         employeeService.resetEmpPass(emp_code);
 
         return ResponseEntity.ok().build();
+    }
+
+    /* 내 팀원 조회 : 박은비 */
+    @GetMapping("/findMyTeamMate")
+    public ResponseEntity<ResponseMessage> findMyTeamMate(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<EmployeeResponse> myTeamMate = employeeService.findMyTeamMate(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("myTeamMate", myTeamMate); // 복수형으로 변경: attendance -> attendances
+        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
     }
 
 //    @PatchMapping("/resetEmpPass/{emp_code}")
