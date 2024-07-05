@@ -1,5 +1,6 @@
 package synergyhubback.employee.presentation;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -7,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
@@ -41,11 +41,41 @@ public class EmployeeController {
 
     /* 사원 등록 */
     @PostMapping("/empsRegist")
-    public ResponseEntity<Void> empsRegist (@RequestBody @Valid List<EmployeeRegistRequest> employeeRegistRequests) {
+    public ResponseEntity<Void> empsRegist (@RequestBody @Valid EmpRegistDataRequest empRegistDataRequests, @RequestHeader("Authorization") String token) throws MessagingException {
 
-        employeeService.empsRegist(employeeRegistRequests);
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<EmployeeRegistRequest> employeeRegistRequests = empRegistDataRequests.getEmployees();
+
+        employeeService.empsRegist(
+                employeeRegistRequests,
+                empRegistDataRequests.getDetailErdNum(),
+                empRegistDataRequests.getDetailErdTitle(),
+                empCode,
+                empRegistDataRequests.getDetailErdRegistdate()
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /* 인사등록 리스트 조회 */
+    @GetMapping("/empsResgistList")
+    public ResponseEntity<List<DetailByEmpRegistResponseGroup>> getEmpRegistListGrouped() {
+
+        List<DetailByEmpRegistResponseGroup> detailByEmpRegistResponseGroups = employeeService.getEmpRegistList();
+
+        return ResponseEntity.ok(detailByEmpRegistResponseGroups);
+    }
+
+    /* 인사등록 리스트 상세조회 */
+    @GetMapping("/empsRegistListDetail/{erd_num}")
+    public ResponseEntity<EmpRegistDetailListResponse> getEmpsRegistListDetail(@PathVariable String erd_num) {
+
+        EmpRegistDetailListResponse empRegistDetailListResponse = employeeService.getEmpsRegistListDetail(erd_num);
+
+        return ResponseEntity.ok(empRegistDetailListResponse);
     }
 
     /* 내 정보 조회 */
@@ -168,6 +198,7 @@ public class EmployeeController {
         return ResponseEntity.ok(departmentResponse);
     }
 
+
     /* 직위 전체 조회 */
     @GetMapping("/empTitles")
     public ResponseEntity<List<EmpTitleListResponse>> getEmpTitleList() {
@@ -185,13 +216,14 @@ public class EmployeeController {
 
         return ResponseEntity.ok(empPositionList);
     }
-    /* orgChart 조회 */
+  
+    /* 조직도 조회 */
     @GetMapping("/org")
-    public ResponseEntity<List<OrgResponse>> getOrg() {
+    public ResponseEntity<List<EmployeeResponse>> getOrg() {
 
-        List<OrgResponse> orgResponses = employeeService.getOrgEmps();
+        List<EmployeeResponse> employeeResponseList = employeeService.getOrg();
 
-        return ResponseEntity.ok(orgResponses);
+        return ResponseEntity.ok(employeeResponseList);
     }
 
     /* 조직도 상세 조회 */
@@ -212,6 +244,15 @@ public class EmployeeController {
         return ResponseEntity.ok().build();
     }
 
+
+    /* 발령 등록 */
+    @PostMapping("/appRegist")
+    public ResponseEntity<Void> registApp(@RequestBody @Valid AppRegistGroupRequest appRegistGroupRequest) {
+
+        employeeService.registApp(appRegistGroupRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
 //    @PatchMapping("/resetEmpPass/{emp_code}")
 //    public ResponseEntity<ResetEmpPassRequest> patchEmpPass(@PathVariable int emp_code, @RequestHeader("Authorization") String token) {
@@ -236,4 +277,5 @@ public class EmployeeController {
 //        return ResponseEntity.ok().build();
 //    }
 }
+
 
