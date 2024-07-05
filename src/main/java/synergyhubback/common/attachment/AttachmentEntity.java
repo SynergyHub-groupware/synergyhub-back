@@ -35,6 +35,15 @@ public class AttachmentEntity {
         this.attachOriginal = attachOriginal;
         this.attachSave = attachSave;
     }
+    public static AttachmentEntity create(String attachOriginal, String attachSave, String attachUrl, String attachSort) {
+
+        return new AttachmentEntity(
+                attachOriginal,
+                attachSave,
+                attachUrl,
+                attachSort
+        );
+    }
 }
 
 

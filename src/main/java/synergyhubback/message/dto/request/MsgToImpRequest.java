@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RevMsgDelRequest {
+public class MsgToImpRequest {
 
     private String msgCode;
     private int storCode;
-
 }

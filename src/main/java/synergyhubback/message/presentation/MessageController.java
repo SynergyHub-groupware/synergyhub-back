@@ -1,15 +1,19 @@
 package synergyhubback.message.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import synergyhubback.auth.util.TokenUtils;
+import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.message.domain.entity.Message;
-import synergyhubback.message.dto.request.CreateMsgRequest;
-import synergyhubback.message.dto.request.CreateTempRequest;
-import synergyhubback.message.dto.request.RevMsgDelRequest;
-import synergyhubback.message.dto.request.SendMsgDelRequest;
+import synergyhubback.message.domain.entity.Storage;
+import synergyhubback.message.dto.request.*;
 import synergyhubback.message.dto.response.*;
 import synergyhubback.message.service.MessageService;
 
@@ -178,8 +182,28 @@ public class MessageController {
         }
     }
 
+    /* Attachment File Insert */
+    @PostMapping("/attach")
+    public ResponseEntity<ResponseMsg> registAttach(@RequestParam(value = "files", required = false) MultipartFile[] files) {
+
+        try {
+
+            if (files == null) {
+                files = new MultipartFile[0];
+            }
+
+            messageService.registAttach(files);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "파일 저장 완료", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
+    }
+
     /* Temp Message Create (Insert) */
-    @PostMapping("/create/temp")
+    @PostMapping( "/create/temp")
     public ResponseEntity<ResponseMsg> createTemp(@RequestBody CreateTempRequest request) {
 
         try {
@@ -212,5 +236,123 @@ public class MessageController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /* 쪽지 읽음 처리 */
+    @PatchMapping("/{msgCode}/read")
+    public ResponseEntity<Void> changeStatusByReadMsg(@PathVariable String msgCode) {
+
+        messageService.changeStatusByReadMsg(msgCode);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /* 쪽지 읽지 않음 처리 */
+    @PatchMapping("/{msgCode}/unread")
+    public ResponseEntity<Void> changeStatusByUnreadMsg(@PathVariable String msgCode) {
+
+        messageService.changeStatusByUnreadMsg(msgCode);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /* 쪽지에 저장된 파일 찾기 */
+    @GetMapping("/findAttach/{msgCode}")
+    public ResponseEntity<List<AttachResponse>> findAttachment(@PathVariable String msgCode) {
+        List<AttachResponse> attachList = messageService.findAttachment(msgCode);
+
+        return ResponseEntity.ok(attachList);
+    }
+
+    /* 쪽지에 저장된 파일 다운로드 */
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadMsgAttach(@RequestParam String attachOriginal, @RequestParam String attachSave) {
+
+        Resource file = messageService.downloadMsgAttach(attachSave);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachOriginal + "\"")
+                .body(file);
+    }
+
+    /* 중요 보관함 이동 처리 */
+    @PutMapping("/toImp/{msgCode}")
+    public ResponseEntity<Void> moveToImp(@PathVariable String msgCode, @RequestBody MsgToImpRequest request) {
+
+        messageService.moveToImp(msgCode, request.getStorCode());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /* Receive Msg Status 모두 Y로 업데이트 */
+    @PutMapping("/receive/updateStatus")
+    public ResponseEntity<String> updateRevMsgStatus(@RequestBody List<String> msgCodes) {
+
+        try {
+            messageService.updateRevMsgStatus(msgCodes);
+
+            return ResponseEntity.ok("Receive Msg Status Update Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fail to update Rev Msg Status" + e.getMessage());
+        }
+    }
+
+    @PutMapping("/receive/updateRevStor")
+    public ResponseEntity<String> updateAllRevMsgToBin(@RequestBody List<String> msgCodes) {
+
+        try {
+            messageService.updateAllRevMsgToBin(msgCodes);
+
+            return ResponseEntity.ok("Receive Msg Status Update Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fail to update Rev Msg Status" + e.getMessage());
+        }
+    }
+
+    @PutMapping("send/updateSendStor")
+    public ResponseEntity<String> updateAllSendMsgToBin(@RequestBody List<String> msgCodes) {
+
+        try {
+            messageService.updateAllSendMsgToBin(msgCodes);
+
+            return ResponseEntity.ok("Receive Msg Status Update Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fail to update Rev Msg Status" + e.getMessage());
+        }
+    }
+
+    /* 회원 차단 등록 */
+    @PostMapping("/block")
+    public ResponseEntity<ResponseMsg> blockEmp(@RequestBody CreateBlockEmpRequest request) {
+
+        try {
+            messageService.blcokEmp(
+                    request.getBlkId(),
+                    request.getBlkName()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "회원 차단에 성공했습니다.", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/{blkId}/{blkName}")
+    public ResponseEntity<BlockEmpResponse> getMessageBlock(
+            @PathVariable int blkId,
+            @PathVariable int blkName
+    ) {
+        BlockEmpResponse response = messageService.getBlockByBlkIdAndBlkName(blkId, blkName);
+
+        if (response == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
