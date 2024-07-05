@@ -913,11 +913,13 @@ public class ApprovalService {
         int lsCode = formRegistRequest.getLineSort().getLsCode();
         LineSort foundLine = lineSortRepository.findById(lsCode).orElseThrow(() -> new RuntimeException("LineSort not found with lsCode: " + lsCode));
 
+
         Form newForm = Form.of(
                 formRegistRequest.getAfName(),
                 formRegistRequest.getAfExplain(),
                 foundLine,
-                formRegistRequest.getAfCon()
+                formRegistRequest.getAfCon(),
+                'Y'
         );
         formRepository.save(newForm);
     }
@@ -940,6 +942,24 @@ public class ApprovalService {
         );
         formRepository.save(foundForm);
     }
+
+    public void nonActiveForm(int afCode) {
+        Form foundForm = formRepository.findById(afCode).orElseThrow(() -> new RuntimeException("Form not found with afCode: " + afCode));
+        foundForm.nonActiveForm('N');
+        formRepository.save(foundForm);
+    }
+
+    public void activeForm(int afCode) {
+        Form foundForm = formRepository.findById(afCode).orElseThrow(() -> new RuntimeException("Form not found with afCode: " + afCode));
+        foundForm.nonActiveForm('Y');
+        formRepository.save(foundForm);
+    }
+
+    public Boolean checkIsForm(int afCode) {
+        Boolean isForm = docRepository.existsByForm_AfCode(afCode);
+        return isForm;
+    }
+
 
     public void registBox(BoxRequest boxRequest) {
         ApprovalBox newBox = ApprovalBox.of(
