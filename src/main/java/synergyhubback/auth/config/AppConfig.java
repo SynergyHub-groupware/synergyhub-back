@@ -24,13 +24,16 @@ public class AppConfig {
         modelMapper.typeMap(DayOffResponse.class, DayOff.class)
                 .setProvider(request -> DayOff.builder()
                         .doCode(((DayOff) request.getSource()).getDoCode())
+                        .doReportDate(((DayOff) request.getSource()).getDoReportDate())
                         .doName(((DayOff) request.getSource()).getDoName())
                         .doUsed(((DayOff) request.getSource()).getDoUsed())
                         .doStartDate(((DayOff) request.getSource()).getDoStartDate())
                         .doEndDate(((DayOff) request.getSource()).getDoEndDate())
                         .doStartTime(((DayOff) request.getSource()).getDoStartTime())
                         .doEndTime(((DayOff) request.getSource()).getDoEndTime())
-                        .dayOffBalance(((DayOff) request.getSource()).getDayOffBalance())
+                        .granted(((DayOff) request.getSource()).getGranted())
+                        .dbUsed(((DayOff) request.getSource()).getDbUsed())
+                        .remaining(((DayOff) request.getSource()).getRemaining())
                         .build());
         modelMapper.typeMap(DayOffBalanceRequest.class, DayOffBalance.class)
                 .setProvider(request -> DayOffBalance.builder()
@@ -51,6 +54,7 @@ public class AppConfig {
                         .endTime(((AttendanceRegistRequest) request.getSource()).getEndTime())
                         .employee(((AttendanceRegistRequest) request.getSource()).getEmployee())
                         .attendanceStatus(((AttendanceRegistRequest) request.getSource()).getAttendanceStatus())
+                        .overWork(((AttendanceRegistRequest) request.getSource()).getOverWork())
                         .build());
         return modelMapper;
     }

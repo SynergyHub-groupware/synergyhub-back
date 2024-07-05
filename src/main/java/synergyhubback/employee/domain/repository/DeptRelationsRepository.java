@@ -1,8 +1,8 @@
 package synergyhubback.employee.domain.repository;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.DeptRelations;
 
@@ -23,4 +23,7 @@ public interface DeptRelationsRepository extends JpaRepository<DeptRelations, In
 
     DeptRelations findByParentDepartmentAndSubDepartment(Department parentDepartment, Department subDepartment);
 
+    /* 팀명으로 하위부서 조회 : 박은비 추가 */
+    @Query("SELECT ds FROM DeptRelations ds WHERE ds.subDepartment.dept_code = :deptCode")
+    DeptRelations findBySubDeptCode(@Param("deptCode") String deptCode);
 }
