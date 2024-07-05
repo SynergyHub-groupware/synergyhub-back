@@ -17,16 +17,13 @@ Authorization: Bearer eyJkYXRlIjoxNzIwMDU3NTk0NTI2LCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 ### 금주의 근태 기록 조회
 GET http://localhost:8080/api/attendance/current-week
 
-### 월간 근태 기록 조회
-
 ### 출근시간 등록
 POST http://localhost:8080/api/attendance/registStartTime
-Authorization: Bearer eyJkYXRlIjoxNzE5NDczNjc4NTEzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NzcyNzh9.GcXoDam9SoDVXGLScbEDFfSTXxdlHumhEHw-ZSsNQmjQrrxKod17XkaTNIhF695mMgJQpwoTazmi_9EZt8-9xQ
+Authorization: Bearer eyJkYXRlIjoxNzIwMTU3NTU2MTI0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIyMTIxLCJleHAiOjE3MjA3NjIzNTZ9.ErLBRX5W4n4NpL0TIhzSEKcttzEWtKIbeFUC_aUnlpdr6XG2jOj4SJfBau3zEqloOIuK0scQ4OrSQoKr5Gdy-g
 
 ### 퇴근시간 등록
 POST http://localhost:8080/api/attendance/registEndTime
-Authorization: Bearer eyJkYXRlIjoxNzE5NDczNjc4NTEzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTk0NzcyNzh9.GcXoDam9SoDVXGLScbEDFfSTXxdlHumhEHw-ZSsNQmjQrrxKod17XkaTNIhF695mMgJQpwoTazmi_9EZt8-9xQ
-
+Authorization: Bearer eyJkYXRlIjoxNzIwMTU3NTU2MTI0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIyMTIxLCJleHAiOjE3MjA3NjIzNTZ9.ErLBRX5W4n4NpL0TIhzSEKcttzEWtKIbeFUC_aUnlpdr6XG2jOj4SJfBau3zEqloOIuK0scQ4OrSQoKr5Gdy-g
 
 ### 지정 출/퇴근시간 조회 테스트
 GET http://localhost:8080/api/attendance/test
@@ -112,3 +109,7 @@ Content-Type: application/json
   "employee":
   { "emp_code": 2024062 }
 }
+
+### 오늘의 전체 근태 내역 조회
+GET http://localhost:8080/api/attendance/today-all
+Authorization: Bearer eyJkYXRlIjoxNzIwMDcyNDk5MTE5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA2NzcyOTl9.jsFu1nABIOneLQKlIfhW-7aJ-8UdZrSKgg6B9bs8qOp4MUJRFs_WtthKNFKiyM_ok_YJ0A7k1dFnS_rfF7dHyQ

@@ -60,8 +60,8 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2024062",
-  "emp_pass" : "2024062"
+  "emp_code" : "2022121",
+  "emp_pass" : "2022121"
 }
 
 //@emp_code = 2024062
@@ -142,7 +142,7 @@ GET http://localhost:8080/employee/empPositions
 GET http://localhost:8080/employee/org
 
 ### 조직도 상세 조회
-GET http://localhost:8080/employee/orgDetail/{{emp_code}}
+GET http://localhost:8080/employee/orgDetail/2024062
 
 ### 비밀번호 사원코드로 초기화
 PUT http://localhost:8080/employee/resetEmpPass/2024035

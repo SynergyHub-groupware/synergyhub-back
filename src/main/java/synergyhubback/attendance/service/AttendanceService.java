@@ -28,6 +28,7 @@ import synergyhubback.employee.domain.repository.EmployeeRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 생성 */
-    @Scheduled(cron = "30 41 19 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 36 09 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -392,6 +393,7 @@ public class AttendanceService {
     }
 
 
+    /* 출근시간 등록 */
     @Transactional
     public AttendanceRegistStartTimeRequest registAttendanceStartTime(int empCode) {
         // 사원 조회
@@ -421,6 +423,38 @@ public class AttendanceService {
 
         // 업데이트된 근태 기록 저장
         attendanceRepository.save(foundAttendance);
+
+        /* 근무상태 업데이트 */
+        LocalTime atdStartTime = foundAttendance.getAtdStartTime();
+
+        System.out.println("atdStartTime: " + atdStartTime);
+        System.out.println("currentTime: " + currentTime);
+
+        if (currentTime.equals(atdStartTime) || currentTime.isBefore(atdStartTime)) {
+
+            // 근무상태 조회
+            List<AttendanceStatus> attendanceStatusList = attendanceStatusRepository.findAll();
+            AttendanceStatus newAttendanceStatus = attendanceStatusList.stream()
+                    .filter(status -> status.getAtsCode() == 2) // 2 : 출근
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("출근 상태 업데이트 실패"));
+
+            // 근무상태 업데이트
+            foundAttendance.updateAttendanceStatus(newAttendanceStatus);
+
+        } else if (currentTime.isAfter(atdStartTime)){
+
+            // 근무상태 조회
+            List<AttendanceStatus> attendanceStatusList = attendanceStatusRepository.findAll();
+            AttendanceStatus newAttendanceStatus = attendanceStatusList.stream()
+                    .filter(status -> status.getAtsCode() == 3) // 3 : 지각
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("출근 상태 업데이트 실패"));
+
+            // 근무상태 업데이트
+            foundAttendance.updateAttendanceStatus(newAttendanceStatus);
+
+        }
 
         AttendanceRegistStartTimeRequest response = new AttendanceRegistStartTimeRequest();
         response.setStartTime(currentTime);
@@ -470,6 +504,16 @@ public class AttendanceService {
 
         // 업데이트된 근태 기록 저장
         attendanceRepository.save(foundAttendance);
+
+        // 근무상태 조회
+        List<AttendanceStatus> attendanceStatusList = attendanceStatusRepository.findAll();
+        AttendanceStatus newAttendanceStatus = attendanceStatusList.stream()
+                .filter(status -> status.getAtsCode() == 5) // 5 : 퇴근
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("출근 상태 업데이트 실패"));
+
+        // 근무상태 업데이트
+        foundAttendance.updateAttendanceStatus(newAttendanceStatus);
 
         // 응답 객체 생성 및 설정
         AttendanceRegistEndTimeRequest response = new AttendanceRegistEndTimeRequest();
@@ -533,7 +577,22 @@ public class AttendanceService {
         return attendanceRepository.findTopByOrderByAtdCodeDesc();
     }
 
-    /* 오늘의 근태 기록 조회 */
+    /* 오늘의 근태 기록 조회 : 전체 */
+    public List<AttendancesResponse> getAllAttendancesForToday() {
+
+        // 현재 날짜 계산
+        LocalDate currentDate = LocalDate.now();
+
+        // 근태일지 조회
+        List<Attendance> foundAttendance = attendanceRepository.findByAtdDate(currentDate);
+
+        // AttendancesResponse 객체로 변환하여 반환
+        return foundAttendance.stream()
+                .map(AttendancesResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    /* 오늘의 근태 기록 조회 : 개인 */
     public AttendancesResponse getAttendancesForToday(int empCode) {
 
         // 사원 조회
