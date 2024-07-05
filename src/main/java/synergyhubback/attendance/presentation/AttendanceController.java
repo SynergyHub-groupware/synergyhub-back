@@ -254,8 +254,26 @@ public class AttendanceController {
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
     }
 
+    @Operation(summary = "오늘의 전체 근태 기록 조회", description = "오늘의 전체 근태 기록을 조회한다.")
+    @GetMapping("/today-all")
+    public ResponseEntity<ResponseMessage> getAttendanceForTodayAll(@RequestHeader("Authorization") String token) {
 
-    @Operation(summary = "오늘의 근태 기록 조회", description = "오늘의 근태 기록을 조회한다.")
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+        List<AttendancesResponse> attendancesForToday = attendanceService.getAllAttendancesForToday();
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("AllAttendanceToday", attendancesForToday); // 단수형으로 변경: attendances -> attendance
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "조회 성공", responseMap));
+    }
+
+
+    @Operation(summary = "오늘의 개인 근태 기록 조회", description = "오늘의 개인 근태 기록을 조회한다.")
     @GetMapping("/today")
     public ResponseEntity<ResponseMessage> getAttendanceForToday(@RequestHeader("Authorization") String token) {
 
