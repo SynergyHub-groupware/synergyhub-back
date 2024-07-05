@@ -13,6 +13,7 @@ import synergyhubback.approval.domain.entity.AppointDetail;
 import synergyhubback.approval.domain.entity.ApprovalAppoint;
 import synergyhubback.approval.domain.repository.AppointDetailRepository;
 import synergyhubback.approval.domain.repository.ApprovalAppointRepository;
+import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.auth.dto.LoginDto;
 import synergyhubback.common.address.service.EmailService;
 import synergyhubback.common.exception.NotFoundException;
@@ -324,6 +325,18 @@ public class EmployeeService {
         deptRelationsRepository.save(deptRelations);
     }
 
+    public List<EmpTitleListResponse> getEmpTitleList() {
+        List<Title> empTitleList = titleRepository.findAll();
+
+        return empTitleList.stream().map(EmpTitleListResponse::from).toList();
+    }
+
+    public List<GetPositionNameResponse> getPositionList() {
+        List<Position> empPositionList = positionRepository.findAll();
+
+        return empPositionList.stream().map(GetPositionNameResponse::from).toList();
+    }
+
     public void modifyDeptRelations(int dept_relations_code, Department parentDepartment, Department subDepartment) {
 
         DeptRelations deptRelations = deptRelationsRepository.findById(dept_relations_code)
@@ -360,10 +373,10 @@ public class EmployeeService {
                         department.getDept_code(),
                         department.getDept_title(),
                         department.getSubDepartments().stream()
-                                .map(sub -> sub.getSubDepartment().getDept_code())
+                                .map(sub -> sub.getSubDepartment().getDept_title())
                                 .collect(Collectors.toList()),
                         department.getParentDepartments().stream()
-                                .map(par -> par.getParentDepartment().getDept_code())
+                                .map(par -> par.getParentDepartment().getDept_title())
                                 .collect(Collectors.toList())
                 ))
                 .collect(Collectors.toList());
@@ -467,8 +480,8 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public void registApp(@Valid AppRegistGroupRequest appRegistGroupRequest) {
 
+public void registApp(@Valid AppRegistGroupRequest appRegistGroupRequest) {
 // 1. ApprovalAppoint 객체 생성 및 저장
         ApprovalAppoint approvalAppoint = new ApprovalAppoint(
                 appRegistGroupRequest.getAappCode(),

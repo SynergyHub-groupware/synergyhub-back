@@ -70,6 +70,7 @@ Content-Type: application/json
 GET http://localhost:8080/employee/myInfo
 Authorization: Bearer eyJkYXRlIjoxNzIwMDg3MDk3MDczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MjA2OTE4OTd9.dvNIb30qAqMtUpTi3BuntTwp5329GfaLvqN5pwSQQVi-AAX8NF3bgvpV9sN-wi1x2G19uNKcDdFJfmEdUeTyqg
 
+
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard
 Authorization: Bearer eyJkYXRlIjoxNzIwMDg3MDk3MDczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MjA2OTE4OTd9.dvNIb30qAqMtUpTi3BuntTwp5329GfaLvqN5pwSQQVi-AAX8NF3bgvpV9sN-wi1x2G19uNKcDdFJfmEdUeTyqg
@@ -136,6 +137,11 @@ GET http://localhost:8080/employee/departments
 ### 부서 상세 조회
 GET http://localhost:8080/employee/deptDetailList/D2
 
+
+### 직급 전체 조회
+GET http://localhost:8080/employee/empPositions
+
+
 ### 조직도 전체 조회
 GET http://localhost:8080/employee/org
 
@@ -161,6 +167,10 @@ Content-Type:application/json
     "adetType": "승진",
     "empCode": "2024062"
   }
+  
+### 내 팀 사원 조회
+GET http://localhost:8080/employee/findMyTeamMate
+Authorization: Bearer eyJkYXRlIjoxNzIwMDkyNDA1ODQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA2OTcyMDV9.zsewjEugU9QzBX2gQg_iFIhB6Jev7D09I6fgBCKv_1SHEg_ycujmSRoplmMCD15C34-w36vidIVZljJN7ZzbeA
 
 
 

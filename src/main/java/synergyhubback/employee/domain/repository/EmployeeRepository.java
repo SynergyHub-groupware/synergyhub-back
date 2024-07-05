@@ -52,8 +52,39 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e.emp_name FROM Employee e WHERE e.emp_code = :empCode")
     String findEmpNameById(int empCode);
 
+
     @Query("SELECT e FROM Employee e WHERE e.emp_status = 'Y'")
     List<Employee> findAllActiveEmployees();
 
     List<Employee> findByDepartment(Department department);
+
+    /* --- 박은비 --- */
+
+    // D2 하위 사원 조회
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d2', 'd7', 'd8', 'd9', 'd10', 'd11', 'd12')")
+    List<Employee> findByD2();
+
+    // D3 하위 사원 조회
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d3', 'd4', 'd5', 'd6', 'd13', 'd14', 'd15')")
+    List<Employee> findByD3();
+
+    // D7 하위 사원 조회
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d7', 'd8', 'd9')")
+    List<Employee> findByD7();
+
+    // D10 하위 사원 조회
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d10', 'd11', 'd12')")
+    List<Employee> findByD10();
+
+    // D4 하위 사원 조회
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d4', 'd5', 'd6')")
+    List<Employee> findByD4();
+
+    // D13 하위 사원 조회
+    @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d13', 'd14', 'd15')")
+    List<Employee> findByD13();
+
+
+
+
 }

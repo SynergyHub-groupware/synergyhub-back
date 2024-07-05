@@ -58,15 +58,16 @@ public class Pheed {
         this.url = url;
     }
 
-    public Pheed(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee) {
+    public Pheed(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee, String url) {
         this.pheedCon = pheedCon;
         this.creStatus = creStatus;
         this.readStatus = readStatus;
         this.deStatus = deStatus;
         this.pheedSort = pheedSort;
         this.employee = employee;
+        this.url = url;
     }
-    public static Pheed of(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee){
-        return new Pheed(pheedCon, creStatus, readStatus, deStatus, pheedSort, employee);
+    public static Pheed of(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee, String url){
+        return new Pheed(pheedCon, creStatus, readStatus, deStatus, pheedSort, employee, url);
     }
 }

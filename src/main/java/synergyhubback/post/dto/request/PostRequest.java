@@ -1,5 +1,7 @@
 package synergyhubback.post.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +41,20 @@ public class PostRequest {
         PostSortEntity postSortEntity = new PostSortEntity();
         postSortEntity.setPsCode(psCode);
         this.PsCode = postSortEntity;
+    }
+
+    @JsonCreator
+    public PostRequest(@JsonProperty("postcode") String postCode,@JsonProperty("postName") String postName,@JsonProperty("postViewCnt") int postViewCnt,@JsonProperty("postDate") LocalDate postDate,@JsonProperty("postCon") String postCon,@JsonProperty("postCommSet") PostCommSet postCommSet,@JsonProperty("fixStatus") char fixStatus,@JsonProperty("noticeStatus") char noticeStatus,@JsonProperty("empCode") int empCode, @JsonProperty("lowBoardCode") LowBoardEntity lowBoardCode,@JsonProperty("psCode") PostSortEntity psCode) {
+        this.PostCode = postCode;
+        this.PostName = postName;
+        this.PostViewCnt = postViewCnt;
+        this.PostDate = postDate;
+        this.PostCon = postCon;
+        this.postCommSet = postCommSet;
+        this.FixStatus = fixStatus;
+        this.NoticeStatus = noticeStatus;
+        this.EmpCode = empCode;
+        this.LowBoardCode = lowBoardCode;
+        this.PsCode = psCode;
     }
 }
