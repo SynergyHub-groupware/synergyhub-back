@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,6 +15,8 @@ public class DetailByEmpRegistRequest {
 
     private String erd_title;
 
-    private int emp_code;
+    private String erd_writer;
+
+    private LocalDate erd_registdate;
 
 }

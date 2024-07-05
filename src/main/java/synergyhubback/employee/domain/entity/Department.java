@@ -36,6 +36,7 @@ public class Department {
     @OneToMany(mappedBy = "subDepartment", fetch = FetchType.LAZY)
     private Set<DeptRelations> parentDepartments = new HashSet<>();
 
+
     public Department(String dept_code, String dept_title, LocalDate creation_date, LocalDate end_date, Set<DeptRelations> parentDepartments, Set<DeptRelations> subDepartments) {
         this.dept_code = dept_code;
         this.dept_title = dept_title;
@@ -44,6 +45,7 @@ public class Department {
         this.parentDepartments = parentDepartments;
         this.subDepartments = subDepartments;
     }
+
 
     public void setParentDepartment(Department parentDepartment) {
         // 기존의 parentDepartments를 업데이트할 수도 있어야 함

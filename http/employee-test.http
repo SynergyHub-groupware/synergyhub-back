@@ -50,10 +50,11 @@ Content-Type:application/json
   }
 ]
 
+### 인사내역 조회
+GET http://localhost:8080/employee/empsResgistList
 
-
-### 사원등록 상세정보 등록
-POST http://localhost:8080/employee/empRegistDetail
+### 인사내역 상세 조회
+GET http://localhost:8080/employee/empsRegistListDetail/PER-2024-06-001
 
 ### 로그인 테스트
 POST http://localhost:8080/emp/auth/login
@@ -67,19 +68,20 @@ Content-Type: application/json
 //@emp_code = 2024062
 ### 내정보 조회
 GET http://localhost:8080/employee/myInfo
-Authorization: Bearer eyJkYXRlIjoxNzE5ODI4ODk2NjI4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA0MzM2OTZ9.9TXFK9SHkydFEx2bYD7x11HFxb_3-stXkxMEPb5NccZQnZl-yBmjE81M-vz3bi-Gl2rdDX_9T1u74MXv6knq1g
+Authorization: Bearer eyJkYXRlIjoxNzIwMDg3MDk3MDczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MjA2OTE4OTd9.dvNIb30qAqMtUpTi3BuntTwp5329GfaLvqN5pwSQQVi-AAX8NF3bgvpV9sN-wi1x2G19uNKcDdFJfmEdUeTyqg
+
 
 ### 인사기록카드 조회
 GET http://localhost:8080/employee/recordCard
-Authorization: Bearer eyJkYXRlIjoxNzE5MzA0MTY2Mzc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MTkzMDc3NjZ9.0ExrgU9p43ELJGjEEZdxS67qCJTQUAvlIzTOfZW0TaCslEcrmlFu1Tx8W3Icv9pXRzIzPjip5A9YBLfqQEjqSA
+Authorization: Bearer eyJkYXRlIjoxNzIwMDg3MDk3MDczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MjA2OTE4OTd9.dvNIb30qAqMtUpTi3BuntTwp5329GfaLvqN5pwSQQVi-AAX8NF3bgvpV9sN-wi1x2G19uNKcDdFJfmEdUeTyqg
 
 ### 팀원 인사기록카드 조회
 GET http://localhost:8080/employee/teamRecordCard/2021011
-Authorization: Bearer eyJkYXRlIjoxNzE5MzEwMzAyNDAzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MTkzMTM5MDJ9.nsez9CagYHmVpU-5r6irl5kzvb5xtFAmsSpt8lJe-wvQ-fgMg4e-rLsnPd35aHGX2ttsoQIrXfBqrP-QFTQ-Vg
+Authorization: Bearer eyJkYXRlIjoxNzIwMDg3MDk3MDczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MjA2OTE4OTd9.dvNIb30qAqMtUpTi3BuntTwp5329GfaLvqN5pwSQQVi-AAX8NF3bgvpV9sN-wi1x2G19uNKcDdFJfmEdUeTyqg
 
 ### 팀원 정보 조회
 GET http://localhost:8080/employee/employeeList
-Authorization: Bearer eyJkYXRlIjoxNzE5MzEwMzAyNDAzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MTkzMTM5MDJ9.nsez9CagYHmVpU-5r6irl5kzvb5xtFAmsSpt8lJe-wvQ-fgMg4e-rLsnPd35aHGX2ttsoQIrXfBqrP-QFTQ-Vg
+Authorization: Bearer eyJkYXRlIjoxNzIwMDg3MDk3MDczLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIwMDExLCJleHAiOjE3MjA2OTE4OTd9.dvNIb30qAqMtUpTi3BuntTwp5329GfaLvqN5pwSQQVi-AAX8NF3bgvpV9sN-wi1x2G19uNKcDdFJfmEdUeTyqg
 
 ### 부서 등록
 POST http://localhost:8080/employee/registDept
@@ -135,19 +137,37 @@ GET http://localhost:8080/employee/departments
 ### 부서 상세 조회
 GET http://localhost:8080/employee/deptDetailList/D2
 
+
 ### 직급 전체 조회
 GET http://localhost:8080/employee/empPositions
+
 
 ### 조직도 전체 조회
 GET http://localhost:8080/employee/org
 
 ### 조직도 상세 조회
-GET http://localhost:8080/employee/orgDetail/{{emp_code}}
+GET http://localhost:8080/employee/orgDetail/2020011
 
 ### 비밀번호 사원코드로 초기화
 PUT http://localhost:8080/employee/resetEmpPass/2024035
 Authorization: Bearer eyJkYXRlIjoxNzE5Mjk0NTAzODcwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MTkyOTgxMDN9.qX90Vu9uJJJ41hLDOGDlKbdcpHpAmWy2xmrRwR5xjycfZLdXFf7fdbHevf9YNXTlEjLH9ALt9xxy4Ix3TBeHiw
 
+### 발령 등록
+POST http://localhost:8080/employee/appRegist
+Content-Type:application/json
+
+{
+    "aappCode": "APP123",
+    "aappNo": "APP123",
+    "aappDate": "2024-07-05",
+    "aappTitle": "임원 발령",
+    "aappNo": "APP123",
+    "adetBefore": "대리",
+    "adetAfter": "과장",
+    "adetType": "승진",
+    "empCode": "2024062"
+  }
+  
 ### 내 팀 사원 조회
 GET http://localhost:8080/employee/findMyTeamMate
 Authorization: Bearer eyJkYXRlIjoxNzIwMDkyNDA1ODQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA2OTcyMDV9.zsewjEugU9QzBX2gQg_iFIhB6Jev7D09I6fgBCKv_1SHEg_ycujmSRoplmMCD15C34-w36vidIVZljJN7ZzbeA
