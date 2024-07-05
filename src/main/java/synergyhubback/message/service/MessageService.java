@@ -11,10 +11,13 @@ import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.message.domain.entity.Message;
+import synergyhubback.message.domain.entity.MessageBlock;
 import synergyhubback.message.domain.entity.Storage;
+import synergyhubback.message.domain.repository.MessageBlockRepository;
 import synergyhubback.message.domain.repository.MessageRepository;
 import synergyhubback.message.domain.repository.MsgEmpRepository;
 import synergyhubback.message.domain.repository.StorageRepository;
+import synergyhubback.message.dto.request.CreateBlockEmpRequest;
 import synergyhubback.message.dto.response.*;
 
 import java.io.File;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +42,8 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final StorageRepository storageRepository;
-    private final MsgEmpRepository msgEmpRepository;
     private final AttachmentRepository attachmentRepository;
+    private final MessageBlockRepository messageBlockRepository;
 
     /* emp_code를 찾아서 받은 쪽지 리스트 조회 */
     public List<ReceiveResponse> getReceiveMessage(int empCode) {
@@ -388,5 +392,57 @@ public class MessageService {
             messageRepository.save(msg);
         });
     }
-    // commit
+
+    public void blcokEmp(Employee blkId, Employee blkName) {
+
+        Integer lastBlkCode = messageBlockRepository.findLastBlkCode();
+        if(lastBlkCode == null) {
+            lastBlkCode = 1;
+        }
+        int newBlkCode = newBlkCode(lastBlkCode);
+
+        System.out.println("lastBlkCode = " + lastBlkCode);
+        System.out.println("newBlkCode = " + newBlkCode);
+
+        MessageBlock messageBlock = MessageBlock.create(
+                newBlkCode,
+                LocalDate.now()
+        );
+
+        messageBlock.setBlkId(blkId);
+        messageBlock.setBlkName(blkName);
+
+        System.out.println("messageBlock.getBlkId() = " + messageBlock.getBlkId());
+        System.out.println("messageBlock.getBlkName() = " + messageBlock.getBlkName());
+
+        messageBlockRepository.save(messageBlock);
+    }
+
+    private int newBlkCode(Integer lastBlkCode) {
+
+        if (lastBlkCode != null && lastBlkCode > 0) {
+
+            return lastBlkCode + 1;
+        } else if (lastBlkCode == null) {
+
+            lastBlkCode = 0;
+
+            return lastBlkCode;
+        } else {
+
+            throw new IllegalArgumentException("lastBlkCode는 음수일 수 없습니다." + lastBlkCode);
+        }
+    }
+
+    public BlockEmpResponse getBlockByBlkIdAndBlkName(int blkId, int blkName) {
+
+        MessageBlock messageBlock = messageBlockRepository.findByBlkIdAndBlkName(blkId, blkName);
+
+        if (messageBlock == null) {
+
+            return null;
+        }
+
+        return BlockEmpResponse.getBlockEmp(messageBlock);
+    }
 }

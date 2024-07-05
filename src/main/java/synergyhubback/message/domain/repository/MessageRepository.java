@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import synergyhubback.message.domain.entity.Message;
+import synergyhubback.message.dto.request.CreateBlockEmpRequest;
 
 import java.util.List;
 
@@ -44,6 +45,5 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query(value = "SELECT m FROM Message m ORDER BY CAST(SUBSTRING(m.msgCode, 3) AS INTEGER ) DESC LIMIT 1")
     Message findByRecentMsg();
-
 
 }

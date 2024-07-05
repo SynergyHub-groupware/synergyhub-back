@@ -323,4 +323,36 @@ public class MessageController {
                     .body("Fail to update Rev Msg Status" + e.getMessage());
         }
     }
+
+    /* 회원 차단 등록 */
+    @PostMapping("/block")
+    public ResponseEntity<ResponseMsg> blockEmp(@RequestBody CreateBlockEmpRequest request) {
+
+        try {
+            messageService.blcokEmp(
+                    request.getBlkId(),
+                    request.getBlkName()
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMsg(200, "회원 차단에 성공했습니다.", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMsg(500, "서버 오류" + e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/{blkId}/{blkName}")
+    public ResponseEntity<BlockEmpResponse> getMessageBlock(
+            @PathVariable int blkId,
+            @PathVariable int blkName
+    ) {
+        BlockEmpResponse response = messageService.getBlockByBlkIdAndBlkName(blkId, blkName);
+
+        if (response == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

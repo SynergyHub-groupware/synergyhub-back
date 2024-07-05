@@ -149,3 +149,22 @@ PUT http://localhost:8080/emp/message/send/updateSendStor
 Content-Type: application/json
 
 ["MS74", "MS75"]
+
+
+### Block Emp
+POST http://localhost:8080/emp/message/block
+Content-Type: application/json
+
+{
+  "blkCode": 1,
+  "blkDate": "2024-07-05",
+  "blkId": {
+    "emp_code": 2021011
+  },
+  "blkName": {
+    "emp_code": 2021011
+  }
+}
+
+### Block Emp Get
+GET http://localhost:8080/emp/message/2021011/2021068
