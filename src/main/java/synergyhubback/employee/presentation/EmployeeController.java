@@ -254,26 +254,6 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    /* 내 팀원 조회 : 박은비 */
-    @GetMapping("/findMyTeamMate")
-    public ResponseEntity<ResponseMessage> findMyTeamMate(@RequestHeader("Authorization") String token) {
-
-        String jwtToken = TokenUtils.getToken(token);
-        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
-        int empCode = Integer.parseInt(tokenEmpCode);
-
-        List<EmployeeResponse> myTeamMate = employeeService.findMyTeamMate(empCode);
-        HttpHeaders headers = new HttpHeaders();
-
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("myTeamMate", myTeamMate); // 복수형으로 변경: attendance -> attendances
-        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(responseMessage);
-    }
-
 //    @PatchMapping("/resetEmpPass/{emp_code}")
 //    public ResponseEntity<ResetEmpPassRequest> patchEmpPass(@PathVariable int emp_code, @RequestHeader("Authorization") String token) {
 //
