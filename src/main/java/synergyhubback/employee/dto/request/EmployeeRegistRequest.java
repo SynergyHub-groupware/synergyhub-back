@@ -15,31 +15,40 @@ public class EmployeeRegistRequest {
 
     private final int emp_code;
 
-    @NotBlank
-    private  String emp_name;
-
-    private  String emp_pass;
+    private int par_emp_code;
 
     @NotBlank
-    private  String social_security_no;
+    private String emp_name;
+
+    private String emp_pass;
 
     @NotBlank
-    private  String dept_code;
+    private String social_security_no;
 
     @NotBlank
-    private  String position_code;
+    private String email;
 
     @NotBlank
-    private  String title_code;
+    private String dept_code;
+
+    @NotBlank
+    private String position_code;
+
+    @NotBlank
+    private String title_code;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private  LocalDate hire_date;
+    private LocalDate hire_date;
 
-    private  String emp_status;
+    private String emp_status;
 
-//    private int detailErdCode;
     private String detailErdNum;
+
     private String detailErdTitle;
-//    private int detailEmpCode;
+
+    private String detailErdWriter;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate detailErdRegistdate;
 
 }

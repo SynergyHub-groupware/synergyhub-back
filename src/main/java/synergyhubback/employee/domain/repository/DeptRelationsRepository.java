@@ -7,6 +7,7 @@ import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.DeptRelations;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface DeptRelationsRepository extends JpaRepository<DeptRelations, Integer> {
@@ -23,4 +24,7 @@ public interface DeptRelationsRepository extends JpaRepository<DeptRelations, In
 
     DeptRelations findByParentDepartmentAndSubDepartment(Department parentDepartment, Department subDepartment);
 
+    Optional<DeptRelations> findBySubDepartment(Department department);
+
+    List<DeptRelations> findByParentDepartment(Department department);
 }

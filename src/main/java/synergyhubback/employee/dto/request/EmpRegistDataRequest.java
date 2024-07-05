@@ -1,7 +1,6 @@
 package synergyhubback.employee.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -14,7 +13,15 @@ import java.util.List;
 public class EmpRegistDataRequest {
 
     private String detailErdNum;
+
     private String detailErdTitle;
+
+    private String detailErdWriter;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate detailErdRegistdate = LocalDate.now();
+
     private List<EmployeeRegistRequest> employees;
+
 
 }
