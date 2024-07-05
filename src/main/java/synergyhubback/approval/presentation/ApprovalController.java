@@ -245,6 +245,25 @@ public class ApprovalController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/nonActiveForm")
+    public ResponseEntity<Void> nonActiveForm(@RequestParam final int afCode){
+        approvalService.nonActiveForm(afCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/activeForm")
+    public ResponseEntity<Void> activeForm(@RequestParam final int afCode){
+        approvalService.activeForm(afCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/checkIsForm")
+    public ResponseEntity<Boolean> checkIsForm(@RequestParam final int afCode){
+        final Boolean isForm = approvalService.checkIsForm(afCode);
+        return ResponseEntity.ok(isForm);
+    }
+
+
     @PostMapping("/registBox")
     public ResponseEntity<Void> registBox(@RequestBody final BoxRequest boxRequest){
         approvalService.registBox(boxRequest);

@@ -9,13 +9,13 @@ import java.util.List;
 @Repository
 public interface LineEmpRepository {
     @Query(value = "WITH RECURSIVE DeptHierarchy AS (" +
-            "    SELECT SUP_DEPT_CODE, SUB_DEPT_CODE " +
+            "    SELECT PAR_DEPT_CODE, SUB_DEPT_CODE " +
             "    FROM DEPT_RELATIONS " +
             "    WHERE SUB_DEPT_CODE = :depCode " +
             "    UNION ALL " +
-            "    SELECT dr.SUP_DEPT_CODE, dr.SUB_DEPT_CODE " +
+            "    SELECT dr.PAR_DEPT_CODE, dr.SUB_DEPT_CODE " +
             "    FROM DEPT_RELATIONS dr " +
-            "    JOIN DeptHierarchy dh ON dr.SUB_DEPT_CODE = dh.SUP_DEPT_CODE " +
+            "    JOIN DeptHierarchy dh ON dr.SUB_DEPT_CODE = dh.PAR_DEPT_CODE " +
             ") " +
             "SELECT ei.*, et.TITLE_NAME, dp.DEPT_TITLE " +
             "FROM ( " +
@@ -23,7 +23,7 @@ public interface LineEmpRepository {
             "           ROW_NUMBER() OVER (PARTITION BY ei.TITLE_CODE ORDER BY CAST(SUBSTRING_INDEX(ei.DEPT_CODE, 'D', -1) AS UNSIGNED) DESC) AS rn " +
             "    FROM EMPLOYEE_INFO ei " +
             "    JOIN ( " +
-            "        SELECT DISTINCT SUP_DEPT_CODE AS DEPT_CODE " +
+            "        SELECT DISTINCT PAR_DEPT_CODE AS DEPT_CODE " +
             "        FROM DeptHierarchy " +
             "        UNION " +
             "        SELECT DISTINCT SUB_DEPT_CODE AS DEPT_CODE " +
