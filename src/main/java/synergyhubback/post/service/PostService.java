@@ -18,6 +18,7 @@ import synergyhubback.post.dto.request.BoardRequest;
 import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.response.PostResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,14 +76,14 @@ public class PostService {
         return postRepository.save(postEntity);
     }
 
-    public List<PostEntity> getAllPostList(Pageable pageable) {
-        List<PostEntity> posts = postRepository.AllPostList(pageable);
+    public List<PostResponse> getAllPostList(Pageable pageable) {
+        List<PostResponse> posts = postRepository.AllPostList(pageable);
 
         // 새로운 ArrayList로 복사
-        List<PostEntity> modifiableList = new ArrayList<>(posts);
+        List<PostResponse> modifiableList = new ArrayList<>(posts);
 
         // 리스트를 원하는 방식으로 정렬 (예시: ID 오름차순)
-        modifiableList.sort(Comparator.comparing(PostEntity::getPostCode));
+        modifiableList.sort(Comparator.comparing(PostResponse::getPostCode));
 
         return modifiableList;
     }

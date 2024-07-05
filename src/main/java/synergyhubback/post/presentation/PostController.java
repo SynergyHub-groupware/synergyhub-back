@@ -21,6 +21,7 @@ import synergyhubback.post.dto.request.BoardRequest;
 import synergyhubback.post.dto.request.CommontRequest;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.response.PostResponse;
 import synergyhubback.post.service.PostService;
 
 import java.io.File;
@@ -259,11 +260,11 @@ public class PostController {
 
 
     @GetMapping("/list")
-    public ResponseEntity<List<PostEntity>> findPostList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize) {
+    public ResponseEntity<List<PostResponse>> findPostList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize) {
         System.out.println("getList stared");
         Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "PostCode");
         System.out.println(pageable);
-        List<PostEntity> posts = postService.getAllPostList(pageable);
+        List<PostResponse> posts = postService.getAllPostList(pageable);
         System.out.println(posts);
         return ResponseEntity.ok(posts);
     }
@@ -309,12 +310,18 @@ public class PostController {
         System.out.println("게시글 등록 메소드 작동시작");
         System.out.println(lowBoardCode);
         System.out.println(attachFile);
+        System.out.println(postName);
+        System.out.println(postCon);
+        System.out.println(postCommSet);
+        System.out.println(fixStatus);
+        System.out.println(noticeStatus);
+        System.out.println(psCode);
         PostCommSet commSet = PostCommSet.fromValue(postCommSet);
         System.out.println(commSet);
 
         /* 상품 등록하기 */
         PostRequest newPost = new PostRequest();
-        String numericPart = postService.LastPost().getPostCode().substring(1); // "020"
+        String numericPart = postService.LastPost().getPostCode().substring(2); // "020"
         int lastNumber = Integer.parseInt(numericPart); // 20
         int nextNumber = lastNumber + 1;
 
@@ -328,6 +335,7 @@ public class PostController {
         newPost.setPsCode(psCode);
         System.out.println(lowBoardCode);
 
+        System.out.println("newPost" + newPost);
         PostEntity post = postService.insertPost(newPost);
 
 

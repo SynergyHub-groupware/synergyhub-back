@@ -10,6 +10,7 @@ import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.PostRequest;
 import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.response.PostResponse;
 
 import java.util.List;
 
@@ -70,7 +71,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     Integer postDelete(@Param("postCode") String postCode);
 
     @Query("SELECT p FROM PostEntity p WHERE p.FixStatus <> 'D' ORDER BY p.PostCode ")
-    List<PostEntity> AllPostList(Pageable pageable);
+    List<PostResponse> AllPostList(Pageable pageable);
 
     @Query("SELECT p from PostEntity p where p.EmpCode.emp_code = :empCode ORDER BY p.PostCode DESC")
     List<PostEntity> ReadyPost(@Param("emp_code") int empCode);
