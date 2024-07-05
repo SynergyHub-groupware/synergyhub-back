@@ -373,6 +373,19 @@ public class MessageService {
 
             messageRepository.save(msg);
         });
+    }
 
+    public void updateAllSendMsgToBin(List<String> msgCodes) {
+
+        List<Message> revMsgToUpdate = messageRepository.findByMsgCodeIn(msgCodes);
+
+        revMsgToUpdate.forEach(msg -> {
+
+            Storage storage = new Storage();
+            storage.setStorCode(5);
+            msg.setSendStor(storage);
+
+            messageRepository.save(msg);
+        });
     }
 }

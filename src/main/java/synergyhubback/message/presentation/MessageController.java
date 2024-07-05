@@ -310,4 +310,17 @@ public class MessageController {
                     .body("Fail to update Rev Msg Status" + e.getMessage());
         }
     }
+
+    @PutMapping("send/updateSendStor")
+    public ResponseEntity<String> updateAllSendMsgToBin(@RequestBody List<String> msgCodes) {
+
+        try {
+            messageService.updateAllSendMsgToBin(msgCodes);
+
+            return ResponseEntity.ok("Receive Msg Status Update Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fail to update Rev Msg Status" + e.getMessage());
+        }
+    }
 }

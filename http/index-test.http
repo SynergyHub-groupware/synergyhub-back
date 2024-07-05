@@ -143,3 +143,9 @@ PUT http://localhost:8080/emp/message/receive/updateRevStor
 Content-Type: application/json
 
 ["MS74", "MS75"]
+
+### sendStor Update
+PUT http://localhost:8080/emp/message/send/updateSendStor
+Content-Type: application/json
+
+["MS74", "MS75"]
