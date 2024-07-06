@@ -57,6 +57,16 @@ public class Attendance {
         this.employee = employee;
     }
 
+    // 지정 출근시간 업데이트
+    public void updateAtdStartTime(LocalTime atdStartTime) {
+        this.atdStartTime = atdStartTime;
+    }
+
+    // 지정 퇴근시간 업데이트
+    public void updateAtdEndTime(LocalTime atdEndTime) {
+        this.atdEndTime = atdEndTime;
+    }
+
     // 출근시간 업데이트
     public void updateStartTime(LocalTime startTime) {
         this.startTime = startTime;
