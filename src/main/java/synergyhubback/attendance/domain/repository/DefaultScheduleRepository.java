@@ -57,4 +57,15 @@ public interface DefaultScheduleRepository extends JpaRepository<DefaultSchedule
     @Query("SELECT ds FROM DefaultSchedule ds WHERE ds.employee = :employee AND :currentDate BETWEEN ds.dsStartDate AND ds.dsEndDate")
     DefaultSchedule findByEmployeeAndDate(@Param("employee") Employee employee, @Param("currentDate") LocalDate currentDate);
 
+    /* 날짜가 없고 사원번호가 존재하는 기록 조회 */
+    @Query("SELECT ds FROM DefaultSchedule ds WHERE ds.employee = :employee AND ds.dsStartDate IS NULL")
+    DefaultSchedule findByEmployeeAndDateIsNull(Employee employee);
+
+    /* 날짜가 없는 모든 기록 조회 */
+    @Query("SELECT ds FROM DefaultSchedule ds WHERE ds.dsStartDate IS NULL")
+    List<DefaultSchedule> findByDateIsNull();
+
+    /* 사원번호와 날짜가 없는 모든 기록 조회 */
+    @Query("SELECT ds FROM DefaultSchedule ds WHERE ds.employee IS NULL AND ds.dsStartDate IS NULL")
+    List<DefaultSchedule> findByEmployeeIsNullAndDateIsNull();
 }

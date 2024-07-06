@@ -83,8 +83,8 @@ public class AttendancesResponse {
             // 팀명
             this.deptTitle = null; // 팀명은 null로 설정
 
-            // 하위부서
-            this.subTitle = null;
+            // 하위부서 (내 부서)
+            this.subTitle = attendance.getEmployee().getDepartment().getDept_title();
 
             StringBuilder parentDeptTitles = new StringBuilder();
             Set<DeptRelations> parentDepartments = attendance.getEmployee().getDepartment().getParentDepartments();
@@ -99,7 +99,7 @@ public class AttendancesResponse {
             }
 
             // 상위부서
-            this.parTitle = attendance.getEmployee().getDepartment().getDept_title();
+            this.parTitle = parentDeptTitles.toString();
 
         } else if (attendance.getEmployee().getTitle().getTitle_code().equals("T5") || attendance.getEmployee().getTitle().getTitle_code().equals("T6")) {
 

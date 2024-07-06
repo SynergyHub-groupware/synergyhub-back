@@ -18,4 +18,8 @@ public interface ApprovalAttendanceRepository extends JpaRepository<ApprovalAtte
     /* 휴가 기록 조회 */
     @Query("SELECT a FROM ApprovalAttendance a WHERE :currentDate >= a.aattStart AND :currentDate <= a.aattEnd")
     ApprovalAttendance findByAttStartAndAttEnd(LocalDateTime currentDate);
+
+    /* AATT 코드로 조회 */
+    @Query("SELECT a FROM ApprovalAttendance a WHERE a.aattCode = :aattCode")
+    ApprovalAttendance findByAATTCode(String aattCode);
 }
