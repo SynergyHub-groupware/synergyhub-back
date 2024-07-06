@@ -87,11 +87,21 @@ public class AttendanceService {
         String adCode = event.getAdCode();
 
         Document AATTdocument = docRepository.getReferenceById(adCode);
+        String AATTCode = AATTdocument.getAdDetail();
+        ApprovalAttendance approvalAttendance = approvalAttendanceRepository.findByAATTCode(AATTCode);
 
-        // 예외근무, 초과근무 신청서라면 (근무일지 생성)
-        createAttendanceRecord(AATTdocument);
+        // 종류
+        String AATTSort = approvalAttendance.getAattSort();
 
-        // 오늘 날짜의 휴가신청서라면
+        if(AATTSort.equals("외근") || AATTSort.equals("출장") || AATTSort.equals("교육") || AATTSort.equals("훈련") || AATTSort.equals("재택")) {
+            createAttendanceRecord(AATTdocument);
+        } else if(AATTSort.equals("연장근무") || AATTSort.equals("휴일근무")) {
+            if(AATTSort.equals("연장근무")) {
+                registOverWork(AATTdocument);
+            } else {
+                createAttendanceRecord(AATTdocument); // 휴일근무면 근무일지 생성
+            }
+        }
     }
 
     /* 예외 근무, 휴가 신청 시 비동기 생성을 위한 근태일지 생성 */
@@ -141,15 +151,41 @@ public class AttendanceService {
 
         /* ------------------------------------ 근무 상태 설정 ------------------------------------ */
 
-        // 1. 우선 디폴트로 설정
-        AttendanceStatus defaultStatus = attendanceStatusRepository.findById(1)
-                .orElseThrow(() -> new EntityNotFoundException("기본 근무 상태를 찾을 수 없습니다."));
-        newAttendanceRequest.setAttendanceStatus(defaultStatus);
+        // 종류 선택
+        String sort  = foundAATT.getAattSort();
 
-        // DTO 객체를 Entity로 매핑하여 우선 저장
-        Attendance newAttendance = modelMapper.map(newAttendanceRequest, Attendance.class);
-        attendanceRepository.save(newAttendance);
+        switch (sort) {
 
+            case "외근" -> {
+                AttendanceStatus defaultStatus = attendanceStatusRepository.findById(9)
+                        .orElseThrow(() -> new EntityNotFoundException("기본 근무 상태를 찾을 수 없습니다."));
+                newAttendanceRequest.setAttendanceStatus(defaultStatus);
+
+                // DTO 객체를 Entity로 매핑하여 저장
+                Attendance newAttendance = modelMapper.map(newAttendanceRequest, Attendance.class);
+                attendanceRepository.save(newAttendance);
+            }
+            case "재택" -> {
+                AttendanceStatus defaultStatus = attendanceStatusRepository.findById(13)
+                        .orElseThrow(() -> new EntityNotFoundException("기본 근무 상태를 찾을 수 없습니다."));
+                newAttendanceRequest.setAttendanceStatus(defaultStatus);
+
+                // DTO 객체를 Entity로 매핑하여 저장
+                Attendance newAttendance = modelMapper.map(newAttendanceRequest, Attendance.class);
+                attendanceRepository.save(newAttendance);
+            } case "휴일근무" -> {
+                AttendanceStatus defaultStatus = attendanceStatusRepository.findById(1)
+                        .orElseThrow(() -> new EntityNotFoundException("기본 근무 상태를 찾을 수 없습니다."));
+                newAttendanceRequest.setAttendanceStatus(defaultStatus);
+
+                // DTO 객체를 Entity로 매핑하여 저장
+                Attendance newAttendance = modelMapper.map(newAttendanceRequest, Attendance.class);
+                attendanceRepository.save(newAttendance);
+
+                // 초과근무로 기록
+                registOverWork(AATTdocument);
+            }
+        }
     }
 
     /* 근무 일지 자동 생성 */
@@ -1015,11 +1051,19 @@ public class AttendanceService {
 
     @Transactional
     // 초과근무 등록
-    public void registOverWork(OverWorkRequest request) {
+    public void registOverWork(Document AATTdocument) {
+
+        // 신청한 날짜 설정
+        String aattCode = AATTdocument.getAdDetail();
+        ApprovalAttendance foundAATT = approvalAttendanceRepository.findByAATTCode(aattCode);
+        LocalDate newDate = LocalDate.from(foundAATT.getAattStart());
 
         // 초과근무 날에 해당되는 근무일지 조회
-        LocalDate currentDate = LocalDate.now();
-        Attendance foundAttendance = attendanceRepository.findByEmployeeAndAtdDate(request.getEmployee(), currentDate);
+        Attendance foundAttendance = attendanceRepository.findByEmployeeAndAtdDate(AATTdocument.getEmployee(), newDate);
+
+        // 초과근무 시간 설정
+        LocalTime owStartTime = foundAATT.getAattStart().toLocalTime();
+        LocalTime owEndTime = foundAATT.getAattEnd().toLocalTime();
 
         System.out.println("근무일지 코드 : " + foundAttendance.getAtdCode());
 
@@ -1027,17 +1071,16 @@ public class AttendanceService {
             throw new RuntimeException("이미 초과근무 내역이 존재합니다.");
         }
 
-        // 없다면 빌드 후 저장
+        // 없다면 빌드 후 초과근무 테이블에 DB 저장
         OverWork overWork = OverWork.builder()
-                .owDate(request.getOwDate())
-                .owStartTime(request.getOwStartTime())
-                .owEndTime(request.getOwEndTime())
-                .employee(request.getEmployee())
+                .owDate(newDate)
+                .owStartTime(owStartTime)
+                .owEndTime(owEndTime)
+                .employee(AATTdocument.getEmployee())
                 .build();
-
         overWorkRepository.save(overWork);
 
-        // 근무일지의 초과근무 업데이트
+        // 근무일지의 초과근무 정보 업데이트
         foundAttendance.updateOverWork(overWork);
     }
 
