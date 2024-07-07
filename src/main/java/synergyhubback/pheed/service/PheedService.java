@@ -178,5 +178,6 @@ public class PheedService {
 
         // 피드 등록 완료 후 이벤트 발행
         eventPublisher.publishEvent(new PheedCreatedEvent(this, savedPheed));
+        System.out.println("이벤트 발행 ! ! !");
     }
 }
