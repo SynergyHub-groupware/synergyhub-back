@@ -1,168 +1,182 @@
 package synergyhubback.pheed.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import synergyhubback.common.event.PheedCreatedEvent;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.pheed.domain.entity.Pheed;
-import synergyhubback.pheed.domain.repository.EmitterRepository;
 import synergyhubback.pheed.domain.repository.PheedRepository;
-import synergyhubback.pheed.dto.request.PheedCreateRequest;
+import synergyhubback.pheed.domain.repository.SseRepository;
 import synergyhubback.pheed.dto.response.PheedResponse;
+import synergyhubback.pheed.presentation.PheedController;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PheedService {
 
     private static final Long DEFAULT_TIMEOUT = 7L * 24 * 60 * 60 * 1000;
 
-    private final EmitterRepository emitterRepository;
-    private final PheedRepository pheedRepository;
     private final EmployeeRepository employeeRepository;
+    private final SseRepository sseRepository;
+    private final PheedRepository pheedRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public PheedService(EmitterRepository emitterRepository, PheedRepository pheedRepository, EmployeeRepository employeeRepository) {
-        this.emitterRepository = emitterRepository;
-        this.pheedRepository = pheedRepository;
-        this.employeeRepository = employeeRepository;
-    }
+    public SseEmitter subscribe(String empCode, String lastEventId) {
+        String emitterId = empCode + "_" + System.currentTimeMillis();
+        SseEmitter sseEmitter = sseRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
 
-    @Transactional
-    public void send(int pheedCode, String pheedCon, String pheedSort, Employee employee, String url) {
-        Employee fetchedEmployee = employeeRepository.findByEmpCode(employee.getEmp_code());
-        if (fetchedEmployee == null) {
-            throw new IllegalArgumentException("Employee not found with empCode: " + employee.getEmp_code());
-        }
+        System.out.println("New emitter added: " + sseEmitter);
 
-        Pheed pheed = Pheed.builder()
-                .pheedCode(pheedCode)
-                .pheedCon(pheedCon)
-                .creStatus(LocalDateTime.now())
-                .readStatus("N")
-                .deStatus("N")
-                .pheedSort(pheedSort)
-                .employee(fetchedEmployee)
-                .url(url)
-                .build();
-
-        Pheed savedPheed = pheedRepository.save(pheed);
-
-        String empCode = String.valueOf(fetchedEmployee.getEmp_code());
-        String eventId = empCode + "_" + System.currentTimeMillis();
-        Map<String, SseEmitter> emitters = emitterRepository.findAllEmitterStartWithByEmpCode(empCode);
-        emitters.forEach((key, emitter) -> {
-            emitterRepository.saveEventCache(key, savedPheed);
-            sendPheedResponse(emitter, eventId, key, PheedResponse.createResponse(savedPheed));
-        });
-    }
-
-    private void sendPheedResponse(SseEmitter emitter, String eventId, String emitterId, PheedResponse pheedResponse) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String json = objectMapper.writeValueAsString(pheedResponse);
-
-            emitter.send(SseEmitter.event()
-                    .id(eventId)
-                    .name("sse")
-                    .data(json)
-            );
-        } catch (IOException exception) {
-            handleEmitterException(emitter, emitterId);
+            sseEmitter.send(SseEmitter.event().name("connect"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
 
-    private void handleEmitterException(SseEmitter emitter, String emitterId) {
-        emitterRepository.deleteByPheedCode(emitterId);
-        emitter.complete();
-    }
+        PheedController.sseEmitters.put(String.valueOf(empCode), sseEmitter);
 
-    private String makeTimeIncludeId(String empCode) {
-        return empCode + "_" + System.currentTimeMillis();
+        sseEmitter.onCompletion(() -> sseRepository.deleteEmitterById(emitterId));
+        sseEmitter.onTimeout(() -> sseRepository.deleteEmitterById(emitterId));
+        sseEmitter.onError(e -> sseRepository.deleteEmitterById(emitterId));
+
+        send(sseEmitter, emitterId, createDummyPheed(empCode));
+
+        if (hasLostData(lastEventId)) {
+            Map<String, Object> eventCaches = sseRepository.findAllEventCacheStartsWithUsername(empCode);
+            eventCaches.entrySet().stream()
+                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+                    .forEach(entry -> emitEventToClient(sseEmitter, entry.getKey(), entry.getValue()));
+        }
+
+        return sseEmitter;
     }
 
     private boolean hasLostData(String lastEventId) {
         return !lastEventId.isEmpty();
     }
 
-    private void sendLostData(String lastEventId, int empCode, String emitterId, SseEmitter emitter) {
-        Map<String, Object> eventCaches = emitterRepository.findAllEventCacheStartWithByEmpCode(String.valueOf(empCode));
-        eventCaches.entrySet().stream()
-                .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                .forEach(entry -> {
-                    if (entry.getValue() instanceof Pheed) {
-                        sendPheedResponse(emitter, entry.getKey(), emitterId, PheedResponse.createResponse((Pheed) entry.getValue()));
-                    } else {
-                        handleEmitterException(emitter, emitterId);
-                    }
-                });
+    private void send(SseEmitter sseEmitter, String emitterId, PheedResponse pheedResponse) {
+        try {
+            sseEmitter.send(SseEmitter.event()
+                    .id(emitterId)
+                    .name("sse")
+                    .data(pheedResponse, MediaType.APPLICATION_JSON));
+        } catch(IOException exception) {
+            sseRepository.deleteEmitterById(emitterId);
+            sseEmitter.completeWithError(exception);
+        }
     }
 
-    @Transactional
-    public void createPheed(PheedCreateRequest request) {
-        Employee employee = employeeRepository.findByEmpCode(request.getEmployee().getEmp_code());
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee not found with empCode: " + request.getEmployee().getEmp_code());
-        }
+    public void send(String con, String sort, String empCode, String url) {
+        PheedResponse pheed = pheedCreateRequest(con, sort, empCode, url);
 
-        Pheed pheed = Pheed.builder()
-                .pheedCode(request.getPheedCode())
-                .pheedCon(request.getPheedCon())
+        Map<String, SseEmitter> sseEmitters = sseRepository.findAllEmitterStartsWithUsername(empCode);
+        sseEmitters.forEach((key, sseEmitter) -> {
+            sseRepository.saveEventCache(key, pheed);
+            emitEventToClient(sseEmitter, key, pheed);
+        });
+    }
+
+    private PheedResponse pheedCreateRequest(String con, String sort, String empCode, String url) {
+        Employee employee = employeeRepository.findByEmpCode(Integer.parseInt(empCode));
+
+        return PheedResponse.builder()
+                .pheedCon(con)
                 .creStatus(LocalDateTime.now())
                 .readStatus("N")
                 .deStatus("N")
-                .pheedSort(request.getPheedSort())
-                .employee(employee)
-                .url(request.getUrl())
+                .pheedSort(sort)
+                .empCode(Integer.parseInt(empCode))
+                .url(url)
                 .build();
-
-        pheedRepository.save(pheed);
     }
 
-    @Transactional
-    public SseEmitter subscribe(int userId, String lastEventId) {
-        String emitterId = makeTimeIncludeId(String.valueOf(userId));
-        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+    public PheedResponse createDummyPheed(String empCode) {
+        return PheedResponse.builder()
+                .pheedCon("hi")
+                .creStatus(LocalDateTime.now())
+                .readStatus("N")
+                .deStatus("N")
+                .pheedSort("TEST")
+                .empCode(Integer.parseInt(empCode))
+                .url("test.com")
+                .build();
+    }
 
-        emitterRepository.save(emitterId, emitter);
-
-        emitter.onCompletion(() -> {
-            emitter.complete();
-        });
-
-        emitter.onTimeout(() -> {
-            emitter.complete();
-            emitterRepository.deleteById(emitterId);
-        });
-
-        // 클라이언트에게 실제 피드 데이터 전송
-        List<Pheed> pheedList = pheedRepository.findByEmployeeEmp_code(userId);
-        for (Pheed pheed : pheedList) {
-            sendPheedResponse(emitter, makeTimeIncludeId(String.valueOf(userId)), emitterId, PheedResponse.createResponse(pheed));
+    private void emitEventToClient(SseEmitter sseEmitter, String emitterId, Object data) {
+        try {
+            send(sseEmitter, emitterId, (PheedResponse) data);
+        } catch (Exception e) {
+            sseRepository.deleteEmitterById(emitterId);
+            throw new RuntimeException("Connection Failed.");
         }
+    }
 
-        // 클라이언트가 미수신한 Event 목록이 존재할 경우, 전송하여 Event 유실을 예방
-        if (hasLostData(lastEventId)) {
-            sendLostData(lastEventId, userId, emitterId, emitter);
-        }
+    // 새로운 Pheed가 저장될 때 클라이언트에게 알림을 보내는 메서드
+    public void notifyClientsForNewPheed(Pheed pheed) {
+        String empCode = String.valueOf(pheed.getEmployee().getEmp_code());
+        Map<String, SseEmitter> sseEmitters = PheedController.sseEmitters; // 이 부분은 실제로 동작하도록 수정이 필요할 수 있습니다.
 
-        return emitter;
+        sseEmitters.forEach((key, sseEmitter) -> {
+            PheedResponse pheedResponse = convertToPheedResponse(pheed);
+            emitEventToClient(sseEmitter, key, pheedResponse);
+        });
+    }
+
+    private PheedResponse convertToPheedResponse(Pheed pheed) {
+        return PheedResponse.builder()
+                .pheedCode(pheed.getPheedCode())
+                .pheedCon(pheed.getPheedCon())
+                .creStatus(pheed.getCreStatus())
+                .readStatus(pheed.getReadStatus())
+                .deStatus(pheed.getDeStatus())
+                .pheedSort(pheed.getPheedSort())
+                .empCode(pheed.getEmployee().getEmp_code())
+                .url(pheed.getUrl())
+                .build();
     }
 
     // 모든 피드 조회 메서드
-    @Transactional(readOnly = true)
+    @Transactional
     public List<PheedResponse> getAllPheeds(int empCode) {
-        List<Pheed> pheeds = pheedRepository.findByEmployeeEmp_code(empCode);
+        List<Pheed> pheeds = pheedRepository.findByEmployeeEmpCode(empCode); //최신순 정렬
 
         return pheeds.stream()
-                .map(PheedResponse::createResponse)
+                .map(PheedResponse::pheedResponse)
                 .collect(Collectors.toList());
     }
 
+    // 피드 DB 생성 메서드
+    @Transactional
+    public void registPheed(String pheedCon, String pheedSort, String empCode, String url) {
+
+        Employee employee = employeeRepository.findByEmpCode(2024062);
+
+        Pheed pheed = Pheed.builder()
+                .pheedCon(pheedCon)
+                .creStatus(LocalDateTime.now())
+                .readStatus("N")
+                .deStatus("N")
+                .pheedSort(pheedSort)
+                .employee(employee)
+                .url(url)
+                .build();
+
+        // 먼저 저장
+        Pheed savedPheed = pheedRepository.save(pheed); // 저장된 피드 엔티티를 반환받음
+
+        // 피드 등록 완료 후 이벤트 발행
+        eventPublisher.publishEvent(new PheedCreatedEvent(this, savedPheed));
+    }
 }

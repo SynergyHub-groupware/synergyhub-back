@@ -24,17 +24,18 @@ public class PheedResponse {
     private String deStatus;         // 삭제상태
     private String pheedSort;        // 피드분류
     private int empCode;             // 사원코드
+    private String empName;
     private String url;              // 링크
 
-    public static PheedResponse createResponse(Pheed pheed) {
+    public static PheedResponse pheedResponse(Pheed pheed) {
         return builder()
-                .pheedCode(pheed.getPheedCode())
                 .pheedCon(pheed.getPheedCon())
                 .creStatus(pheed.getCreStatus())
                 .readStatus(pheed.getReadStatus())
                 .deStatus(pheed.getDeStatus())
                 .pheedSort(pheed.getPheedSort())
-                .empCode(pheed.getEmployee().getEmp_code()) // 여기서 사원 코드(empCode)를 설정합니다.
+                .empCode(pheed.getEmployee().getEmp_code())
+                .empName(pheed.getEmployee().getEmp_name())
                 .url(pheed.getUrl())
                 .build();
     }

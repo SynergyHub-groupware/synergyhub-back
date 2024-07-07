@@ -294,33 +294,6 @@ public class AttendanceController {
 
     /* ------------------------------------ 초과근무 ------------------------------------ */
 
-    // 지정 출퇴근시간 등록
-    @Operation(summary = "초과근무 등록", description = "초과근무를 등록한다.")
-    @PostMapping(value = "/registOverWork", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessage> registOverWork(@RequestBody OverWorkRequest request) {
-        try {
-            // Null 체크 추가
-            if (request.getOwStartTime() == null) {
-                throw new IllegalArgumentException("시작시간을 설정해야합니다.");
-            } else if (request.getOwEndTime() == null) {
-                throw new IllegalArgumentException("퇴근시간을 설정해야합니다.");
-            } else if (request.getEmployee() == null) {
-                throw new IllegalArgumentException("사원을 설정해야합니다.");
-            }
-
-            // 초과근무 등록
-            attendanceService.registOverWork(request);
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(new ResponseMessage(200, "초과근무 등록 성공", null));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage(500, "서버 오류: " + e.getMessage(), null));
-        }
-    }
-
     @Operation(summary = "초과근무 기록 조회", description = "초과근무 기록을 조회한다.")
     @GetMapping("/overwork")
     public ResponseEntity<ResponseMessage> findAllOverTimeWork() {
