@@ -13,7 +13,7 @@ Content-Type: application/json; charset=utf-8
 Authorization: Bearer eyJkYXRlIjoxNzIwMzM4Mzc2OTIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA5NDMxNzZ9.YnzdKmJUh7istJkQHoO6-H2Xt_g4hwfalr_auxeYgeVmRtDvzQQIbJg4bBXTJbCpO10ulslYIMpipZOv8XTDvQ
 
 {
-  "pheedCon": "드디어 된거임? 예? 신이 나네요 ㅠㅠ ㅋㅋ",
+  "pheedCon": "왜 안나왕?",
   "pheedSort": "일반",
   "employee":
   { "emp_code": 2024062 },

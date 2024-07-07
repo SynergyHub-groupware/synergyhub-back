@@ -29,6 +29,7 @@ public class PheedResponse {
 
     public static PheedResponse pheedResponse(Pheed pheed) {
         return builder()
+                .pheedCode(pheed.getPheedCode())
                 .pheedCon(pheed.getPheedCon())
                 .creStatus(pheed.getCreStatus())
                 .readStatus(pheed.getReadStatus())
