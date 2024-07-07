@@ -1,6 +1,9 @@
 package synergyhubback.pheed.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,19 +28,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = {"Authorization", "Last-Event-ID"})
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/pheed")
 public class PheedController {
 
     private final PheedService pheedService;
     private final EmployeeService employeeService;
     private final TokenUtils tokenUtils;
-
-    public PheedController(PheedService pheedService, EmployeeService employeeService, TokenUtils tokenUtils) {
-        this.pheedService = pheedService;
-        this.employeeService = employeeService;
-        this.tokenUtils = tokenUtils;
-    }
 
     public static Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
@@ -48,23 +47,33 @@ public class PheedController {
 
         String jwtToken = TokenUtils.getToken(token);
         String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
-        int empCode = Integer.parseInt(tokenEmpCode);
 
-        MyInfoResponse myInfoResponse = employeeService.getMyInfo(empCode);
 
-        return pheedService.subscribe(myInfoResponse.getEmp_code(), lastEventId);
+        return pheedService.subscribe(tokenEmpCode, lastEventId);
     }
+
+    // sse를 통한 알림 기능을 받을 사용자들을 등록(저장)할 장소
+    // 프론트 쪽에서 사용자가 '로그인'을 하면, 해당 사용자를 sseEmitters에 등록되도록 한다.
 
     /* 피드 생성 */
     @PostMapping(value = "/create", consumes = "application/json")
-    public ResponseEntity<String> createPheed(@RequestBody PheedCreateRequest request) {
-        try {
-            pheedService.send(request.getPheedCode(), request.getPheedCon(), request.getPheedSort(), request.getEmployee(), request.getUrl());
-            return ResponseEntity.status(HttpStatus.CREATED).body("Pheed created successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseMessage> createPheed(@RequestHeader("Authorization") String token,
+                                              @RequestBody PheedCreateRequest request) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+        pheedService.registPheed(
+                request.getPheedCon(),
+                request.getPheedSort(),
+                tokenEmpCode,
+                request.getUrl());
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ResponseMessage(200, "피드 등록 성공", null));
     }
+
 
     /* 피드 조회 */
     @GetMapping("/list")
@@ -88,7 +97,6 @@ public class PheedController {
 
         return new ResponseEntity<>(responseMessage, headers, HttpStatus.OK);
     }
-
 
 
 
