@@ -3,8 +3,8 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2021011",
-  "emp_pass" : "2021011"
+  "emp_code" : "2021067",
+  "emp_pass" : "2021067"
 
 }
 
@@ -73,7 +73,7 @@ Content-Type: application/json
 
 ### Temp Msg
 GET http://localhost:8080/emp/message/temp
-Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
+Authorization: Bearer eyJkYXRlIjoxNzIwNDE4NTMxOTkzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjEwMjMzMzF9.CoeADJ_dYaP5yQu-b1kw0hWEuI9nbxmpH4tDKhS6QWRITy_Xd1hURxFTL6yqV6H3VuMmUjAS8Koc-fhm3IPQPA
 
 ### Create Temp Msg
 POST http://localhost:8080/emp/message/create/temp
@@ -116,7 +116,7 @@ Content-Type: application/json
 }
 
 ### Find File By msgCode
-GET http://localhost:8080/emp/message/findAttach/MS76
+GET http://localhost:8080/emp/message/findAttach/MS71
 
 ### Download File
 GET http://localhost:8080/emp/message/download/attach
