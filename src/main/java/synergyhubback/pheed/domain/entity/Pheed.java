@@ -68,4 +68,15 @@ public class Pheed {
     public static Pheed of(String pheedCon, LocalDateTime creStatus, String readStatus, String deStatus, String pheedSort, Employee employee, String url){
         return new Pheed(pheedCon, creStatus, readStatus, deStatus, pheedSort, employee, url);
     }
+
+    /* 읽음 상태로 전환 */
+    public void updateReadStatus() {
+        this.readStatus = "Y";
+
+    }
+
+    /* 삭제 상태로 전환 */
+    public void updateDeStatus(String deStatus) {
+        this.deStatus = "Y";
+    }
 }
