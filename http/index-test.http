@@ -3,8 +3,8 @@ POST http://localhost:8080/emp/auth/login
 Content-Type: application/json
 
 {
-  "emp_code" : "2021067",
-  "emp_pass" : "2021067"
+  "emp_code" : "2021011",
+  "emp_pass" : "2021011"
 
 }
 
@@ -13,7 +13,7 @@ GET http://localhost:8080/address/select
 
 ### 받은 쪽지 전체 조회
 GET http://localhost:8080/emp/message/receive
-Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
+Authorization: Bearer eyJkYXRlIjoxNzIwNDA3NjQxMzU4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDExLCJleHAiOjE3MjEwMTI0NDF9.5QoX55F8ehrHQEpjrPzj_Hi_SR4A3DBM_QemKdJ5CY_Tq_L_A_wHOr7MXbYz1RXzsVApL0G8zwZ5dLmkS72KOA
 ### 보낸 쪽지 전체 조회
 GET http://localhost:8080/emp/message/send
 Authorization: Bearer eyJkYXRlIjoxNzE5ODE1OTQ3ODExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDY3LCJleHAiOjE3MjA0MjA3NDd9.6eSyhtYMcGhRZvHa36DNCtDV8mQpRrmZ4yG-73FTnliLB0za-W7Hhe5NbaZuIngEX-5N4sQc8bJkmynKyLeOGw
@@ -156,7 +156,6 @@ POST http://localhost:8080/emp/message/block
 Content-Type: application/json
 
 {
-  "blkCode": 1,
   "blkDate": "2024-07-05",
   "blkId": {
     "emp_code": 2021011
@@ -168,3 +167,10 @@ Content-Type: application/json
 
 ### Block Emp Get
 GET http://localhost:8080/emp/message/2021011/2021068
+
+### Block Emp Address
+GET http://localhost:8080/emp/message/block/address?emp_code=2021011
+Authorization: Bearer eyJkYXRlIjoxNzIwNDAxNTc0OTYyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDIxMDExLCJleHAiOjE3MjEwMDYzNzR9.LTcnf3VX9WdP4k-8pNQ8TnkqXOddZcxyCnrOMHG3IVsoArvKFt0OI51_ud832PBn7NBqYrWi3VmqAt3uEWorWA
+
+### Block Emp Delete
+DELETE http://localhost:8080/emp/message/delete/2

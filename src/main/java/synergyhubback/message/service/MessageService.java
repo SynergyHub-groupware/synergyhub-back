@@ -7,9 +7,13 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import synergyhubback.common.address.domain.dto.AddressSelect;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.employee.domain.entity.Position;
+import synergyhubback.employee.domain.entity.Title;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.domain.entity.MessageBlock;
 import synergyhubback.message.domain.entity.Storage;
@@ -445,5 +449,15 @@ public class MessageService {
 
         return BlockEmpResponse.getBlockEmp(messageBlock);
     }
-    //commit
+
+    public boolean deleteBlkEmp(int blkCode) {
+
+        try {
+            messageBlockRepository.deleteById(blkCode);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

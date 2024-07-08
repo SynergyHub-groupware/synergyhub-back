@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import synergyhubback.auth.util.TokenUtils;
+import synergyhubback.common.address.domain.dto.AddressSelect;
+import synergyhubback.common.address.service.AddressService;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.domain.entity.Storage;
@@ -25,6 +27,7 @@ import java.util.List;
 public class MessageController {
 
     private final MessageService messageService;
+    private final AddressService addressService;
 
     /* 받은 쪽지 전체 리스트 조회 */
     @GetMapping("/receive")
@@ -355,4 +358,32 @@ public class MessageController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/block/address")
+    public ResponseEntity<List<AddressSelect>> getAddressSelect(@RequestHeader("Authorization") String token,
+                                                                @RequestParam("emp_code") int empCode) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        if(jwtToken == null || !TokenUtils.isValidToken(jwtToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<AddressSelect> addresses = addressService.getMsgBlockAddress(empCode);
+
+        return ResponseEntity.ok(addresses);
+    }
+
+    @DeleteMapping("/delete/{blkCode}")
+    public ResponseEntity<String> deleteBlkEmp(@PathVariable("blkCode") int blkCode) {
+        boolean deleted = messageService.deleteBlkEmp(blkCode);
+
+        if (deleted) {
+            return new ResponseEntity<>("삭제 성공", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("삭제 실패", HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    // pull commit
 }
