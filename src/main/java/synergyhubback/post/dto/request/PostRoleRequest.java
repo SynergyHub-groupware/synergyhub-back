@@ -12,6 +12,7 @@ import synergyhubback.post.domain.entity.LowBoardEntity;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class PostRoleRequest {
     private char PrWriteRole;
     private int LowCode;
@@ -25,5 +26,13 @@ public class PostRoleRequest {
         this.LowCode = lowCode;
         this.EmpCode = empCode;
         this.PrAdmin = prAdmin;
+    }
+
+    public PostRoleRequest(char prWriteRole, LowBoardEntity lowCode, int empCode, char prAdmin, String empName, String deptTitle, String positionName) {
+        this.PrWriteRole = prWriteRole;
+        this.LowCode = lowCode.getLowBoardCode();
+        this.EmpCode = empCode;
+        this.PrAdmin = prAdmin;
+
     }
 }

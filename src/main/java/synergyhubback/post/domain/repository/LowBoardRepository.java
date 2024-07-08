@@ -6,9 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import synergyhubback.post.domain.entity.CommentEntity;
 import synergyhubback.post.domain.entity.LowBoardEntity;
-import synergyhubback.post.dto.request.BoardRequest;
 
 @Repository
 public interface LowBoardRepository extends JpaRepository<LowBoardEntity, Long> {
@@ -27,4 +25,8 @@ public interface LowBoardRepository extends JpaRepository<LowBoardEntity, Long> 
     @Modifying
     @Query("update LowBoardEntity lb set lb.LowBoardName = 'Deleted' where lb.LowBoardCode = :lowCode")
     Integer boardDelete(int lowCode);
+
+
+    @Query("select lb.LowBoardCode from LowBoardEntity lb ORDER BY lb.LowBoardCode DESC LIMIT 1")
+    int lastLowBoard();
 }

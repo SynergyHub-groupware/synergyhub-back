@@ -85,4 +85,8 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Modifying
     @Query("update CommentEntity c set c.CommStatus='D' where c.CommCode = :commCode")
     Integer commentDelete(String commCode);
+
+    @Query("DELETE FROM PostRoleEntity p WHERE p.LowCode.LowBoardCode = :lowCode")
+    @Modifying
+    void deleteRoles(int lowCode);
 }

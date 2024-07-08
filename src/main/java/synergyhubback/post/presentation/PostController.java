@@ -17,10 +17,7 @@ import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
-import synergyhubback.post.dto.request.BoardRequest;
-import synergyhubback.post.dto.request.CommontRequest;
-import synergyhubback.post.dto.request.PostRequest;
-import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.request.*;
 import synergyhubback.post.dto.response.CommonResponse;
 import synergyhubback.post.dto.response.PostResponse;
 import synergyhubback.post.service.PostService;
@@ -45,6 +42,12 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/getRoll/{PostCode}/{Roll}")
+    public ResponseEntity<List<PostRollRequest>> getRoll(@PathVariable("PostCode") int LowBoardCode, @PathVariable("Roll") String roll) {
+        System.out.println(roll);
+        return ResponseEntity.ok(postService.getRollRequests(LowBoardCode, roll));
+    }
+
     @PostMapping("/boardCreate")
     public ResponseEntity<LowBoardEntity> boardCreate(@RequestBody BoardRequest boardRequest) {
         System.out.println("boardRequest : " + boardRequest);
@@ -61,6 +64,15 @@ public class PostController {
     public ResponseEntity<Integer> boardDelete(@PathVariable("lowCode") int lowCode) {
         System.out.println("lowCode : " + lowCode);
         return ResponseEntity.ok(postService.boardDelete(lowCode));
+    }
+    @GetMapping("/PostRole")
+    public ResponseEntity<List<PostRoleEntity>> getPostRole() {
+        return ResponseEntity.ok(postService.getPostRole());
+    }
+
+    @PostMapping("/PostRoleUpdate/{lowBoard}")
+    public ResponseEntity<String> postRoleUpdate(@RequestBody List<PostRoleRequest> updatedRoles, @PathVariable("lowBoard") int lowCode) {
+        return ResponseEntity.ok(postService.updateRoles(updatedRoles, lowCode));
     }
 
     @PostMapping("/PostRoleCreate")

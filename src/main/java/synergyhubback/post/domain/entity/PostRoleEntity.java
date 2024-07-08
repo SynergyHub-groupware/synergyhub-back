@@ -27,4 +27,5 @@ public class PostRoleEntity {
     @Column(name = "pr_admin")
     private char PrAdmin;
 
+
 }

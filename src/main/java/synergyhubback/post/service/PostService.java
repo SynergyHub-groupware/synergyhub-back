@@ -14,17 +14,17 @@ import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.repository.*;
 import synergyhubback.post.domain.type.PostCommSet;
-import synergyhubback.post.dto.request.BoardRequest;
-import synergyhubback.post.dto.request.CommontRequest;
-import synergyhubback.post.dto.request.PostRequest;
-import synergyhubback.post.dto.request.PostRoleRequest;
+import synergyhubback.post.dto.request.*;
 import synergyhubback.post.dto.response.CommonResponse;
 import synergyhubback.post.dto.response.PostResponse;
+import synergyhubback.common.address.domain.repository.AddressDeptRepository;
+import synergyhubback.common.address.domain.repository.AddressEmpRepository;
+import synergyhubback.common.address.domain.repository.AddressPositionRepository;
+import synergyhubback.common.address.domain.repository.AddressTitleRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -42,6 +42,14 @@ public class PostService {
     private PostRoleRepository postRoleRepository;
     @Autowired
     private BoardRepository boardRepository;
+    @Autowired
+    private  AddressDeptRepository addressDeptRepository;
+    @Autowired
+    private  AddressPositionRepository addressPositionRepository;
+    @Autowired
+    private  AddressEmpRepository addressEmpRepository;
+    @Autowired
+    private  AddressTitleRepository addressTitleRepository;
 
     public PostEntity LastPost() {
         return postRepository.LastPost();
@@ -251,8 +259,9 @@ public class PostService {
         for (PostRoleRequest role : uniqueRolesMap.values()) {
             PostRoleEntity postRole = new PostRoleEntity();
             postRole.setPrWriteRole(role.getPrWriteRole());
+            int lastCode= lowBoardRepository.lastLowBoard();
             LowBoardEntity lowBoardEntity = new LowBoardEntity(); // Assuming constructor with ID
-            lowBoardEntity.setLowBoardCode(role.getLowCode());
+            lowBoardEntity.setLowBoardCode(lastCode);
             postRole.setLowCode(lowBoardEntity);
             Employee employee = new Employee();
             employee.setEmp_code(role.getEmpCode());
@@ -283,6 +292,64 @@ public class PostService {
     public Integer commentDelete(String commCode) {
         return postRepository.commentDelete(commCode);
     }
+
+    public List<PostRollRequest> getRollRequests(int LowBoardCode, String roll) {
+        return postRoleRepository.findByLowBoardCodeAndRoll(LowBoardCode, roll);
+    }
+    @Transactional
+    public String updateRoles(List<PostRoleRequest> updatedRoles, int lowCode) {
+        System.out.println("updatedRoles:" + updatedRoles);
+        postRepository.deleteRoles(lowCode);
+        // 중복 제거 및 역할 결정을 위한 Map
+        Map<Integer, PostRoleRequest> uniqueRolesMap = new HashMap<>();
+        for (PostRoleRequest role : updatedRoles) {
+            int empCode = role.getEmpCode();
+            if (!uniqueRolesMap.containsKey(empCode)) {
+                uniqueRolesMap.put(empCode, role);
+            } else {
+                // 기존에 있는 데이터와 비교하여 Y가 많은 것을 선택
+                PostRoleRequest existingRole = uniqueRolesMap.get(empCode);
+                if (role.getPrWriteRole() == 'Y') {
+                    existingRole.setPrWriteRole('Y');
+                }
+                if (role.getPrAdmin() == 'Y') {
+                    existingRole.setPrAdmin('Y');
+                }
+            }
+        }
+
+        // 중복 제거된 데이터를 PostRoleEntity로 변환하여 저장
+        List<PostRoleEntity> postRolesToSave = new ArrayList<>();
+        for (PostRoleRequest role : uniqueRolesMap.values()) {
+            PostRoleEntity postRole = new PostRoleEntity();
+            postRole.setPrWriteRole(role.getPrWriteRole());
+
+            // LowBoardEntity 설정
+            LowBoardEntity lowBoardEntity = new LowBoardEntity(); // LowBoardEntity의 생성자가 ID를 필요로 한다고 가정
+            lowBoardEntity.setLowBoardCode(lowCode);
+            postRole.setLowCode(lowBoardEntity);
+
+            // Employee 설정
+            Employee employee = new Employee();
+            employee.setEmp_code(role.getEmpCode());
+            postRole.setEmpCode(employee);
+
+            postRole.setPrAdmin(role.getPrAdmin());
+            postRolesToSave.add(postRole);
+        }
+
+        // PostRoleEntity 저장
+        for (PostRoleEntity postRole : postRolesToSave) {
+            postRoleRepository.save(postRole);
+        }
+
+        return "Roles updated successfully";
+    }
+
+    public List<PostRoleEntity> getPostRole() {
+        return postRoleRepository.findAll();
+    }
+}
 //    @Transactional
 //    public List<PostRoleRequest> postRoleCreate(Map<String, PostRoleRequest> updatedRoles) {
 //        List<PostRoleEntity> entitiesToSave = new ArrayList<>();
@@ -352,5 +419,5 @@ public class PostService {
 //
 //        return response;
 //    }
-}
+
 
