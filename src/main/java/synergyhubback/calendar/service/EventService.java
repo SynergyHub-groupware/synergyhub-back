@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.calendar.domain.entity.Event;
 import synergyhubback.calendar.domain.entity.Label;
 import synergyhubback.calendar.domain.repository.EventRepository;
+import synergyhubback.calendar.domain.repository.GuestRepository;
 import synergyhubback.calendar.domain.repository.LabelRepository;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Transactional
 public class EventService {
 
+    private final GuestRepository guestRepository;
     private final EventRepository eventRepository;
     private final EmployeeRepository employeeRepository;
     private final LabelRepository labelRepository;
@@ -59,6 +61,7 @@ public class EventService {
     }
 
     public void deleteEvent(String eventId) {
+        guestRepository.deleteByEventId(eventId);
         eventRepository.deleteById(eventId);
     }
 
@@ -69,6 +72,12 @@ public class EventService {
     public List<Event> findAll() {
         return eventRepository.findAll();
     }
+
+    public List<Event> findAllByEmpCode(int empCode) {
+        return eventRepository.findEventsByEmployeeOrGuest(empCode);
+    }
+
+
 
     public Employee findEmployeeById(int empCode) {
         return employeeRepository.findById(empCode)

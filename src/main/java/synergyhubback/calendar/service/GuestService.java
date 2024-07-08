@@ -49,6 +49,7 @@ public class GuestService {
         return guestRepository.findById(guestCode);
     }
 
+
     public List<Guest> findAll() {
         return guestRepository.findAll();
     }
@@ -67,6 +68,16 @@ public class GuestService {
         return taskRepository.findById(taskCode)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
     }
+
+    public List<Guest> findByEventId(String eventId) {
+        return guestRepository.findByEventId(eventId);
+    }
+
+    public List<Guest> findByTaskId(String taskId) {
+        return guestRepository.findByTaskId(taskId);
+    }
+
+
 
     private String generateGuestCode() {
         Optional<Guest> lastGuestOptional = guestRepository.findTopByOrderByGuestCodeDesc();

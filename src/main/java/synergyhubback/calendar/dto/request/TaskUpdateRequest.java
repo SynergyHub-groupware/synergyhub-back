@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TaskUpdateRequest {
 
+    @JsonProperty("id")
+    private String id; // 추가된 id 필드
+
     @JsonProperty("title")
     private String title;
 
@@ -21,10 +24,10 @@ public class TaskUpdateRequest {
     private LocalDate modifiedDate;
 
     @JsonProperty("start")
-    private LocalDateTime start;
+    private LocalDate start;
 
     @JsonProperty("end")
-    private LocalDateTime end;
+    private LocalDate end;
 
     @JsonProperty("status")
     private String status;
@@ -46,16 +49,18 @@ public class TaskUpdateRequest {
 
     @JsonCreator
     public TaskUpdateRequest(
+            @JsonProperty("id") String id, // 수정된 생성자
             @JsonProperty("title") String title,
             @JsonProperty("modifiedDate") LocalDate modifiedDate,
-            @JsonProperty("start") LocalDateTime start,
-            @JsonProperty("end") LocalDateTime end,
+            @JsonProperty("start") LocalDate start,
+            @JsonProperty("end") LocalDate end,
             @JsonProperty("status") String status,
             @JsonProperty("priority") String priority,
             @JsonProperty("description") String description,
             @JsonProperty("owner") String owner,
             @JsonProperty("display") boolean display,
             @JsonProperty("empCode") int empCode) {
+        this.id = id;
         this.title = title;
         this.modifiedDate = modifiedDate;
         this.start = start;

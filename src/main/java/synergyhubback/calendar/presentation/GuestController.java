@@ -9,6 +9,7 @@ import synergyhubback.calendar.dto.request.GuestCreateRequest;
 import synergyhubback.calendar.dto.request.GuestUpdateRequest;
 import synergyhubback.calendar.dto.response.GuestResponse;
 import synergyhubback.calendar.service.GuestService;
+import synergyhubback.auth.util.TokenUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,25 +22,42 @@ public class GuestController {
     private final GuestService guestService;
 
     @GetMapping
-    public ResponseEntity<List<GuestResponse>> getAllGuests() {
-        List<Guest> guests = guestService.findAll();
-        List<GuestResponse> response = guests.stream().map(this::convertToResponse).collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<List<GuestResponse>> getAllGuests(@RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+            List<Guest> guests = guestService.findAll();
+            List<GuestResponse> response = guests.stream().map(this::convertToResponse).collect(Collectors.toList());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @GetMapping("/{guestCode}")
-    public ResponseEntity<GuestResponse> getGuestById(@PathVariable String guestCode) {
-        Guest guest = guestService.findById(guestCode).orElse(null);
-        if (guest != null) {
-            return new ResponseEntity<>(convertToResponse(guest), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<GuestResponse> getGuestById(@PathVariable String guestCode, @RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+            Guest guest = guestService.findById(guestCode).orElse(null);
+            if (guest != null) {
+                return new ResponseEntity<>(convertToResponse(guest), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     @PostMapping
-    public ResponseEntity<GuestResponse> createGuest(@RequestBody GuestCreateRequest guestCreateRequest) {
+    public ResponseEntity<GuestResponse> createGuest(@RequestBody GuestCreateRequest guestCreateRequest, @RequestHeader("Authorization") String token) {
         try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
             Guest newGuest = guestService.createGuest(guestCreateRequest);
             return new ResponseEntity<>(convertToResponse(newGuest), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -48,8 +66,11 @@ public class GuestController {
     }
 
     @PutMapping("/{guestCode}")
-    public ResponseEntity<GuestResponse> updateGuest(@PathVariable String guestCode, @RequestBody GuestUpdateRequest guestUpdateRequest) {
+    public ResponseEntity<GuestResponse> updateGuest(@PathVariable String guestCode, @RequestBody GuestUpdateRequest guestUpdateRequest, @RequestHeader("Authorization") String token) {
         try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
             Guest updatedGuest = guestService.updateGuest(guestCode, guestUpdateRequest);
             return new ResponseEntity<>(convertToResponse(updatedGuest), HttpStatus.OK);
         } catch (Exception e) {
@@ -58,12 +79,45 @@ public class GuestController {
     }
 
     @DeleteMapping("/{guestCode}")
-    public ResponseEntity<HttpStatus> deleteGuest(@PathVariable String guestCode) {
+    public ResponseEntity<HttpStatus> deleteGuest(@PathVariable String guestCode, @RequestHeader("Authorization") String token) {
         try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
             guestService.deleteGuest(guestCode);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<List<GuestResponse>> getGuestsByEventId(@PathVariable String eventId, @RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+            List<Guest> guests = guestService.findByEventId(eventId);
+            List<GuestResponse> response = guests.stream().map(this::convertToResponse).collect(Collectors.toList());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+
+
+    @GetMapping("/task/{taskId}")
+    public ResponseEntity<List<GuestResponse>> getGuestsByTaskId(@PathVariable String taskId, @RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+            List<Guest> guests = guestService.findByTaskId(taskId);
+            List<GuestResponse> response = guests.stream().map(this::convertToResponse).collect(Collectors.toList());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
