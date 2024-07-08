@@ -12,4 +12,8 @@ public interface DayOffBalanceRepository extends JpaRepository<DayOffBalance, In
 
     @Query("SELECT a FROM DayOffBalance a WHERE a.employee.emp_code = :empCode")
     DayOffBalance findAllByEmpCode(int empCode);
+
+    /* 연차촉진대상자 : 현월(1월이라면 1개)보다 적게 사용한 사원이 해당 */
+    @Query("SELECT a FROM DayOffBalance a WHERE a.employee.emp_code = :empCode")
+    DayOffBalance findRecipient(int empCode);
 }
