@@ -820,9 +820,9 @@ public class ApprovalService {
         trueLineRepository.save(foundLine);
 
         // 결재 완료 이벤트 발행
-        eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
-
-        System.out.println("결재 완료 이벤트 발행");
+//        eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
+//
+//        System.out.println("결재 완료 이벤트 발행");
 
         // 피드
         String approver = employeeRepository.findEmpNameById(empCode);  // 승인한 사람 이름 조회
