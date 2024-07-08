@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -49,6 +50,9 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "LABEL_CODE")
     private Label label;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Guest> guests;
 
     public static Event createEvent(
             String title,
