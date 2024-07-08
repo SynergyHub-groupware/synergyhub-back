@@ -113,3 +113,22 @@ Content-Type: application/json
 ### 오늘의 전체 근태 내역 조회
 GET http://localhost:8080/api/attendance/today-all
 Authorization: Bearer eyJkYXRlIjoxNzIwMDcyNDk5MTE5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA2NzcyOTl9.jsFu1nABIOneLQKlIfhW-7aJ-8UdZrSKgg6B9bs8qOp4MUJRFs_WtthKNFKiyM_ok_YJ0A7k1dFnS_rfF7dHyQ
+
+### 연차 촉진 이메일 발송 기능
+POST http://localhost:8080/api/attendance/sendEmail?empCodes=2020021
+
+### 예외근무 신청 현황
+GET http://localhost:8080/api/attendance/currentBT
+Authorization: Bearer eyJkYXRlIjoxNzIwNDM4MTgzOTc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEwNDI5ODN9.jDTS5aRx7ApJ06oqaKFUmnIgEFjyxVCoVbEKk5HkkPFU9AH6sZYqJN2h1GoC4d7IH-dtUo-sl3hE80ID3xzRBQ
+
+### 초과근무 신청 현황
+GET http://localhost:8080/api/attendance/currentOW
+Authorization: Bearer eyJkYXRlIjoxNzIwNDM4MTgzOTc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEwNDI5ODN9.jDTS5aRx7ApJ06oqaKFUmnIgEFjyxVCoVbEKk5HkkPFU9AH6sZYqJN2h1GoC4d7IH-dtUo-sl3hE80ID3xzRBQ
+
+### 휴가 신청 현황
+GET http://localhost:8080/api/attendance/currentDO
+Authorization: Bearer eyJkYXRlIjoxNzIwNDM4MTgzOTc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEwNDI5ODN9.jDTS5aRx7ApJ06oqaKFUmnIgEFjyxVCoVbEKk5HkkPFU9AH6sZYqJN2h1GoC4d7IH-dtUo-sl3hE80ID3xzRBQ
+
+### 월간 휴가승인 현황
+GET http://localhost:8080/api/attendance/monthDO
+Authorization: Bearer eyJkYXRlIjoxNzIwNDM4MTgzOTc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEwNDI5ODN9.jDTS5aRx7ApJ06oqaKFUmnIgEFjyxVCoVbEKk5HkkPFU9AH6sZYqJN2h1GoC4d7IH-dtUo-sl3hE80ID3xzRBQ

@@ -1,7 +1,9 @@
 package synergyhubback.attendance.service;
 
 
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.event.EventListener;
@@ -14,10 +16,13 @@ import synergyhubback.approval.domain.entity.Personal;
 import synergyhubback.approval.domain.repository.ApprovalAttendanceRepository;
 import synergyhubback.approval.domain.repository.DocRepository;
 import synergyhubback.approval.domain.repository.PersonalRepository;
+import synergyhubback.approval.dto.response.DocListResponse;
+import synergyhubback.approval.dto.response.DocumentResponse;
 import synergyhubback.attendance.domain.entity.*;
 import synergyhubback.attendance.domain.repository.*;
 import synergyhubback.attendance.dto.request.*;
 import synergyhubback.attendance.dto.response.*;
+import synergyhubback.common.address.service.EmailService;
 import synergyhubback.common.event.ApprovalCompletedEvent;
 import synergyhubback.common.util.DateUtils;
 import synergyhubback.employee.domain.entity.Department;
@@ -31,15 +36,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AttendanceService {
 
-    private List<Attendance> attendances;
     private final ModelMapper modelMapper;
     private final AttendanceRepository attendanceRepository;
     private final EmployeeRepository employeeRepository;
@@ -53,29 +60,8 @@ public class AttendanceService {
     private final DocRepository docRepository;
     private final PersonalRepository personalRepository;
     private final ApprovalAttendanceRepository approvalAttendanceRepository;
+    private final EmailService emailService;
 
-    public AttendanceService(ModelMapper modelMapper, AttendanceRepository attendanceRepository,
-                             EmployeeRepository employeeRepository, DefaultScheduleRepository defaultScheduleRepository,
-                             OverWorkRepository overWorkRepository, AttendanceStatusRepository attendanceStatusRepository,
-                             DayOffRepository dayOffRepository, DayOffBalanceRepository dayOffBalanceRepository,
-                             DeptRelationsRepository deptRelationsRepository, DepartmentRepository departmentRepository,
-                             DocRepository docRepository, PersonalRepository personalRepository,
-                             ApprovalAttendanceRepository approvalAttendanceRepository) {
-
-        this.modelMapper = modelMapper;
-        this.attendanceRepository = attendanceRepository;
-        this.employeeRepository = employeeRepository;
-        this.defaultScheduleRepository = defaultScheduleRepository;
-        this.overWorkRepository = overWorkRepository;
-        this.attendanceStatusRepository = attendanceStatusRepository;
-        this.dayOffRepository = dayOffRepository;
-        this.dayOffBalanceRepository = dayOffBalanceRepository;
-        this.deptRelationsRepository = deptRelationsRepository;
-        this.departmentRepository = departmentRepository;
-        this.docRepository = docRepository;
-        this.personalRepository = personalRepository;
-        this.approvalAttendanceRepository = approvalAttendanceRepository;
-    }
 
     /* 이벤트 리스너 */
     @EventListener
@@ -189,7 +175,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 자동 생성 */
-    @Scheduled(cron = "30 04 17 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 50 19 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -1226,6 +1212,127 @@ public class AttendanceService {
 
         // 변경사항을 데이터베이스에 반영
         dayOffBalanceRepository.save(myDayOffBalance);
+    }
+
+
+    // 연차 촉진 이메일 발송 서비스 (단체)
+    @Scheduled(cron = "30 26 19 * * *") // 매월 1일에 발송
+    public void autoSendDayOffEmail() throws MessagingException {
+
+        LocalDate currentDate = LocalDate.now();
+        int currentMonth = currentDate.getMonthValue();
+        System.out.println("현월 : " + currentMonth);
+
+        // 모든 사원 목록 조회
+        List<Employee> employees = employeeRepository.findAll();
+
+        for(Employee employee : employees) {
+
+            // 연차 보유 갯수 조회
+            DayOffBalance foundDayOffBalance = dayOffBalanceRepository.findRecipient(employee.getEmp_code());
+
+            if(foundDayOffBalance != null) {
+                // 소진연차를 위한 월 계산
+                LocalDate insertDateMonth = foundDayOffBalance.getDbInsertDate(); // 부여된 일자
+                int month = insertDateMonth.getMonthValue();
+                System.out.println("부여된 월 : " + month);
+                int resultMonth = 13 - month;
+                System.out.println("소진 기준 월 : " + resultMonth);
+
+                // 소진해야 할 연차 계산
+                int result = (int) ((foundDayOffBalance.getGranted() / resultMonth) * currentMonth) + 1;
+                System.out.println("소진해야 할 연차 : " + result);
+
+                // 만약 소진해야할 연차보다 사용 연차가 적다면
+                if(result > foundDayOffBalance.getDbUsed()) {
+                    emailService.autoSendDayOffEmail(employee, result);
+
+                    System.out.println("연차 촉진 이메일 발송 완료");
+                }
+            }
+        }
+    }
+
+    // 연차 촉진 이메일 발송 서비스 (개별)
+    public void sendDayOffEmail(int empCode) throws MessagingException {
+
+        LocalDate currentDate = LocalDate.now();
+        int currentMonth = currentDate.getMonthValue();
+        System.out.println("현월 : " + currentMonth);
+
+        // 연차 보유 갯수 조회
+        DayOffBalance foundDayOffBalance = dayOffBalanceRepository.findRecipient(empCode);
+
+        if(foundDayOffBalance != null) {
+            // 소진연차를 위한 월 계산
+            LocalDate insertDateMonth = foundDayOffBalance.getDbInsertDate(); // 부여된 일자
+            int month = insertDateMonth.getMonthValue();
+            System.out.println("부여된 월 : " + month);
+            int resultMonth = 13 - month;
+            System.out.println("소진 기준 월 : " + resultMonth);
+
+            // 소진해야 할 연차 계산
+            int result = (int) ((foundDayOffBalance.getGranted() / resultMonth) * currentMonth) + 1;
+            System.out.println("소진해야 할 연차 : " + result);
+
+            // employee
+            Employee employee = employeeRepository.findByEmpCode(empCode);
+
+            // 만약 소진해야할 연차보다 사용 연차가 적다면
+            if(result > foundDayOffBalance.getDbUsed()) {
+                emailService.sendDayOffEmail(employee, result);
+
+                System.out.println("연차 촉진 이메일 발송 완료");
+            }
+        }
+    }
+
+    // 결재 현황 확인을 위한 서비스
+
+    // 예외근무 현황
+    public List<DocumentResponse> findBTDocList(int empCode) {
+
+        List<DocumentResponse> btList = docRepository.findCurrentBTList(empCode);
+        return btList;
+    }
+
+    // 초과근무 현황
+    public List<DocumentResponse> findOWDocList(int empCode) {
+
+        List<DocumentResponse> owList = docRepository.findCurrentOWList(empCode);
+        return owList;
+    }
+
+    // 휴가신청 현황
+    public List<DocumentResponse> findDODocList(int empCode) {
+
+        List<DocumentResponse> doList = docRepository.findCurrentDOList(empCode);
+        return doList;
+    }
+
+    // 월간 휴가신청 승인 현황
+    public List<DocumentResponse> findDODoneDocList(int empCode) {
+
+        LocalDateTime startDate = LocalDateTime.now().with(TemporalAdjusters.firstDayOfMonth()); // 이번 달 1일
+        LocalDateTime endDate = LocalDateTime.now().with(TemporalAdjusters.lastDayOfMonth()); // 이번 달 말일
+
+        // 이번 달 휴가 신청기록 조회
+        List<ApprovalAttendance> listAATT = approvalAttendanceRepository.findByCurrentMonth(startDate, endDate);
+
+        // 휴가 신청 코드를 담을 리스트
+        List<String> AATTCode = listAATT.stream()
+                .map(ApprovalAttendance::getAattCode)
+                .collect(Collectors.toList());
+
+        // 본인의 승인된 결재 문서 조회
+        List<DocumentResponse> listDocAATT = docRepository.findByEmpCode(empCode);
+
+        // AATTCode와 일치하는 DocumentResponse 객체들을 담을 리스트
+        List<DocumentResponse> resultList = listDocAATT.stream()
+                .filter(doc -> AATTCode.contains(doc.getAdDetail()))
+                .collect(Collectors.toList());
+
+        return resultList;
     }
 
 }
