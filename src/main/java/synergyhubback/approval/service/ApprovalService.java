@@ -1,7 +1,10 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +20,13 @@ import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.request.FormRegistRequest;
 import synergyhubback.approval.dto.response.*;
+import synergyhubback.attendance.domain.entity.Attendance;
+import synergyhubback.attendance.domain.entity.AttendanceStatus;
+import synergyhubback.attendance.domain.repository.AttendanceRepository;
+import synergyhubback.attendance.domain.repository.AttendanceStatusRepository;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.common.event.ApprovalCompletedEvent;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.pheed.domain.entity.Pheed;
@@ -32,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,6 +72,12 @@ public class ApprovalService {
     private final AttachmentRepository attachmentRepository;
     private final PheedRepository pheedRepository;
     private final LineSortRepository lineSortRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final AttendanceStatusRepository attendanceStatusRepository;
+
+    /* 박은비 추가 */
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<FormListResponse> findFormList() {
@@ -803,6 +818,11 @@ public class ApprovalService {
         TrueLine foundLine = trueLineRepository.findByEmployee_Emp_codeAndDocument_AdCode(empCode, adCode);
         foundLine.modifyAccept("승인", LocalDate.now());
         trueLineRepository.save(foundLine);
+
+        // 결재 완료 이벤트 발행
+        eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
+
+        System.out.println("결재 완료 이벤트 발행");
 
         // 피드
         String approver = employeeRepository.findEmpNameById(empCode);  // 승인한 사람 이름 조회
