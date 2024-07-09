@@ -175,7 +175,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 자동 생성 */
-    @Scheduled(cron = "30 50 19 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 24 14 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -1327,9 +1327,10 @@ public class AttendanceService {
         // 본인의 승인된 결재 문서 조회
         List<DocumentResponse> listDocAATT = docRepository.findByEmpCode(empCode);
 
-        // AATTCode와 일치하는 DocumentResponse 객체들을 담을 리스트
+        // AATTCode와 일치하는 DocumentResponse 객체들을 담을 리스트, 최대 5개 제한
         List<DocumentResponse> resultList = listDocAATT.stream()
                 .filter(doc -> AATTCode.contains(doc.getAdDetail()))
+                .limit(5)
                 .collect(Collectors.toList());
 
         return resultList;
