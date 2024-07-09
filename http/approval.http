@@ -101,7 +101,7 @@ GET http://localhost:8080/approval/viewInfo?adCode=AD1
 GET http://localhost:8080/approval/viewLine?adCode=AD1
 
 ### 결재 상세보기 : 상세내용
-GET http://localhost:8080/approval/viewDetail?adDetail=AATT16
+GET http://localhost:8080/approval/viewDetail?adDetail=AATT1
 
 ### 결재 상세보기 : 첨부파일
 GET http://localhost:8080/approval/viewAttach?adCode=AD17
@@ -119,7 +119,7 @@ DELETE http://localhost:8080/approval/document/delete?adCode=AD1
 PATCH http://localhost:8080/approval/modifyStatus?adCode=AD19
 
 ### 받은결재함[대기] 조회
-GET http://localhost:8080/approval/receive/document?empCode=2020011&status=return
+GET http://localhost:8080/approval/receive/document?empCode=2024051&status=waiting
 
 ### 결재양식 등록
 POST http://localhost:8080/approval/registForm
