@@ -325,6 +325,7 @@ public class ApprovalService {
                             getUrl
                     );
                     pheedRepository.save(newPheed);
+                    eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
 
                     // 모든 참조자한테 피드 보내기
                     List<TrueLine> referTrueLineList = docRegistRequest.getTrueLineList().stream().filter(line -> line.getTalRole().equals("참조")).toList();
@@ -342,6 +343,7 @@ public class ApprovalService {
                                 getUrl
                         );
                         pheedRepository.save(newPheed1);
+                        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
                     }
                 }
             }
@@ -505,6 +507,7 @@ public class ApprovalService {
                         getUrl
                 );
                 pheedRepository.save(newPheed);
+                eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
 
 
 
@@ -524,6 +527,7 @@ public class ApprovalService {
                             getUrl
                     );
                     pheedRepository.save(newPheed1);
+                    eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
                 }
             }
 
@@ -853,6 +857,7 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed1);
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
 
             // 피드 등록 완료 후 이벤트 발행
             eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
@@ -871,8 +876,6 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed2);
-
-            // 피드 등록 완료 후 이벤트 발행
             eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed2));
 
             // 열람자한테 보내는 피드
@@ -890,8 +893,6 @@ public class ApprovalService {
                         getUrl
                 );
                 pheedRepository.save(newPheed0);
-
-                // 피드 등록 완료 후 이벤트 발행
                 eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed0));
             }
 
@@ -912,8 +913,6 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed3);
-
-            // 피드 등록 완료 후 이벤트 발행
             eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed3));
         }
     }
@@ -945,6 +944,7 @@ public class ApprovalService {
                 getUrl
         );
         pheedRepository.save(newPheed);
+        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
     }
 
     public void registForm(FormRegistRequest formRegistRequest) {
