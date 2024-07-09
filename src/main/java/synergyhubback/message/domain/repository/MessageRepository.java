@@ -49,4 +49,6 @@ public interface MessageRepository extends JpaRepository<Message, String> {
     @Query(value = "SELECT m FROM Message m ORDER BY CAST(SUBSTRING(m.msgCode, 3) AS INTEGER ) DESC LIMIT 1")
     Message findByRecentMsg();
 
+    @Query("SELECT m.empSend.emp_name FROM Message m WHERE m.msgCode = :newMsgCode")
+    String findEmpNameByMsgCode(String newMsgCode);
 }

@@ -314,7 +314,7 @@ public class ApprovalService {
                     Employee receiver = filteredTrueLineList.get(0).getEmployee();  // 결재라인에서 첫번째 결재자 받아오기
 
                     String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
-                    String getUrl = "/approval/view/" + adCode;
+                    String getUrl = "/approval/receive/waiting";
 
                     // 첫번째 결재자한테 피드 보내기
                     Pheed newPheed = Pheed.of(
@@ -325,6 +325,7 @@ public class ApprovalService {
                             getUrl
                     );
                     pheedRepository.save(newPheed);
+                    eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
 
                     // 모든 참조자한테 피드 보내기
                     List<TrueLine> referTrueLineList = docRegistRequest.getTrueLineList().stream().filter(line -> line.getTalRole().equals("참조")).toList();
@@ -333,15 +334,17 @@ public class ApprovalService {
                         String referName = employeeRepository.findEmpNameById(refer.getEmp_code());
 
                         String pheedContent1 = writer + "님이 '" + ttl + "' 결재를 상신하였습니다. " + referName + "님은 '참조자'로써 해당 결재를 확인하실 수 있습니다.";
+                        String getUrl1 = "/approval/receive/reference";
 
                         Pheed newPheed1 = Pheed.of(
                                 pheedContent1,
                                 LocalDateTime.now(), "N", "N",
                                 adCode,
                                 refer,
-                                getUrl
+                                getUrl1
                         );
                         pheedRepository.save(newPheed1);
+                        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
                     }
                 }
             }
@@ -494,7 +497,7 @@ public class ApprovalService {
                 Employee receiver = filteredTrueLineList.get(0).getEmployee();
 
                 String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
-                String getUrl = "/approval/view/" + documentCode;
+                String getUrl = "/approval/receive/waiting";
 
                 // 첫번째 결재자한테 피드 보내기
                 Pheed newPheed = Pheed.of(
@@ -505,6 +508,7 @@ public class ApprovalService {
                         getUrl
                 );
                 pheedRepository.save(newPheed);
+                eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
 
 
 
@@ -515,15 +519,17 @@ public class ApprovalService {
                     String referName = employeeRepository.findEmpNameById(refer.getEmp_code());
 
                     String pheedContent1 = writer + "님이 '" + ttl + "' 결재를 상신하였습니다. " + referName + "님은 '참조자'로써 해당 결재를 확인하실 수 있습니다.";
+                    String getUrl1 = "/approval/receive/reference";
 
                     Pheed newPheed1 = Pheed.of(
                             pheedContent1,
                             LocalDateTime.now(), "N", "N",
                             documentCode,
                             refer,
-                            getUrl
+                            getUrl1
                     );
                     pheedRepository.save(newPheed1);
+                    eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
                 }
             }
 
@@ -844,7 +850,7 @@ public class ApprovalService {
         if(foundAdStatus.equals("대기")){                         // 결재가 시작되었을때 전송
             // 작성자한테 보내는 피드
             String pheedContent1 = "'" + ttl + "' 결재가 시작되었습니다.";
-            String getUrl = "/approval/view/" + adCode;
+            String getUrl = "/approval/send/progress";
             Pheed newPheed1 = Pheed.of(
                     pheedContent1,
                     LocalDateTime.now(), "N", "N",
@@ -853,6 +859,7 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed1);
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
 
             // 피드 등록 완료 후 이벤트 발행
             eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
@@ -862,7 +869,7 @@ public class ApprovalService {
         if(foundAdStatus2.equals("완료")){     // 결재가 완료되었을때 전송
             // 작성자한테 보내는 피드
             String pheedContent2 = "'" + ttl + "' 결재가 완료되었습니다.";
-            String getUrl = "/approval/view/" + adCode;
+            String getUrl = "/approval/send/complete";
             Pheed newPheed2 = Pheed.of(
                     pheedContent2,
                     LocalDateTime.now(), "N", "N",
@@ -871,8 +878,6 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed2);
-
-            // 피드 등록 완료 후 이벤트 발행
             eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed2));
 
             // 열람자한테 보내는 피드
@@ -881,17 +886,16 @@ public class ApprovalService {
                 String readerName = employeeRepository.findEmpNameById(reader.getEmp_code());
 
                 String pheedContent0 = writerName + "님의 '" + ttl + "' 결재가 완료되었습니다. " + readerName + "님은 '열람자'로써 해당 결재를 확인하실 수 있습니다.";
+                String getUrl1 = "/approval/receive/reference";
 
                 Pheed newPheed0 = Pheed.of(
                         pheedContent0,
                         LocalDateTime.now(), "N", "N",
                         adCode,
                         reader,
-                        getUrl
+                        getUrl1
                 );
                 pheedRepository.save(newPheed0);
-
-                // 피드 등록 완료 후 이벤트 발행
                 eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed0));
             }
 
@@ -903,7 +907,7 @@ public class ApprovalService {
             Employee nextApprover = afterList.get(0).getEmployee();                // 다음 결재자 중 첫번째 결재자 조회
 
             String pheedContent3 = writerName + "님이 상신한 '" + ttl + "' 결재가 대기중입니다.";
-            String getUrl = "/approval/view/" + adCode;
+            String getUrl = "/approval/receive/waiting";
             Pheed newPheed3 = Pheed.of(
                     pheedContent3,
                     LocalDateTime.now(), "N", "N",
@@ -912,8 +916,6 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed3);
-
-            // 피드 등록 완료 후 이벤트 발행
             eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed3));
         }
     }
@@ -935,7 +937,7 @@ public class ApprovalService {
         Employee receiver = employeeRepository.findById(writerCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + writerCode));
 
         String pheedContent = turnedEmployee + "님이 '" + ttl + "' 결재를 반려하였습니다.";
-        String getUrl = "/approval/view/" + adCode;
+        String getUrl = "/approval/send/return";
 
         Pheed newPheed = Pheed.of(
                 pheedContent,
@@ -945,6 +947,7 @@ public class ApprovalService {
                 getUrl
         );
         pheedRepository.save(newPheed);
+        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
     }
 
     public void registForm(FormRegistRequest formRegistRequest) {
