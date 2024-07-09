@@ -675,20 +675,20 @@ public class AttendanceService {
             DayOff foundDayOff = dayOffRepository.findByEmpCodeAndCurrentDate(employee, currentDate);
             System.out.println("휴가 기록 존재 여부 : " + foundDayOff);
 
-             if (foundDayOff != null) {
+            if (foundDayOff != null) {
 
-                 // 근태일지 조회
-                 Attendance attendance = attendanceRepository.findByEmployeeAndAtdDate(employee, currentDate);
+                // 근태일지 조회
+                Attendance attendance = attendanceRepository.findByEmployeeAndAtdDate(employee, currentDate);
 
-                 // 근무상태 조회
-                 List<AttendanceStatus> attendanceStatusList = attendanceStatusRepository.findAll();
-                 AttendanceStatus newAttendanceStatus = attendanceStatusList.stream()
-                         .filter(status -> status.getAtsCode() == 7) // 휴가 상태 코드를 찾아서
-                         .findFirst()
-                         .orElseThrow(() -> new RuntimeException("휴가 처리 실패")); // 예외처리 추가
+                // 근무상태 조회
+                List<AttendanceStatus> attendanceStatusList = attendanceStatusRepository.findAll();
+                AttendanceStatus newAttendanceStatus = attendanceStatusList.stream()
+                        .filter(status -> status.getAtsCode() == 7) // 휴가 상태 코드를 찾아서
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("휴가 처리 실패")); // 예외처리 추가
 
-                 // 근무상태 업데이트
-                 attendance.updateAttendanceStatus(newAttendanceStatus);
+                // 근무상태 업데이트
+                attendance.updateAttendanceStatus(newAttendanceStatus);
             }
         }
     }
