@@ -20,15 +20,13 @@ Authorization: Bearer eyJkYXRlIjoxNzIwMzM4Mzc2OTIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
   "url" : "http://localhost:3000/attendance"
 }
 
-### 피드 구독
-GET http://localhost:8080/api/pheed/subscribe
-Authorization: Bearer eyJkYXRlIjoxNzIwMzIxODgxMTgyLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA5MjY2ODF9.lcnf9AplzCsjIsYnioYkg25pHnzp2FsZfhATvreklk5CSYmBAio2Hjlj2pvWRDmZ6KTZXdLVP461T5NIsn6rEg
-Last-Event-ID:
-
 ### 피드 조회
 GET http://localhost:8080/api/pheed/list
 Content-Type: application/json
 Authorization: Bearer eyJkYXRlIjoxNzIwMzM2MzA5MDE4LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA5NDExMDl9.nlhM23GeIBhmt3HhbVDnPkGrA4emiYw7PkRFUOwDgmYl8TTxtiHYXzdbeeBHUbjJLHZqLdoUfTXDcl0mcsHe9Q
 
-### 피드 수신
-GET http://localhost:8080/sse
+### 피드 읽음
+PUT http://localhost:8080/api/pheed/update-readStatus/1
+
+### 피드 삭제
+PUT http://localhost:8080/api/pheed/update-deStatus/2

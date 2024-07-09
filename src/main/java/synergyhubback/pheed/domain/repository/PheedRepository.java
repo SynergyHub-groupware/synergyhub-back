@@ -13,7 +13,7 @@ import java.util.List;
 public interface PheedRepository extends JpaRepository<Pheed, Integer> {
 
 
-    @Query("SELECT p FROM Pheed p WHERE p.employee.emp_code = :empCode ORDER BY p.id DESC")
+    @Query("SELECT p FROM Pheed p WHERE p.employee.emp_code = :empCode AND p.deStatus = 'N' ORDER BY p.pheedCode DESC")
     List<Pheed> findByEmployeeEmpCode(@Param("empCode") int empCode);
 
     @Query("SELECT p FROM Pheed p WHERE p.employee.emp_code = :empCode")
@@ -26,4 +26,7 @@ public interface PheedRepository extends JpaRepository<Pheed, Integer> {
 
     @Query("SELECT p FROM Pheed p WHERE p.pheedSort = :test")
     Pheed findByPheedSort(String test);
+
+    @Query("SELECT p FROM Pheed p WHERE p.pheedCode = :pheedCode")
+    Pheed findByPheedCode(int pheedCode);
 }

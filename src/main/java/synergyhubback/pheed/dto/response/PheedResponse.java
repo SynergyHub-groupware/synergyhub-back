@@ -27,6 +27,18 @@ public class PheedResponse {
     private String empName;
     private String url;              // 링크
 
+    public PheedResponse(Pheed foundPheed) {
+        this.pheedCode = foundPheed.getPheedCode();
+        this.pheedCon = foundPheed.getPheedCon();
+        this.creStatus = foundPheed.getCreStatus();
+        this.readStatus = foundPheed.getReadStatus();
+        this.deStatus = foundPheed.getDeStatus();
+        this.pheedSort = foundPheed.getPheedSort();
+        this.empCode = foundPheed.getEmployee().getEmp_code();
+        this.empName = foundPheed.getEmployee().getEmp_name();
+        this.url = foundPheed.getUrl();
+    }
+
     public static PheedResponse pheedResponse(Pheed pheed) {
         return builder()
                 .pheedCode(pheed.getPheedCode())

@@ -98,7 +98,38 @@ public class PheedController {
         return new ResponseEntity<>(responseMessage, headers, HttpStatus.OK);
     }
 
+    /* 피드 읽음 */
+    @PutMapping("/update-readStatus/{pheedCode}")
+    public ResponseEntity<ResponseMessage> readPheed(@PathVariable int pheedCode) {
+        PheedResponse pheedResponse = pheedService.updateReadStatus(pheedCode);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("read update", pheedResponse);
+
+        ResponseMessage responseMessage = new ResponseMessage(200, "피드 읽음 상태 업데이트 성공", responseMap);
+
+        return new ResponseEntity<>(responseMessage, headers, HttpStatus.OK);
+    }
+
+
+    /* 피드 삭제 */
+    @PutMapping("/update-deStatus/{pheedCode}")
+    public ResponseEntity<ResponseMessage> deletePheed(@PathVariable int pheedCode) {
+        PheedResponse pheedResponse = pheedService.updateDeStatus(pheedCode);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("delete update", pheedResponse);
+
+        ResponseMessage responseMessage = new ResponseMessage(200, "피드 삭제 업데이트 성공", responseMap);
+
+        return new ResponseEntity<>(responseMessage, headers, HttpStatus.OK);
+    }
 
 
 

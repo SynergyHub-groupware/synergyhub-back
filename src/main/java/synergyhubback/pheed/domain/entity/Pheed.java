@@ -76,7 +76,7 @@ public class Pheed {
     }
 
     /* 삭제 상태로 전환 */
-    public void updateDeStatus(String deStatus) {
+    public void updateDeStatus() {
         this.deStatus = "Y";
     }
 }
