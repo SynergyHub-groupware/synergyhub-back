@@ -1,9 +1,11 @@
 package synergyhubback.pheed.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import synergyhubback.common.event.PheedCreatedEvent;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -179,5 +182,27 @@ public class PheedService {
         // 피드 등록 완료 후 이벤트 발행
         eventPublisher.publishEvent(new PheedCreatedEvent(this, savedPheed));
         System.out.println("이벤트 발행 ! ! !");
+    }
+
+    /* 피드 읽음 */
+    @Transactional
+    public PheedResponse updateReadStatus(int pheedCode) {
+        Optional<Pheed> optionalPheed = Optional.ofNullable(pheedRepository.findByPheedCode(pheedCode));
+        Pheed pheed = optionalPheed.orElseThrow(() -> new EntityNotFoundException("피드를 찾을 수 없습니다. pheedCode: " + pheedCode));
+
+        pheed.updateReadStatus(); // 읽음 상태 업데이트
+
+        return new PheedResponse(pheed); // 업데이트된 피드 정보를 기반으로 응답 DTO 생성
+    }
+
+    @Transactional
+    /* 피드 삭제 */
+    public PheedResponse updateDeStatus(int pheedCode) {
+        Optional<Pheed> optionalPheed = Optional.ofNullable(pheedRepository.findByPheedCode(pheedCode));
+        Pheed pheed = optionalPheed.orElseThrow(() -> new EntityNotFoundException("피드를 찾을 수 없습니다. pheedCode: " + pheedCode));
+
+        pheed.updateDeStatus(); // 읽음 상태 업데이트
+
+        return new PheedResponse(pheed); // 업데이트된 피드 정보를 기반으로 응답 DTO 생성
     }
 }
