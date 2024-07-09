@@ -27,6 +27,7 @@ import synergyhubback.attendance.domain.repository.AttendanceStatusRepository;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
 import synergyhubback.common.event.ApprovalCompletedEvent;
+import synergyhubback.common.event.PheedCreatedEvent;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.pheed.domain.entity.Pheed;
@@ -505,6 +506,8 @@ public class ApprovalService {
                 );
                 pheedRepository.save(newPheed);
 
+
+
                 // 모든 참조자한테 피드 보내기
                 List<TrueLine> referTrueLineList = TrueLineList.stream().filter(line -> line.getTalRole().equals("참조")).toList();
                 for(TrueLine line : referTrueLineList){
@@ -820,9 +823,9 @@ public class ApprovalService {
         trueLineRepository.save(foundLine);
 
         // 결재 완료 이벤트 발행
-//        eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
-//
-//        System.out.println("결재 완료 이벤트 발행");
+        eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
+
+        System.out.println("결재 완료 이벤트 발행");
 
         // 피드
         String approver = employeeRepository.findEmpNameById(empCode);  // 승인한 사람 이름 조회
@@ -847,6 +850,9 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed1);
+
+            // 피드 등록 완료 후 이벤트 발행
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
         }
 
         String foundAdStatus2 = docRepository.findAdStatusById(adCode); // 결재 승인 후에 문서 상태 조회
@@ -863,6 +869,9 @@ public class ApprovalService {
             );
             pheedRepository.save(newPheed2);
 
+            // 피드 등록 완료 후 이벤트 발행
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed2));
+
             // 열람자한테 보내는 피드
             for(TrueLine line: readTrueLineList){
                 Employee reader = line.getEmployee();
@@ -878,6 +887,9 @@ public class ApprovalService {
                         getUrl
                 );
                 pheedRepository.save(newPheed0);
+
+                // 피드 등록 완료 후 이벤트 발행
+                eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed0));
             }
 
         }
@@ -897,6 +909,9 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed3);
+
+            // 피드 등록 완료 후 이벤트 발행
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed3));
         }
     }
 
