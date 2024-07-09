@@ -337,7 +337,6 @@ public class MessageService {
             System.out.println("originalFileName = " + originalFileName);
             System.out.println("saveFileName = " + saveFileName);
             System.out.println("messageDir = " + messageDir);
-            System.out.println("message.getMsgCode() = " + message.getMsgCode());
 
             attachmentRepository.save(attachment);
         }
