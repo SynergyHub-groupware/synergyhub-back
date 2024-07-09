@@ -2,6 +2,7 @@ package synergyhubback.message.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.common.address.domain.dto.AddressSelect;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.common.event.PheedCreatedEvent;
 import synergyhubback.employee.domain.entity.Department;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.entity.Position;
@@ -23,6 +25,8 @@ import synergyhubback.message.domain.repository.MsgEmpRepository;
 import synergyhubback.message.domain.repository.StorageRepository;
 import synergyhubback.message.dto.request.CreateBlockEmpRequest;
 import synergyhubback.message.dto.response.*;
+import synergyhubback.pheed.domain.entity.Pheed;
+import synergyhubback.pheed.domain.repository.PheedRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +52,8 @@ public class MessageService {
     private final StorageRepository storageRepository;
     private final AttachmentRepository attachmentRepository;
     private final MessageBlockRepository messageBlockRepository;
+    private final PheedRepository pheedRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /* emp_code를 찾아서 받은 쪽지 리스트 조회 */
     public List<ReceiveResponse> getReceiveMessage(int empCode) {
@@ -201,6 +207,23 @@ public class MessageService {
         System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
         messageRepository.save(message);
+
+        String getEmpName = messageRepository.findEmpNameByMsgCode(newMsgCode);
+
+        String pheedContent = getEmpName + "님이 쪽지를 발송하였습니다.";
+        String getUrl = "/message/storage/receive/detail/" + newMsgCode;
+
+        Pheed newPheed = Pheed.of(
+                pheedContent,
+                LocalDateTime.now(), "N", "N",
+                newMsgCode,
+                message.getEmpRev(),
+                getUrl
+        );
+
+        pheedRepository.save(newPheed);
+        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
+
     }
 
 
@@ -314,7 +337,6 @@ public class MessageService {
             System.out.println("originalFileName = " + originalFileName);
             System.out.println("saveFileName = " + saveFileName);
             System.out.println("messageDir = " + messageDir);
-            System.out.println("message.getMsgCode() = " + message.getMsgCode());
 
             attachmentRepository.save(attachment);
         }
