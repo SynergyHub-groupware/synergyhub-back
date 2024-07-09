@@ -175,7 +175,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 자동 생성 */
-    @Scheduled(cron = "30 50 19 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 24 14 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 

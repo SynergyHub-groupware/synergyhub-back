@@ -1,49 +1,46 @@
 package synergyhubback.common.event;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import synergyhubback.pheed.domain.entity.Pheed;
 import synergyhubback.pheed.dto.response.PheedResponse;
 import synergyhubback.pheed.presentation.PheedController;
 import synergyhubback.pheed.service.PheedService;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.Iterator;
 
 @Component
+@RequiredArgsConstructor
 public class PheedEvent {
 
     private final PheedService pheedService;
 
-    public PheedEvent(PheedService pheedService) {
-        this.pheedService = pheedService;
-    }
-
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePheedCreatedEvent(PheedCreatedEvent event) {
         Pheed createdPheed = event.getCreatedPheed();
-
-        // Send new pheed notification to clients
         sendNewPheedNotificationToClients(createdPheed);
     }
 
     private void sendNewPheedNotificationToClients(Pheed pheed) {
-        // Get SSE emitters for all subscribers
-        for (SseEmitter sseEmitter : PheedController.sseEmitters.values()) {
+        for (Iterator<SseEmitter> iterator = PheedController.sseEmitters.values().iterator(); iterator.hasNext();) {
+            SseEmitter sseEmitter = iterator.next();
             try {
                 sseEmitter.send(SseEmitter.event()
                         .name("newPheed")
                         .data(convertToPheedResponse(pheed)));
             } catch (IOException e) {
-                // Handle exception, possibly close the emitter
                 sseEmitter.completeWithError(e);
+                iterator.remove(); // 예외가 발생한 Emitter를 제거
             }
         }
     }
 
     private PheedResponse convertToPheedResponse(Pheed pheed) {
-        // Convert Pheed entity to PheedResponse DTO
         return PheedResponse.builder()
                 .pheedCode(pheed.getPheedCode())
                 .pheedCon(pheed.getPheedCon())
@@ -55,4 +52,7 @@ public class PheedEvent {
                 .url(pheed.getUrl())
                 .build();
     }
+
 }
+
+
