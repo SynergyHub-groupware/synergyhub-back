@@ -1327,9 +1327,10 @@ public class AttendanceService {
         // 본인의 승인된 결재 문서 조회
         List<DocumentResponse> listDocAATT = docRepository.findByEmpCode(empCode);
 
-        // AATTCode와 일치하는 DocumentResponse 객체들을 담을 리스트
+        // AATTCode와 일치하는 DocumentResponse 객체들을 담을 리스트, 최대 5개 제한
         List<DocumentResponse> resultList = listDocAATT.stream()
                 .filter(doc -> AATTCode.contains(doc.getAdDetail()))
+                .limit(5)
                 .collect(Collectors.toList());
 
         return resultList;

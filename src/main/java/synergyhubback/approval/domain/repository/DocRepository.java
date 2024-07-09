@@ -52,7 +52,7 @@ public interface DocRepository extends JpaRepository<Document, String> {
     List<DocumentResponse> findCurrentDOList(int empCode);
 
     /* 월간 결재 휴가 승인 현황 */
-    @Query("SELECT d FROM Document d WHERE d.employee.emp_code = :empCode AND d.adStatus = '완료'")
+    @Query("SELECT d FROM Document d WHERE d.employee.emp_code = :empCode AND d.adStatus = '완료' ORDER BY d.adReportDate DESC")
     List<DocumentResponse> findByEmpCode(int empCode);
 
 
