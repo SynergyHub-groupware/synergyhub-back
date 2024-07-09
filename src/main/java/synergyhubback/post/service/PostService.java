@@ -21,6 +21,7 @@ import synergyhubback.common.address.domain.repository.AddressDeptRepository;
 import synergyhubback.common.address.domain.repository.AddressEmpRepository;
 import synergyhubback.common.address.domain.repository.AddressPositionRepository;
 import synergyhubback.common.address.domain.repository.AddressTitleRepository;
+import synergyhubback.post.dto.response.PostRoleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,9 +90,8 @@ public class PostService {
     }
 
     public List<PostResponse> getAllPostList(Pageable pageable) {
-        List<PostResponse> posts = postRepository.AllPostList(pageable);
-
-        // 새로운 ArrayList로 복사
+        List<PostResponse> posts = postRepository.AllPostList(pageable);// 새로운 ArrayList로 복사
+        System.out.println(posts);
         List<PostResponse> modifiableList = new ArrayList<>(posts);
 
         // 리스트를 원하는 방식으로 정렬 (예시: ID 오름차순)
@@ -346,8 +346,8 @@ public class PostService {
         return "Roles updated successfully";
     }
 
-    public List<PostRoleEntity> getPostRole() {
-        return postRoleRepository.findAll();
+    public List<PostRollRequest> getPostRole() {
+        return postRoleRepository.findAllRole();
     }
 }
 //    @Transactional

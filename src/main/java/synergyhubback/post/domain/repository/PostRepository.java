@@ -37,7 +37,8 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Query("SELECT p FROM PostEntity p WHERE p.FixStatus = 'Y' AND p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
     List<PostEntity> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
-    @Query("SELECT p FROM PostEntity p WHERE p.PostCode=:postCode ")
+    @Query("SELECT new synergyhubback.post.dto.response.PostResponse(p.PostCode, p.EmpCode.emp_code, p.PostName, p.PostDate, p.PostViewCnt,p.postCommSet) " +
+            "FROM PostEntity p WHERE p.PostCode = :postCode")
     PostResponse getDetail(@Param("postCode") String postCode);
 
     @Query("select c from CommentEntity c  where c.PostCode.PostCode = :postCode and c.CommStatus <> 'D'")

@@ -24,6 +24,15 @@ public class PostResponse {
     private char NoticeStatus;
     private int EmpCode;
     private String EmpName;
+    public PostResponse(String postCode, int empCode, String postName, LocalDate postDate, int postViewCnt,PostCommSet postCommSet) {
+        this.PostCode = postCode;
+        this.EmpCode = empCode;
+        this.PostName = postName;
+        this.PostDate = postDate;
+        this.PostViewCnt = postViewCnt;
+        this.postCommSet = postCommSet;
+    }
+
 
     public PostResponse(PostEntity postEntity) {
         this.PostCode = postEntity.getPostCode();

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.post.domain.entity.PostRoleEntity;
 import synergyhubback.post.dto.request.PostRoleRequest;
 import synergyhubback.post.dto.request.PostRollRequest;
+import synergyhubback.post.dto.response.PostResponse;
+import synergyhubback.post.dto.response.PostRoleResponse;
 
 import java.util.List;
 
@@ -26,4 +28,8 @@ public interface PostRoleRepository extends JpaRepository<PostRoleEntity, Long> 
             "or (:roll = 'Read' and pr.PrWriteRole = 'N' and pr.PrAdmin = 'N' ) " +
             "or (:roll = 'Admin' and pr.PrAdmin = 'Y'))")
     List<PostRollRequest> findByLowBoardCodeAndRoll(@Param("LowBoardCode") int LowBoardCode, @Param("roll") String roll);
+
+    @Query("select new synergyhubback.post.dto.request.PostRollRequest(pr.PrWriteRole, pr.LowCode, pr.EmpCode.emp_code, pr.PrAdmin, pr.EmpCode.emp_name, pr.EmpCode.department.dept_title, pr.EmpCode.position.position_code) " +
+            "from PostRoleEntity pr")
+    List<PostRollRequest> findAllRole();
 }

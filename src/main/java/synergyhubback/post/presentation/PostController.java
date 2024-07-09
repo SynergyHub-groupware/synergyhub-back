@@ -20,6 +20,7 @@ import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.*;
 import synergyhubback.post.dto.response.CommonResponse;
 import synergyhubback.post.dto.response.PostResponse;
+import synergyhubback.post.dto.response.PostRoleResponse;
 import synergyhubback.post.service.PostService;
 
 import java.io.File;
@@ -66,7 +67,7 @@ public class PostController {
         return ResponseEntity.ok(postService.boardDelete(lowCode));
     }
     @GetMapping("/PostRole")
-    public ResponseEntity<List<PostRoleEntity>> getPostRole() {
+    public ResponseEntity<List<PostRollRequest>> getPostRole() {
         return ResponseEntity.ok(postService.getPostRole());
     }
 

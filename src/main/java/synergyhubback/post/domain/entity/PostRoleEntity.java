@@ -21,7 +21,6 @@ public class PostRoleEntity {
     @JoinColumn(name = "Low_Code")
     private LowBoardEntity LowCode;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
     @JoinColumn(name = "Emp_Code")
     private Employee EmpCode;
     @Column(name = "pr_admin")
