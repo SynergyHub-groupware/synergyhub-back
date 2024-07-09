@@ -822,8 +822,11 @@ public class ApprovalService {
         foundLine.modifyAccept("승인", LocalDate.now());
         trueLineRepository.save(foundLine);
 
-        // 결재 완료 이벤트 발행
-        eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
+        if(foundDocument.getAdDetail().equals("2") || foundDocument.getAdDetail().equals("3") || foundDocument.getAdDetail().equals("5")) {
+
+            // 예외근무, 초과근무, 휴가근무 관련 문서라면 결재 완료 이벤트 발행
+            eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
+        }
 
         System.out.println("결재 완료 이벤트 발행");
 
