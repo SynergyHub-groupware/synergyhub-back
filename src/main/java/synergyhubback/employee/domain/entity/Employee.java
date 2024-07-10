@@ -20,6 +20,8 @@ public class Employee {
 
     @Id
     private int emp_code;
+
+    private Integer par_code;       // 부모 사원 코드
     private String emp_name;
     private String emp_pass;
     private String social_security_no;
@@ -58,23 +60,25 @@ public class Employee {
     private Set<DetailByEmpRegist> empRegistDetails = new HashSet<>();
 
 
-    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
+    public Employee(int emp_code,  String emp_name, String emp_pass, String social_security_no, String email, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
         this.emp_pass = emp_pass;
         this.social_security_no = social_security_no;
+        this.email = email;
         this.hire_date = hire_date;
         this.emp_status = emp_status;
     }
 
 
-    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, LocalDate hire_date, String emp_status) {
+    public static Employee regist(int emp_code, String emp_name, String emp_pass, String social_security_no, String email, LocalDate hire_date, String emp_status) {
 
         return new Employee(
                 emp_code,
                 emp_name,
                 emp_pass,
                 social_security_no,
+                email,
                 hire_date,
                 emp_status
         );

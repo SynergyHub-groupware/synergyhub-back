@@ -1,7 +1,10 @@
 package synergyhubback.approval.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +20,14 @@ import synergyhubback.approval.dto.request.BoxRequest;
 import synergyhubback.approval.dto.request.DocRegistRequest;
 import synergyhubback.approval.dto.request.FormRegistRequest;
 import synergyhubback.approval.dto.response.*;
+import synergyhubback.attendance.domain.entity.Attendance;
+import synergyhubback.attendance.domain.entity.AttendanceStatus;
+import synergyhubback.attendance.domain.repository.AttendanceRepository;
+import synergyhubback.attendance.domain.repository.AttendanceStatusRepository;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.common.attachment.AttachmentRepository;
+import synergyhubback.common.event.ApprovalCompletedEvent;
+import synergyhubback.common.event.PheedCreatedEvent;
 import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.pheed.domain.entity.Pheed;
@@ -32,6 +41,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,6 +73,12 @@ public class ApprovalService {
     private final AttachmentRepository attachmentRepository;
     private final PheedRepository pheedRepository;
     private final LineSortRepository lineSortRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final AttendanceStatusRepository attendanceStatusRepository;
+
+    /* 박은비 추가 */
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<FormListResponse> findFormList() {
@@ -231,8 +247,15 @@ public class ApprovalService {
                         updateTrueLine(existLine, newLine);
                     });
                     // 나머지 값 추가
+                    Document foundDoc = docRepository.findById(adCode).orElseThrow(() -> new IllegalArgumentException("Invalid Document code:" + adCode));
                     IntStream.range(existSize, newSize).forEach(i -> {
-                        TrueLine newLine = newTrueLine.get(i);
+                        TrueLine newLine = TrueLine.of(
+                                foundDoc,
+                                newTrueLine.get(i).getTalOrder(),
+                                newTrueLine.get(i).getTalRole(),
+                                "미결재",
+                                newTrueLine.get(i).getEmployee()
+                        );
                         trueLineRepository.save(newLine);
                     });
                 }
@@ -298,7 +321,7 @@ public class ApprovalService {
                     Employee receiver = filteredTrueLineList.get(0).getEmployee();  // 결재라인에서 첫번째 결재자 받아오기
 
                     String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
-                    String getUrl = "/approval/view/" + adCode;
+                    String getUrl = "/approval/receive/waiting";
 
                     // 첫번째 결재자한테 피드 보내기
                     Pheed newPheed = Pheed.of(
@@ -309,6 +332,7 @@ public class ApprovalService {
                             getUrl
                     );
                     pheedRepository.save(newPheed);
+                    eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
 
                     // 모든 참조자한테 피드 보내기
                     List<TrueLine> referTrueLineList = docRegistRequest.getTrueLineList().stream().filter(line -> line.getTalRole().equals("참조")).toList();
@@ -317,15 +341,17 @@ public class ApprovalService {
                         String referName = employeeRepository.findEmpNameById(refer.getEmp_code());
 
                         String pheedContent1 = writer + "님이 '" + ttl + "' 결재를 상신하였습니다. " + referName + "님은 '참조자'로써 해당 결재를 확인하실 수 있습니다.";
+                        String getUrl1 = "/approval/receive/reference";
 
                         Pheed newPheed1 = Pheed.of(
                                 pheedContent1,
                                 LocalDateTime.now(), "N", "N",
                                 adCode,
                                 refer,
-                                getUrl
+                                getUrl1
                         );
                         pheedRepository.save(newPheed1);
+                        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
                     }
                 }
             }
@@ -478,7 +504,7 @@ public class ApprovalService {
                 Employee receiver = filteredTrueLineList.get(0).getEmployee();
 
                 String pheedContent = writer + "님이 '" + ttl + "' 결재를 상신하였습니다.";
-                String getUrl = "/approval/view/" + documentCode;
+                String getUrl = "/approval/receive/waiting";
 
                 // 첫번째 결재자한테 피드 보내기
                 Pheed newPheed = Pheed.of(
@@ -489,6 +515,9 @@ public class ApprovalService {
                         getUrl
                 );
                 pheedRepository.save(newPheed);
+                eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
+
+
 
                 // 모든 참조자한테 피드 보내기
                 List<TrueLine> referTrueLineList = TrueLineList.stream().filter(line -> line.getTalRole().equals("참조")).toList();
@@ -497,15 +526,17 @@ public class ApprovalService {
                     String referName = employeeRepository.findEmpNameById(refer.getEmp_code());
 
                     String pheedContent1 = writer + "님이 '" + ttl + "' 결재를 상신하였습니다. " + referName + "님은 '참조자'로써 해당 결재를 확인하실 수 있습니다.";
+                    String getUrl1 = "/approval/receive/reference";
 
                     Pheed newPheed1 = Pheed.of(
                             pheedContent1,
                             LocalDateTime.now(), "N", "N",
                             documentCode,
                             refer,
-                            getUrl
+                            getUrl1
                     );
                     pheedRepository.save(newPheed1);
+                    eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
                 }
             }
 
@@ -804,6 +835,14 @@ public class ApprovalService {
         foundLine.modifyAccept("승인", LocalDate.now());
         trueLineRepository.save(foundLine);
 
+        if(foundDocument.getAdDetail().equals("2") || foundDocument.getAdDetail().equals("3") || foundDocument.getAdDetail().equals("5")) {
+
+            // 예외근무, 초과근무, 휴가근무 관련 문서라면 결재 완료 이벤트 발행
+            eventPublisher.publishEvent(new ApprovalCompletedEvent(adCode));
+        }
+
+        System.out.println("결재 완료 이벤트 발행");
+
         // 피드
         String approver = employeeRepository.findEmpNameById(empCode);  // 승인한 사람 이름 조회
         String ttl = docRepository.findAdTitleById(adCode);             // 결재문서 제목 조회
@@ -818,7 +857,7 @@ public class ApprovalService {
         if(foundAdStatus.equals("대기")){                         // 결재가 시작되었을때 전송
             // 작성자한테 보내는 피드
             String pheedContent1 = "'" + ttl + "' 결재가 시작되었습니다.";
-            String getUrl = "/approval/view/" + adCode;
+            String getUrl = "/approval/send/progress";
             Pheed newPheed1 = Pheed.of(
                     pheedContent1,
                     LocalDateTime.now(), "N", "N",
@@ -827,13 +866,17 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed1);
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
+
+            // 피드 등록 완료 후 이벤트 발행
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed1));
         }
 
         String foundAdStatus2 = docRepository.findAdStatusById(adCode); // 결재 승인 후에 문서 상태 조회
         if(foundAdStatus2.equals("완료")){     // 결재가 완료되었을때 전송
             // 작성자한테 보내는 피드
             String pheedContent2 = "'" + ttl + "' 결재가 완료되었습니다.";
-            String getUrl = "/approval/view/" + adCode;
+            String getUrl = "/approval/send/complete";
             Pheed newPheed2 = Pheed.of(
                     pheedContent2,
                     LocalDateTime.now(), "N", "N",
@@ -842,6 +885,7 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed2);
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed2));
 
             // 열람자한테 보내는 피드
             for(TrueLine line: readTrueLineList){
@@ -849,15 +893,17 @@ public class ApprovalService {
                 String readerName = employeeRepository.findEmpNameById(reader.getEmp_code());
 
                 String pheedContent0 = writerName + "님의 '" + ttl + "' 결재가 완료되었습니다. " + readerName + "님은 '열람자'로써 해당 결재를 확인하실 수 있습니다.";
+                String getUrl1 = "/approval/receive/reference";
 
                 Pheed newPheed0 = Pheed.of(
                         pheedContent0,
                         LocalDateTime.now(), "N", "N",
                         adCode,
                         reader,
-                        getUrl
+                        getUrl1
                 );
                 pheedRepository.save(newPheed0);
+                eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed0));
             }
 
         }
@@ -868,7 +914,7 @@ public class ApprovalService {
             Employee nextApprover = afterList.get(0).getEmployee();                // 다음 결재자 중 첫번째 결재자 조회
 
             String pheedContent3 = writerName + "님이 상신한 '" + ttl + "' 결재가 대기중입니다.";
-            String getUrl = "/approval/view/" + adCode;
+            String getUrl = "/approval/receive/waiting";
             Pheed newPheed3 = Pheed.of(
                     pheedContent3,
                     LocalDateTime.now(), "N", "N",
@@ -877,6 +923,7 @@ public class ApprovalService {
                     getUrl
             );
             pheedRepository.save(newPheed3);
+            eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed3));
         }
     }
 
@@ -897,7 +944,7 @@ public class ApprovalService {
         Employee receiver = employeeRepository.findById(writerCode).orElseThrow(() -> new RuntimeException("Employee not found with empCode: " + writerCode));
 
         String pheedContent = turnedEmployee + "님이 '" + ttl + "' 결재를 반려하였습니다.";
-        String getUrl = "/approval/view/" + adCode;
+        String getUrl = "/approval/send/return";
 
         Pheed newPheed = Pheed.of(
                 pheedContent,
@@ -907,17 +954,20 @@ public class ApprovalService {
                 getUrl
         );
         pheedRepository.save(newPheed);
+        eventPublisher.publishEvent(new PheedCreatedEvent(this, newPheed));
     }
 
     public void registForm(FormRegistRequest formRegistRequest) {
         int lsCode = formRegistRequest.getLineSort().getLsCode();
         LineSort foundLine = lineSortRepository.findById(lsCode).orElseThrow(() -> new RuntimeException("LineSort not found with lsCode: " + lsCode));
 
+
         Form newForm = Form.of(
                 formRegistRequest.getAfName(),
                 formRegistRequest.getAfExplain(),
                 foundLine,
-                formRegistRequest.getAfCon()
+                formRegistRequest.getAfCon(),
+                'Y'
         );
         formRepository.save(newForm);
     }
@@ -940,6 +990,24 @@ public class ApprovalService {
         );
         formRepository.save(foundForm);
     }
+
+    public void nonActiveForm(int afCode) {
+        Form foundForm = formRepository.findById(afCode).orElseThrow(() -> new RuntimeException("Form not found with afCode: " + afCode));
+        foundForm.nonActiveForm('N');
+        formRepository.save(foundForm);
+    }
+
+    public void activeForm(int afCode) {
+        Form foundForm = formRepository.findById(afCode).orElseThrow(() -> new RuntimeException("Form not found with afCode: " + afCode));
+        foundForm.nonActiveForm('Y');
+        formRepository.save(foundForm);
+    }
+
+    public Boolean checkIsForm(int afCode) {
+        Boolean isForm = docRepository.existsByForm_AfCode(afCode);
+        return isForm;
+    }
+
 
     public void registBox(BoxRequest boxRequest) {
         ApprovalBox newBox = ApprovalBox.of(

@@ -1,12 +1,21 @@
 package synergyhubback.employee.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import synergyhubback.approval.domain.entity.AppointDetail;
+import synergyhubback.approval.domain.entity.ApprovalAppoint;
+import synergyhubback.approval.domain.repository.AppointDetailRepository;
+import synergyhubback.approval.domain.repository.ApprovalAppointRepository;
 import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.auth.dto.LoginDto;
+import synergyhubback.common.address.service.EmailService;
 import synergyhubback.common.exception.NotFoundException;
 import synergyhubback.employee.domain.entity.*;
 import synergyhubback.employee.domain.repository.*;
@@ -15,12 +24,11 @@ import synergyhubback.employee.dto.response.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static synergyhubback.common.exception.type.ExceptionCode.*;
+import static synergyhubback.employee.dto.response.EmployeeListResponse.getEmployeeList;
 
 
 @Service("employeeService")
@@ -37,6 +45,9 @@ public class EmployeeService {
     private final TitleRepository titleRepository;
     private final PositionRepository positionRepository;
     private final DetailByEmpRegistRepository detailByEmpRegistRepository;
+    private final EmailService emailService;
+    private final AppointDetailRepository appointDetailRepository;
+    private final ApprovalAppointRepository approvalAppointRepository;
 
 
     @Transactional(readOnly = true)
@@ -79,13 +90,15 @@ public class EmployeeService {
         return LoginDto.from(employee);
     }
 
-    public void empsRegist(List<EmployeeRegistRequest> employeeRegistRequests) {
+    public void empsRegist(List<EmployeeRegistRequest> employeeRegistRequests, String detailErdNum, String detailErdTitle, int empCode, LocalDate detailErdRegistdate) throws MessagingException {
         for (EmployeeRegistRequest employeeRegistRequest : employeeRegistRequests) {
 
             /* 사원코드 생성 (yyyyMM+1) */
             String hireYearMonth = employeeRegistRequest.getHire_date().format(DateTimeFormatter.ofPattern("yyyyMM"));
             long count = employeeRepository.countByHireYearMonth(hireYearMonth);
-            String empCode = hireYearMonth + (count + 1);
+            String newEmpCode = hireYearMonth + (count + 1);
+
+            String erdWriter = employeeRepository.findEmpNameById(empCode);
 
             Department department = departmentRepository.findByDeptCode(employeeRegistRequest.getDept_code());
             Title title = titleRepository.findByTitleCode(employeeRegistRequest.getTitle_code());
@@ -93,10 +106,11 @@ public class EmployeeService {
 
             /* Employee 객체 생성 */
             Employee newEmp = Employee.regist(
-                    Integer.parseInt(empCode),
+                    Integer.parseInt(newEmpCode),
                     employeeRegistRequest.getEmp_name(),
-                    passwordEncoder.encode(empCode),
+                    passwordEncoder.encode(newEmpCode),
                     employeeRegistRequest.getSocial_security_no(),
+                    employeeRegistRequest.getEmail(),
                     employeeRegistRequest.getHire_date(),
                     employeeRegistRequest.getEmp_status()
             );
@@ -107,8 +121,10 @@ public class EmployeeService {
 
             /* DetailByEmpRegist 객체 생성 */
             DetailByEmpRegist detailByEmpRegist = new DetailByEmpRegist(
-                    employeeRegistRequest.getDetailErdNum(),
-                    employeeRegistRequest.getDetailErdTitle(),
+                    detailErdNum,
+                    detailErdTitle,
+                    erdWriter,
+                    detailErdRegistdate,
                     newEmp
             );
 
@@ -117,7 +133,61 @@ public class EmployeeService {
 
             /* 저장 */
             employeeRepository.save(newEmp);
+
+            /* 아이디, 비밀번호 이메일 전송 */
+            emailService.sendNewEmp(newEmp);
         }
+    }
+
+    public List<DetailByEmpRegistResponseGroup> getEmpRegistList() {
+
+        List<DetailByEmpRegist> detailByEmpRegists = detailByEmpRegistRepository.findAll();
+
+        Map<String, List<DetailByEmpRegist>> groupedByInfo = detailByEmpRegists.stream()
+                .collect(Collectors.groupingBy(empRegist ->
+                        empRegist.getErd_num() + "-" +
+                                empRegist.getErd_title() + "-" +
+                                empRegist.getErd_writer() + "-" +
+                                empRegist.getErd_registdate()));
+
+        Map<String, List<DetailByEmpRegist>> sortedGroupedByInfo = groupedByInfo.entrySet().stream()
+                .sorted(Map.Entry.<String, List<DetailByEmpRegist>>comparingByKey(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
+
+        List<DetailByEmpRegistResponseGroup> responseGroups = sortedGroupedByInfo.entrySet().stream()
+                .map(entry -> {
+                    List<DetailByEmpRegistResponse> responses = entry.getValue().stream()
+                            .sorted(Comparator.comparing(DetailByEmpRegist::getErd_code))
+                            .map(DetailByEmpRegistResponse::getEmpRegistList)
+                            .collect(Collectors.toList());
+
+                    DetailByEmpRegist firstElement = entry.getValue().get(0);
+
+                    return new DetailByEmpRegistResponseGroup(
+                            firstElement.getErd_num(),
+                            firstElement.getErd_title(),
+                            firstElement.getErd_writer(),
+                            firstElement.getErd_registdate(),
+                            responses
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return responseGroups;
+    }
+
+    public EmpRegistDetailListResponse getEmpsRegistListDetail(String erdNum) {
+
+        List<DetailByEmpRegist> detailByEmpRegists = detailByEmpRegistRepository.findEmpRegistListDetail(erdNum);
+
+        DetailByEmpRegist detailByEmpRegist = detailByEmpRegists.get(0);
+
+        return EmpRegistDetailListResponse.fromEntity(detailByEmpRegist.getErd_num(), detailByEmpRegist.getErd_title(), detailByEmpRegists);
     }
 
     public MyInfoResponse getMyInfo(int empCode) {
@@ -154,7 +224,7 @@ public class EmployeeService {
 
         System.out.println("emp found : " + employees.size());
 
-        return EmployeeListResponse.getEmployeeList(employees);
+        return getEmployeeList(employees);
     }
 
 
@@ -359,14 +429,39 @@ public class EmployeeService {
     }
 
 
-    public List<OrgResponse> getOrgEmps() {
+    public List<EmployeeResponse> getOrg() {
+        // 모든 사원 정보 조회
+        List<Employee> employees = employeeRepository.findAll();
 
-        List<Employee> getOrgEmps = employeeRepository.findAll();
+        // EmployeeResponse DTO로 변환
+        Map<Integer, EmployeeResponse> employeeResponseMap = employees.stream()
+                .collect(Collectors.toMap(
+                        Employee::getEmp_code,
+                        EmployeeResponse::fromEntity
+                ));
 
-        return getOrgEmps.stream()
-                .map(OrgResponse::getOrg)
-                .collect(Collectors.toList());
+        // 계층 구조 생성
+        List<EmployeeResponse> rootEmployees = new ArrayList<>();
+        Map<Integer, List<EmployeeResponse>> childrenMap = new HashMap<>();
+
+        for (EmployeeResponse employee : employeeResponseMap.values()) {
+            Integer parCode = employee.getPar_code();
+            if (parCode == null || parCode == 0) {
+                rootEmployees.add(employee);
+            } else {
+                childrenMap.computeIfAbsent(parCode, k -> new ArrayList<>()).add(employee);
+            }
+        }
+
+        for (EmployeeResponse employee : employeeResponseMap.values()) {
+            employee.setChildren(childrenMap.get(employee.getEmp_code()));
+        }
+
+        return rootEmployees;
     }
+
+
+
 
     public OrgDetailResponse getOrgEmpDetail(int emp_code) {
 
@@ -386,68 +481,35 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public List<EmployeeResponse> findMyTeamMate (int empCode) {
 
-        MyInfoResponse myInfo = getMyInfo(empCode);
+public void registApp(@Valid AppRegistGroupRequest appRegistGroupRequest) {
+// 1. ApprovalAppoint 객체 생성 및 저장
+        ApprovalAppoint approvalAppoint = new ApprovalAppoint(
+                appRegistGroupRequest.getAappCode(),
+                appRegistGroupRequest.getAappNo(),
+                appRegistGroupRequest.getAappDate(),
+                appRegistGroupRequest.getAappTitle()
+        );
+        approvalAppointRepository.save(approvalAppoint);
 
-        String myEmpTitle = myInfo.getTitle_code();
-        System.out.println("나의 직책 : " + myEmpTitle);
-        
-        String myDeptCode = myInfo.getDept_code();
-        System.out.println("나의 부서/팀 : " + myDeptCode);
+        // 2. Employee 객체 조회
+        Employee employee = employeeRepository.findByEmpCode(Integer.parseInt(appRegistGroupRequest.getEmpCode()));
 
-        if(myEmpTitle.equals("T1")) {
-
-            List<Employee> employees = employeeRepository.findAll();
-
-            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
-
-        } else if(myEmpTitle.equals("T2") && myDeptCode.equals("D2")) {
-
-            List<Employee> employees = employeeRepository.findByD2();
-            System.out.println("찾은 팀원 : " + employees);
-
-            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
-
-        } else if(myEmpTitle.equals("T2") && myDeptCode.equals("D3")) {
-
-            List<Employee> employees = employeeRepository.findByD3();
-            System.out.println("찾은 팀원 : " + employees);
-
-            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
-
-        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D7")) {
-
-            List<Employee> employees = employeeRepository.findByD7();
-            System.out.println("찾은 팀원 : " + employees);
-
-            return EmployeeListResponse.getEmployeeList(employees).getEmployees();
-
-
-        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D10")) {
-
-        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D4")) {
-
-        } else if(myEmpTitle.equals("T4") && myDeptCode.equals("D13")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D8")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D9")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D11")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D5")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D6")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D14")) {
-
-        } else if(myEmpTitle.equals("T5") && myDeptCode.equals("D15")) {
-
-        }
-
-        return null;
+        // 3. AppointDetail 객체 생성 및 저장
+        AppointDetail appointDetail = AppointDetail.of(
+                approvalAppoint,
+                appRegistGroupRequest.getAdetBefore(),
+                appRegistGroupRequest.getAdetAfter(),
+                appRegistGroupRequest.getAdetType(),
+                employee
+        );
+        appointDetailRepository.save(appointDetail);
     }
 
+    public EmployeeListResponse getAllInfo() {
 
+        List<Employee> allList = employeeRepository.findAll();
+
+        return getEmployeeList(allList);
+    }
 }

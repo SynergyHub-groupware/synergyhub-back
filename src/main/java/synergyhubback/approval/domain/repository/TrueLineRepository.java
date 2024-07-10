@@ -82,18 +82,28 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
     @Query("SELECT t FROM TrueLine t WHERE t.employee.emp_code = :empCode AND t.document.adCode = :adCode")
     TrueLine findByEmployee_Emp_codeAndDocument_AdCode(Integer empCode, String adCode);
 
-    @Query("SELECT t FROM TrueLine t " +
-            "JOIN t.document d " +
-            "JOIN d.employee e " +
-            "JOIN d.form f " +
-            "WHERE t.talOrder = (" +
-            "    SELECT MAX(t2.talOrder) " +
-            "    FROM TrueLine t2 " +
-            "    WHERE t2.document = d " +
-            "    AND t2.talStatus = '승인' " +
-            ")" +
-            "AND t.employee.emp_code = :empCode " +
+//    @Query("SELECT t FROM TrueLine t " +
+//            "JOIN t.document d " +
+//            "JOIN d.employee e " +
+//            "JOIN d.form f " +
+//            "WHERE t.talOrder = (" +
+//            "    SELECT MAX(t2.talOrder) " +
+//            "    FROM TrueLine t2 " +
+//            "    WHERE t2.document = d " +
+//            "    AND t2.talStatus = '승인' " +
+//            ")" +
+//            "AND t.employee.emp_code = :empCode " +
+//            "AND d.adStatus = '완료' " +
+//            "ORDER BY d.adReportDate DESC, " +
+//            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+    @Query("SELECT t FROM TrueLine t JOIN t.document d JOIN d.employee e JOIN d.form f " +
+            "WHERE t.document.adCode IN (" +
+            "    SELECT t2.document.adCode FROM TrueLine t2 " +
+            "    WHERE t2.employee.emp_code = :empCode) " +
             "AND d.adStatus = '완료' " +
+            "AND t.talOrder = (" +
+            "   SELECT MAX(t3.talOrder) FROM TrueLine t3 " +
+            "   WHERE t3.talStatus = '승인' AND t3.document.adCode = d.adCode) " +
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findCompleteReceiveList(Integer empCode);
@@ -103,41 +113,42 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "JOIN d.employee e " +
             "JOIN d.form f " +
             "WHERE t.document.adCode IN (" +
-            "    SELECT t2.document.adCode " +
-            "    FROM TrueLine t2 " +
+            "    SELECT t2.document.adCode FROM TrueLine t2 " +
             "    WHERE t2.employee.emp_code = :empCode " +
+            "    AND t2.talStatus IN ('반려', '승인')" +
             ")" +
+            "AND d.adStatus = '반려' " +
             "AND t.talStatus = '반려' " +
             "ORDER BY d.adReportDate DESC, " +
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findReturnReceiveList(Integer empCode);
 
-//    @Query("SELECT t FROM TrueLine t " +
-//            "JOIN t.document d " +
-//            "JOIN d.employee e " +
-//            "JOIN d.form f " +
-//            "WHERE (t.employee.emp_code = :empCode AND t.talRole = '열람' AND d.adStatus = '완료') " +
-//            "OR (t.employee.emp_code = :empCode AND t.talRole = '참조' AND d.adStatus != '임시저장') " +
+//    @Query("SELECT t FROM TrueLine t JOIN t.document d JOIN d.employee e JOIN d.form f " +
+//            "WHERE d.adCode IN (" +
+//            "   SELECT d2.adCode FROM TrueLine t2 JOIN t2.document d2 " +
+//            "   WHERE t2.employee.emp_code = :empCode AND t2.talRole = '열람' AND d2.adStatus = '완료')" +
+//            "AND t.talOrder = (" +
+//            "   SELECT MAX(t3.talOrder) FROM TrueLine t3 " +
+//            "   WHERE t3.document.adCode = d.adCode AND t3.talStatus IN ('승인', '반려'))" +
+//            "UNION " +
+//            "SELECT t FROM TrueLine t JOIN t.document d JOIN d.employee e JOIN d.form f " +
+//            "WHERE d.adCode IN (" +
+//            "   SELECT d2.adCode FROM TrueLine t2 JOIN t2.document d2 " +
+//            "   WHERE t2.employee.emp_code = :empCode AND t2.talRole = '참조' AND d2.adStatus != '임시저장')" +
+//            "AND t.talOrder = (" +
+//            "   SELECT MIN(t3.talOrder) FROM TrueLine t3 " +
+//            "   WHERE t3.document.adCode = d.adCode AND t3.talStatus = '미결재' AND t3.talOrder != 0) " +
 //            "ORDER BY d.adReportDate DESC, " +
 //            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
-
-    @Query("SELECT t FROM TrueLine t " +
-            "JOIN t.document d " +
-            "JOIN d.employee e " +
-            "JOIN d.form f " +
-            "WHERE d.adCode IN (" +
-            "    SELECT d2.adCode FROM TrueLine t2 " +
-            "    JOIN t2.document d2 " +
-            "    WHERE (t2.employee.emp_code = :empCode AND t2.talRole = '열람' AND d2.adStatus = '완료') " +
-            "    OR (t2.employee.emp_code = :empCode AND t2.talRole = '참조' AND d2.adStatus != '임시저장')" +
-            ") " +
-            "AND t.talOrder = (" +
-            "    SELECT MAX(t3.talOrder) FROM TrueLine t3 " +
-            "    WHERE t3.document.adCode = d.adCode " +
-            "    AND t3.talStatus != '미결재'" +
-            ") " +
-            "ORDER BY d.adReportDate DESC, " +
-            "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
+@Query("SELECT t FROM TrueLine t JOIN t.document d JOIN d.employee e JOIN d.form f " +
+        "WHERE t.employee.emp_code = :empCode " +
+        "AND t.talRole = '열람' AND d.adStatus = '완료'" +
+        "UNION " +
+        "SELECT t FROM TrueLine t JOIN t.document d JOIN d.employee e JOIN d.form f " +
+        "WHERE t.employee.emp_code = :empCode " +
+        "AND t.talRole = '참조' AND d.adStatus != '임시저장' " +
+        "ORDER BY d.adReportDate DESC, " +
+        "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findReferenceReceiveList(Integer empCode);
 
     @Query("SELECT t FROM TrueLine t " +
@@ -167,20 +178,4 @@ public interface TrueLineRepository extends JpaRepository<TrueLine, Integer> {
             "SUBSTRING(d.adCode, 1, 2), CAST(SUBSTRING(d.adCode, 3) AS Integer) DESC")
     List<TrueLine> findDocListInStorage(int abCode);
 
-
-//    @Query(value = "SELECT ab.AB_code, ab.AB_NAME, s.AS_CODE, ad.AD_CODE, ad.AD_TITLE, af.AF_NAME, tal.EMP_CODE, ei.emp_name, tal.TAL_DATE " +
-//            "FROM approval_box ab " +
-//            "JOIN approval_storage s USING (ab_code) " +
-//            "JOIN approval_doc ad USING (ad_code) " +
-//            "JOIN true_app_line tal ON ad.ad_code = tal.ad_code " +
-//            "JOIN employee_info ei ON tal.EMP_CODE = ei.EMP_CODE " +
-//            "JOIN approval_form af ON ad.AF_CODE = af.AF_CODE " +
-//            "WHERE ab.ab_code = :abCode " +
-//            "AND tal.tal_order = ( " +
-//            "    SELECT MAX(tal_order) " +
-//            "    FROM true_app_line " +
-//            "    WHERE ad_code = ad.ad_code " +
-//            "      AND tal_status = '승인' " +
-//            ")", nativeQuery = true)
-//    List<Object[]> findDocListInStorage(int abCode);
 }

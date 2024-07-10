@@ -39,6 +39,7 @@ public class AttendancesResponse {
     private String subTitle;  //하위부서명
     private String deptTitle; //부서명
     private String empName;   //사원명
+    private String empTitle;
 
     private AttendanceStatus attendanceStatus;                            //근무상태코드
     private int empCode;                                                    //사원코드
@@ -52,6 +53,7 @@ public class AttendancesResponse {
     public AttendancesResponse(Attendance attendance) {
         this.atdCode = attendance.getAtdCode();
         this.empCode = attendance.getEmployee().getEmp_code();
+        this.empTitle = attendance.getEmployee().getTitle().getTitle_name();
         this.empName = attendance.getEmployee().getEmp_name();
         this.atdDate = attendance.getAtdDate();
         this.atdStartTime = attendance.getAtdStartTime();
@@ -81,8 +83,8 @@ public class AttendancesResponse {
             // 팀명
             this.deptTitle = null; // 팀명은 null로 설정
 
-            // 하위부서
-            this.subTitle = null;
+            // 하위부서 (내 부서)
+            this.subTitle = attendance.getEmployee().getDepartment().getDept_title();
 
             StringBuilder parentDeptTitles = new StringBuilder();
             Set<DeptRelations> parentDepartments = attendance.getEmployee().getDepartment().getParentDepartments();
@@ -97,7 +99,7 @@ public class AttendancesResponse {
             }
 
             // 상위부서
-            this.parTitle = attendance.getEmployee().getDepartment().getDept_title();
+            this.parTitle = parentDeptTitles.toString();
 
         } else if (attendance.getEmployee().getTitle().getTitle_code().equals("T5") || attendance.getEmployee().getTitle().getTitle_code().equals("T6")) {
 

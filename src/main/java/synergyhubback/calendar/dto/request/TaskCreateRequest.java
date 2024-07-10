@@ -14,8 +14,8 @@ public class TaskCreateRequest {
 
     private final String title;
     private final LocalDate modifiedDate;
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+    private final LocalDate start;
+    private final LocalDate end;
     private final String status;
     private final String priority;
     private final String description;
@@ -27,8 +27,8 @@ public class TaskCreateRequest {
     public TaskCreateRequest(
             @JsonProperty("title") String title,
             @JsonProperty("modifiedDate") LocalDate modifiedDate,
-            @JsonProperty("start") LocalDateTime start,
-            @JsonProperty("end") LocalDateTime end,
+            @JsonProperty("start") LocalDate start,
+            @JsonProperty("end") LocalDate end,
             @JsonProperty("status") String status,
             @JsonProperty("priority") String priority,
             @JsonProperty("description") String description,

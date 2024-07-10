@@ -1,25 +1,20 @@
 package synergyhubback.employee.presentation;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
-import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
-import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -41,11 +36,41 @@ public class EmployeeController {
 
     /* 사원 등록 */
     @PostMapping("/empsRegist")
-    public ResponseEntity<Void> empsRegist (@RequestBody @Valid List<EmployeeRegistRequest> employeeRegistRequests) {
+    public ResponseEntity<Void> empsRegist (@RequestBody @Valid EmpRegistDataRequest empRegistDataRequests, @RequestHeader("Authorization") String token) throws MessagingException {
 
-        employeeService.empsRegist(employeeRegistRequests);
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<EmployeeRegistRequest> employeeRegistRequests = empRegistDataRequests.getEmployees();
+
+        employeeService.empsRegist(
+                employeeRegistRequests,
+                empRegistDataRequests.getDetailErdNum(),
+                empRegistDataRequests.getDetailErdTitle(),
+                empCode,
+                empRegistDataRequests.getDetailErdRegistdate()
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /* 인사등록 리스트 조회 */
+    @GetMapping("/empsResgistList")
+    public ResponseEntity<List<DetailByEmpRegistResponseGroup>> getEmpRegistListGrouped() {
+
+        List<DetailByEmpRegistResponseGroup> detailByEmpRegistResponseGroups = employeeService.getEmpRegistList();
+
+        return ResponseEntity.ok(detailByEmpRegistResponseGroups);
+    }
+
+    /* 인사등록 리스트 상세조회 */
+    @GetMapping("/empsRegistListDetail/{erd_num}")
+    public ResponseEntity<EmpRegistDetailListResponse> getEmpsRegistListDetail(@PathVariable String erd_num) {
+
+        EmpRegistDetailListResponse empRegistDetailListResponse = employeeService.getEmpsRegistListDetail(erd_num);
+
+        return ResponseEntity.ok(empRegistDetailListResponse);
     }
 
     /* 내 정보 조회 */
@@ -168,6 +193,7 @@ public class EmployeeController {
         return ResponseEntity.ok(departmentResponse);
     }
 
+
     /* 직위 전체 조회 */
     @GetMapping("/empTitles")
     public ResponseEntity<List<EmpTitleListResponse>> getEmpTitleList() {
@@ -185,13 +211,14 @@ public class EmployeeController {
 
         return ResponseEntity.ok(empPositionList);
     }
-    /* orgChart 조회 */
+  
+    /* 조직도 조회 */
     @GetMapping("/org")
-    public ResponseEntity<List<OrgResponse>> getOrg() {
+    public ResponseEntity<List<EmployeeResponse>> getOrg() {
 
-        List<OrgResponse> orgResponses = employeeService.getOrgEmps();
+        List<EmployeeResponse> employeeResponseList = employeeService.getOrg();
 
-        return ResponseEntity.ok(orgResponses);
+        return ResponseEntity.ok(employeeResponseList);
     }
 
     /* 조직도 상세 조회 */
@@ -212,24 +239,23 @@ public class EmployeeController {
         return ResponseEntity.ok().build();
     }
 
-    /* 내 팀원 조회 : 박은비 */
-    @GetMapping("/findMyTeamMate")
-    public ResponseEntity<ResponseMessage> findMyTeamMate(@RequestHeader("Authorization") String token) {
 
-        String jwtToken = TokenUtils.getToken(token);
-        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
-        int empCode = Integer.parseInt(tokenEmpCode);
+    /* 발령 등록 */
+    @PostMapping("/appRegist")
+    public ResponseEntity<Void> registApp(@RequestBody @Valid AppRegistGroupRequest appRegistGroupRequest) {
 
-        List<EmployeeResponse> myTeamMate = employeeService.findMyTeamMate(empCode);
-        HttpHeaders headers = new HttpHeaders();
+        employeeService.registApp(appRegistGroupRequest);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("myTeamMate", myTeamMate); // 복수형으로 변경: attendance -> attendances
-        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(responseMessage);
+    /* 모든 사원 정보 조회 */
+    @GetMapping("/all")
+    public ResponseEntity<EmployeeListResponse> getAllInfo() {
+
+        EmployeeListResponse allInfo = employeeService.getAllInfo();
+
+        return ResponseEntity.ok(allInfo);
     }
 
 //    @PatchMapping("/resetEmpPass/{emp_code}")
@@ -255,4 +281,5 @@ public class EmployeeController {
 //        return ResponseEntity.ok().build();
 //    }
 }
+
 

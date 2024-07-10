@@ -1,29 +1,19 @@
 package synergyhubback.employee.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import synergyhubback.employee.domain.entity.Employee;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class OrgResponse {
 
-    private String emp_img;
-    private String emp_name;
-    private String dept_code;
-    private String position_code;
-    private String title_code;
+    List<EmployeeResponse> employeeResponseList;
 
-    public static OrgResponse getOrg(Employee employee) {
 
-        return new OrgResponse(
-                employee.getEmp_img(),
-                employee.getEmp_name(),
-                employee.getDepartment().getDept_title(),
-                employee.getPosition().getPosition_name(),
-                employee.getTitle().getTitle_name()
-        );
-    }
 }

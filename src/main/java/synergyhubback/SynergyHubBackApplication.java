@@ -16,11 +16,9 @@ public class SynergyHubBackApplication {
     public static void main(String[] args) {
         SpringApplication.run(SynergyHubBackApplication.class, args);
 
-
-        /* 근태 관련 test */
-        LocalDate[] weekRange = DateUtils.getCurrentWeek();
-        System.out.println("Start of week: " + weekRange[0]);
-        System.out.println("End of week: " + weekRange[1]);
     }
+
+
+
 
 }
