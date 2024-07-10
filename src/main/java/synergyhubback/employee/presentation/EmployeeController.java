@@ -3,18 +3,23 @@ package synergyhubback.employee.presentation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
+import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -251,6 +256,25 @@ public class EmployeeController {
         return ResponseEntity.ok(departmentResponse);
     }
 
+
+    /* 직위 전체 조회 */
+    @GetMapping("/empTitles")
+    public ResponseEntity<List<EmpTitleListResponse>> getEmpTitleList() {
+
+        List<EmpTitleListResponse> empTitleList = employeeService.getEmpTitleList();
+
+        return ResponseEntity.ok(empTitleList);
+    }
+
+    /* 직급 전체 조회 */
+    @GetMapping("/empPositions")
+    public ResponseEntity<List<GetPositionNameResponse>> getPositionList() {
+
+        List<GetPositionNameResponse> empPositionList = employeeService.getPositionList();
+
+        return ResponseEntity.ok(empPositionList);
+    }
+
     /* 조직도 조회 */
     @GetMapping("/org")
     public ResponseEntity<List<EmployeeResponse>> getOrg() {
@@ -304,4 +328,48 @@ public class EmployeeController {
 
         return ResponseEntity.ok(aappDetailRegistList);
     }
+
+    /* 내 팀원 조회 : 박은비 */
+    @GetMapping("/findMyTeamMate")
+    public ResponseEntity<ResponseMessage> findMyTeamMate(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<EmployeeResponse> myTeamMate = employeeService.findMyTeamMate(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("myTeamMate", myTeamMate); // 복수형으로 변경: attendance -> attendances
+        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+//    @PatchMapping("/resetEmpPass/{emp_code}")
+//    public ResponseEntity<ResetEmpPassRequest> patchEmpPass(@PathVariable int emp_code, @RequestHeader("Authorization") String token) {
+//
+//        String jwtToken = TokenUtils.getToken(token);
+//        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+//        int empCode = Integer.parseInt(tokenEmpCode);
+//
+//        String tokenDeptCode = TokenUtils.getDeptCode(jwtToken);
+//
+//        List<String> allowedDeptCodes = List.of("D4", "D5", "D6");      // 인사부서(인사부, 채용팀, 교육개발팀) 인원만 비밀번호 초기화 가능
+//                                                                          // 팀 인원이 초기화 해주는걸로 바꿈
+//        System.out.println("allowedDeptCodes : " + allowedDeptCodes);
+//        System.out.println("tokenDeptCode : " + tokenDeptCode);
+//
+//        if(tokenDeptCode == null || !allowedDeptCodes.contains(tokenDeptCode)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+//
+//        employeeService.resetEmpPass(emp_code);
+//
+//        return ResponseEntity.ok().build();
+//    }
 }
+

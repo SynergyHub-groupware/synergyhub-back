@@ -10,6 +10,7 @@ import synergyhubback.approval.domain.entity.AppointDetail;
 import synergyhubback.approval.domain.entity.ApprovalAppoint;
 import synergyhubback.approval.domain.repository.AppointDetailRepository;
 import synergyhubback.approval.domain.repository.ApprovalAppointRepository;
+import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.auth.dto.LoginDto;
 import synergyhubback.common.address.service.EmailService;
 import synergyhubback.common.exception.NotFoundException;
@@ -418,6 +419,18 @@ public class EmployeeService {
         DeptRelations deptRelations = new DeptRelations(parentDepartment, subDepartment);
 
         deptRelationsRepository.save(deptRelations);
+    }
+
+    public List<EmpTitleListResponse> getEmpTitleList() {
+        List<Title> empTitleList = titleRepository.findAll();
+
+        return empTitleList.stream().map(EmpTitleListResponse::from).toList();
+    }
+
+    public List<GetPositionNameResponse> getPositionList() {
+        List<Position> empPositionList = positionRepository.findAll();
+
+        return empPositionList.stream().map(GetPositionNameResponse::from).toList();
     }
 
     public void modifyDeptRelations(int dept_relations_code, Department parentDepartment, Department subDepartment) {

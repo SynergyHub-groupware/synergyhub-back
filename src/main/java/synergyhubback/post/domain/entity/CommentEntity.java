@@ -1,9 +1,10 @@
 package synergyhubback.post.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import synergyhubback.employee.domain.entity.Employee;
+import synergyhubback.post.dto.request.CommontRequest;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Date;
 @Getter
 @ToString
 @Setter
+@NoArgsConstructor
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +27,24 @@ public class CommentEntity {
     private LocalDateTime CommDate;
     @Column(name = "comm_status")
 
-    private char CommStatus;
+    private String CommStatus;
 
     @ManyToOne
     @JoinColumn(name = "Post_Code")
     private PostEntity PostCode;
-    private int EmpCode;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "Emp_Code")
+    @JsonIgnore
+    private Employee EmpCode;
+
+    @Builder
+    public CommentEntity(int commCode, String commCon, LocalDateTime commDate, String commStatus, PostEntity postCode, Employee empCode) {
+        CommCode = commCode;
+        CommCon = commCon;
+        CommDate = commDate;
+        CommStatus = commStatus;
+        PostCode = postCode;
+        EmpCode = empCode;
+    }
 }

@@ -9,7 +9,7 @@ import synergyhubback.message.domain.entity.Storage;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Builder
-public class CreateMsgRequest {
+public class CreateTempRequest {
 
     private final String msgTitle;
     private final String msgCon;

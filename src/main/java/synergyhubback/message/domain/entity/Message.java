@@ -33,14 +33,19 @@ public class Message {
     private Employee empSend;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stor_code", referencedColumnName = "storCode")
-    private Storage storCode;
+    @JoinColumn(name = "rev_stor", referencedColumnName = "storCode")
+    private Storage revStor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "send_stor", referencedColumnName = "storCode")
+    private Storage sendStor;
 
     public void setEmpRev(Employee empRev) {this.empRev = empRev;}
     public void setEmpSend(Employee empSend) {this.empSend = empSend;}
-    public void setStorCode(Storage storCode) {
-        this.storCode = storCode;
+    public void setRevStor(Storage revStor) {
+        this.revStor = revStor;
     }
+    public void setSendStor(Storage sendStor) { this.sendStor = sendStor;}
 
     public Message(String msgCode, LocalDate sendDate, String msgTitle, String msgCon, String msgStatus, String emerStatus){
         this.msgCode = msgCode;

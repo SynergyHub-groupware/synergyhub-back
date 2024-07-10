@@ -2,7 +2,7 @@
 GET http://localhost:8080/approval/formList
 
 ### 결재양식기본내용 조회
-GET http://localhost:8080/approval/formContent?afCode=12
+GET http://localhost:8080/approval/formContent?afCode=13
 
 ### 결재라인 특정 조회
 GET http://localhost:8080/approval/formLine?lsCode=4
@@ -94,8 +94,11 @@ GET http://localhost:8080/approval/send/document?empCode=2024062&status=return
 ### 보낸결재함[대기] 조회 + 페이지
 GET http://localhost:8080/approval/send/document?page=1&empCode=2021048&status=waiting
 
+### 결재 기본정보 조회
+GET http://localhost:8080/approval/viewInfo?adCode=AD1
+
 ### 결재 상세보기 : 결재라인
-GET http://localhost:8080/approval/viewLine?adCode=AD41
+GET http://localhost:8080/approval/viewLine?adCode=AD1
 
 ### 결재 상세보기 : 상세내용
 GET http://localhost:8080/approval/viewDetail?adDetail=AATT16
@@ -110,7 +113,7 @@ GET http://localhost:8080/approval/downloadAttach?attachOriginal=결재 더미_V
 GET http://localhost:8080/approval/viewDetail?adDetail=AAPP1
 
 ### 결재 상세보기 : 삭제
-DELETE http://localhost:8080/approval/document/delete?adCode=AD17
+DELETE http://localhost:8080/approval/document/delete?adCode=AD1
 
 ### 결재 상세보기 : 수정
 PATCH http://localhost:8080/approval/modifyStatus?adCode=AD19
@@ -147,6 +150,9 @@ Content-Type: application/json
   }
 }
 
+### 결재양식 사용여부 조회
+GET http://localhost:8080/approval/checkIsForm?afCode=14
+
 ### 보관함 등록
 POST http://localhost:8080/approval/registBox
 Content-Type: application/json
@@ -177,4 +183,5 @@ POST http://localhost:8080/approval/registDocInStorage?adCode=AD1&abCode=6
 GET http://localhost:8080/approval/docListInStorage?abCode=6
 
 ### 개인보관함에서 결재문서 삭제
-DELETE http://localhost:8080/approval/deleteDocInStorage?adCode=AD1&abCode=6
+DELETE http://localhost:8080/approval/deleteDocInStorage?adCode=AD1&abCode=2
+
