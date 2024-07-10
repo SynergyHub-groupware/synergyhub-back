@@ -4,13 +4,13 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 <br/>
 
 ## 📄 프로젝트 소개
-<img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/06f7dacb-6e24-49b3-aa06-29a12f2817dd" width="200px" height="150px" title="Alt Text"><img>
+<img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/06f7dacb-6e24-49b3-aa06-29a12f2817dd" width="200px" height="150px" title="Alt Text">
 <br/>
 - **SynergyHub** : 소통과 협업을 강화하다.
 - 팀원과 원활한 소통을 기반으로 시너지 효과를 극대화하는 그룹웨어를 제공합니다.
 
 ## 📅 개발 기간
-- 2024.05.08 ~ 2024.07.16
+- 2024.05.08 ~ 2024.07.16 (2달)
 
 ### 🏃 담당자 소개
 
