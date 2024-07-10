@@ -1030,8 +1030,8 @@ public class ApprovalService {
     }
 
     public void deleteBox(int abCode) {
-        approvalBoxRepository.deleteById(abCode);
         approvalStorageRepository.deleteByApprovalBox_AbCode(abCode);
+        approvalBoxRepository.deleteById(abCode);
     }
 
     public void registDocInStorage(String adCode, int abCode) {
