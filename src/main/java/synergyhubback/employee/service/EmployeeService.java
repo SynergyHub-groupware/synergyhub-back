@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static synergyhubback.common.exception.type.ExceptionCode.*;
+import static synergyhubback.employee.dto.response.EmployeeListResponse.getEmployeeList;
 
 
 @Service("employeeService")
@@ -223,7 +224,7 @@ public class EmployeeService {
 
         System.out.println("emp found : " + employees.size());
 
-        return EmployeeListResponse.getEmployeeList(employees);
+        return getEmployeeList(employees);
     }
 
 
@@ -503,5 +504,12 @@ public void registApp(@Valid AppRegistGroupRequest appRegistGroupRequest) {
                 employee
         );
         appointDetailRepository.save(appointDetail);
+    }
+
+    public EmployeeListResponse getAllInfo() {
+
+        List<Employee> allList = employeeRepository.findAll();
+
+        return getEmployeeList(allList);
     }
 }

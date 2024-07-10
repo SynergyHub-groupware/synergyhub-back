@@ -3,23 +3,18 @@ package synergyhubback.employee.presentation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
-import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -252,6 +247,15 @@ public class EmployeeController {
         employeeService.registApp(appRegistGroupRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /* 모든 사원 정보 조회 */
+    @GetMapping("/all")
+    public ResponseEntity<EmployeeListResponse> getAllInfo() {
+
+        EmployeeListResponse allInfo = employeeService.getAllInfo();
+
+        return ResponseEntity.ok(allInfo);
     }
 
 //    @PatchMapping("/resetEmpPass/{emp_code}")
