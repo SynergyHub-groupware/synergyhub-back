@@ -22,6 +22,17 @@ public class PostResponse {
     private PostCommSet postCommSet;
     private char FixStatus;
     private char NoticeStatus;
+    private int EmpCode;
+    private String EmpName;
+    public PostResponse(String postCode, int empCode, String postName, LocalDate postDate, int postViewCnt,PostCommSet postCommSet) {
+        this.PostCode = postCode;
+        this.EmpCode = empCode;
+        this.PostName = postName;
+        this.PostDate = postDate;
+        this.PostViewCnt = postViewCnt;
+        this.postCommSet = postCommSet;
+    }
+
 
     public PostResponse(PostEntity postEntity) {
         this.PostCode = postEntity.getPostCode();
@@ -32,5 +43,7 @@ public class PostResponse {
         this.postCommSet = postEntity.getPostCommSet();
         this.FixStatus = postEntity.getFixStatus();
         this.NoticeStatus = postEntity.getNoticeStatus();
+        this.EmpCode = postEntity.getEmpCode().getEmp_code();
+        this.EmpName = postEntity.getEmpCode().getEmp_name();
     }
 }
