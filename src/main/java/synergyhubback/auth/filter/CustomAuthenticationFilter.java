@@ -50,9 +50,6 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         String emp_code = bodyMap.get("emp_code");
         String emp_pass = bodyMap.get("emp_pass");
 
-        log.info("CustomAuthenticationFilter empCode : {}", emp_code);
-        log.info("CustomAuthenticationFilter empPass : {}", emp_pass);
-
         // id, pwd가 설정된 인증 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(emp_code, emp_pass);
