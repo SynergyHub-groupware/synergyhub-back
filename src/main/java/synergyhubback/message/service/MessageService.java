@@ -60,8 +60,6 @@ public class MessageService {
 
         List<Message> receiveList = messageRepository.findByEmpRev_EmpCode(empCode);
 
-        System.out.println("receiveList : " + receiveList.size());
-
         return receiveList.stream()
                 .map(ReceiveResponse::getReceiveMessage)
                 .collect(Collectors.toList());
@@ -72,8 +70,6 @@ public class MessageService {
 
         List<Message> sendList = messageRepository.findByEmpSend_EmpCode(empCode);
 
-        System.out.println("sendList : " + sendList.size());
-
         return sendList.stream()
                 .map(SendResponse::getSendMessage)
                 .collect(Collectors.toList());
@@ -83,8 +79,6 @@ public class MessageService {
     public List<BinResponse> getBinMessage(int empCode) {
 
         List<Message> binList = messageRepository.findByBin_EmpCode(empCode);
-
-        System.out.println("binList : " + binList.size());
 
         return binList.stream()
                 .map(BinResponse::getBinMessage)
@@ -124,8 +118,6 @@ public class MessageService {
 
         List <Message> impList = messageRepository.findByImp_EmpCode(empCode);
 
-        System.out.println("impList : " + impList.size());
-
         return impList.stream()
                 .map(ImpResponse::getImpMessage)
                 .collect(Collectors.toList());
@@ -136,8 +128,6 @@ public class MessageService {
 
         List<Message> workList = messageRepository.findByWork_EmpCode(empCode);
 
-        System.out.println("workList : " + workList.size());
-
         return workList.stream()
                 .map(WorkResponse::getWorkMessage)
                 .collect(Collectors.toList());
@@ -145,8 +135,6 @@ public class MessageService {
     public List<TempResponse> getTempMessage(int empCode) {
 
         List<Message> tempList = messageRepository.findByTemp_empCode(empCode);
-
-        System.out.println("tempList = " + tempList);
 
         return tempList.stream()
                 .map(TempResponse::getTempMessage)
@@ -182,14 +170,6 @@ public class MessageService {
         String lastMsgCode = messageRepository.findLastMsgCode();
         String newMsgCode = newMsgCode(lastMsgCode);
 
-        System.out.println("lastMsgCode = " + lastMsgCode);
-        System.out.println("newMsgCode = " + newMsgCode);
-        System.out.println("msgCon = " + msgCon);
-        System.out.println("empRev = " + empRev);
-        System.out.println("empSend = " + empSend);
-        System.out.println("revStor = " + revStor);
-        System.out.println("sendStor = " + sendStor);
-
         Message message = Message.create(
                 newMsgCode,
                 LocalDateTime.now(),
@@ -203,8 +183,6 @@ public class MessageService {
         message.setEmpSend(empSend);
         message.setRevStor(revStor);
         message.setSendStor(sendStor);
-
-        System.out.println("message.getEmpRev() = " + message.getEmpRev());
 
         messageRepository.save(message);
 
@@ -334,10 +312,6 @@ public class MessageService {
                     message.getMsgCode()
             );
 
-            System.out.println("originalFileName = " + originalFileName);
-            System.out.println("saveFileName = " + saveFileName);
-            System.out.println("messageDir = " + messageDir);
-
             attachmentRepository.save(attachment);
         }
 
@@ -427,9 +401,6 @@ public class MessageService {
         }
         int newBlkCode = newBlkCode(lastBlkCode);
 
-        System.out.println("lastBlkCode = " + lastBlkCode);
-        System.out.println("newBlkCode = " + newBlkCode);
-
         MessageBlock messageBlock = MessageBlock.create(
                 newBlkCode,
                 LocalDate.now()
@@ -437,9 +408,6 @@ public class MessageService {
 
         messageBlock.setBlkId(blkId);
         messageBlock.setBlkName(blkName);
-
-        System.out.println("messageBlock.getBlkId() = " + messageBlock.getBlkId());
-        System.out.println("messageBlock.getBlkName() = " + messageBlock.getBlkName());
 
         messageBlockRepository.save(messageBlock);
     }
