@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
 import synergyhubback.employee.dto.request.*;
@@ -324,10 +325,6 @@ public class EmployeeController {
         return ResponseEntity.ok(aappDetailRegistList);
     }
 
-    /* 내 팀원 조회 : 박은비 */
-    @GetMapping("/findMyTeamMate")
-    public ResponseEntity<ResponseMessage> findMyTeamMate(@RequestHeader("Authorization") String token) {
-   
       /* 모든 사원 정보 조회 */
     @GetMapping("/all")
     public ResponseEntity<EmployeeListResponse> getAllInfo() {
