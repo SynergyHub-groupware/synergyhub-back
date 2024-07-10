@@ -24,6 +24,7 @@ public class CommonResponse {
     private String post_code;
 
     private int emp_code;
+    private String emp_name;
 
 
     public CommonResponse(CommentEntity commentEntity) {
@@ -33,6 +34,7 @@ public class CommonResponse {
         this.comm_status = commentEntity.getCommStatus();
         this.post_code = commentEntity.getPostCode().getPostCode();
         this.emp_code = commentEntity.getEmpCode().getEmp_code();
+        this.emp_name = commentEntity.getEmpCode().getEmp_name();
     }
 
 }

@@ -65,6 +65,7 @@ VALUES
 INSERT INTO `LOW_BOARD`
 (`LOW_CODE`, `LOW_NAME`, `BOARD_CODE`)
 VALUES
+    (0, '임시저장', 0),
     (1, '공지사항', 1),
     (2, '이벤트', 1),
     (3, '자유게시판', 2),
