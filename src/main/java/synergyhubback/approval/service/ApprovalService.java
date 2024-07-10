@@ -247,8 +247,15 @@ public class ApprovalService {
                         updateTrueLine(existLine, newLine);
                     });
                     // 나머지 값 추가
+                    Document foundDoc = docRepository.findById(adCode).orElseThrow(() -> new IllegalArgumentException("Invalid Document code:" + adCode));
                     IntStream.range(existSize, newSize).forEach(i -> {
-                        TrueLine newLine = newTrueLine.get(i);
+                        TrueLine newLine = TrueLine.of(
+                                foundDoc,
+                                newTrueLine.get(i).getTalOrder(),
+                                newTrueLine.get(i).getTalRole(),
+                                "미결재",
+                                newTrueLine.get(i).getEmployee()
+                        );
                         trueLineRepository.save(newLine);
                     });
                 }
