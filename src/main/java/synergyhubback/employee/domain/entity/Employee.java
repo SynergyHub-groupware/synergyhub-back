@@ -141,10 +141,16 @@ public class Employee {
         System.out.println("updateRefreshToken");
     }
 
+    public void setEmp_code(int emp_code) {
+        this.emp_code = emp_code;
+    }
     // 이다정: 서명등록
     public void signRegist(Integer emp_sign) {
         this.emp_sign = emp_sign;
     }
 
 
+    public void setEmpCode(int empCode) {
+        this.emp_code = empCode;
+    }
 }

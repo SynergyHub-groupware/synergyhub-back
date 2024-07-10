@@ -9,6 +9,7 @@ import synergyhubback.employee.domain.entity.Employee;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "TASK")
@@ -29,10 +30,10 @@ public class Task {
     private LocalDate modifiedDate;
 
     @Column(name = "START_DATE")
-    private LocalDateTime start;
+    private LocalDate start;
 
     @Column(name = "END_DATE")
-    private LocalDateTime end;
+    private LocalDate end;
 
     @Column(name = "TASK_STATUS")
     private String status;
@@ -52,4 +53,7 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EMP_CODE")
     private Employee employee;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Guest> guests;
 }

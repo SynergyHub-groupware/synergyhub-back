@@ -3,23 +3,18 @@ package synergyhubback.employee.presentation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
-import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -332,21 +327,14 @@ public class EmployeeController {
     /* 내 팀원 조회 : 박은비 */
     @GetMapping("/findMyTeamMate")
     public ResponseEntity<ResponseMessage> findMyTeamMate(@RequestHeader("Authorization") String token) {
+   
+      /* 모든 사원 정보 조회 */
+    @GetMapping("/all")
+    public ResponseEntity<EmployeeListResponse> getAllInfo() {
 
-        String jwtToken = TokenUtils.getToken(token);
-        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
-        int empCode = Integer.parseInt(tokenEmpCode);
+        EmployeeListResponse allInfo = employeeService.getAllInfo();
 
-        List<EmployeeResponse> myTeamMate = employeeService.findMyTeamMate(empCode);
-        HttpHeaders headers = new HttpHeaders();
-
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("myTeamMate", myTeamMate); // 복수형으로 변경: attendance -> attendances
-        ResponseMessage responseMessage = new ResponseMessage(200, "조회 성공", responseMap);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(responseMessage);
+        return ResponseEntity.ok(allInfo);
     }
 
 //    @PatchMapping("/resetEmpPass/{emp_code}")

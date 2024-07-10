@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import synergyhubback.calendar.domain.entity.Task;
+import synergyhubback.calendar.domain.repository.GuestRepository;
 import synergyhubback.calendar.domain.repository.TaskRepository;
 import synergyhubback.calendar.dto.request.TaskCreateRequest;
 import synergyhubback.calendar.dto.request.TaskUpdateRequest;
@@ -18,10 +19,11 @@ import java.util.Optional;
 @Transactional
 public class TaskService {
 
+    private final GuestRepository guestRepository;
     private final TaskRepository taskRepository;
     private final EmployeeRepository employeeRepository;
 
-    public Task createTask(TaskCreateRequest taskRequest) {
+    public Task createTask(TaskCreateRequest taskRequest, int empCode) {
         Task task = new Task();
         task.setId(generateTaskCode());
         task.setTitle(taskRequest.getTitle());
@@ -34,14 +36,14 @@ public class TaskService {
         task.setOwner(taskRequest.getOwner());
         task.setDisplay(taskRequest.isDisplay());
 
-        Employee employee = employeeRepository.findById(taskRequest.getEmpCode())
+        Employee employee = employeeRepository.findById(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         task.setEmployee(employee);
 
         return taskRepository.save(task);
     }
 
-    public Task updateTask(String id, TaskUpdateRequest taskRequest) {
+    public Task updateTask(String id, TaskUpdateRequest taskRequest, int empCode) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
         task.setTitle(taskRequest.getTitle());
         task.setModifiedDate(taskRequest.getModifiedDate());
@@ -53,7 +55,7 @@ public class TaskService {
         task.setOwner(taskRequest.getOwner());
         task.setDisplay(taskRequest.isDisplay());
 
-        Employee employee = employeeRepository.findById(taskRequest.getEmpCode())
+        Employee employee = employeeRepository.findById(empCode)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         task.setEmployee(employee);
 
@@ -61,12 +63,15 @@ public class TaskService {
     }
 
     public void deleteTask(String id) {
+        guestRepository.deleteByTaskId(id);
         taskRepository.deleteById(id);
     }
 
-    public List<Task> findAllTasks() {
-        return taskRepository.findAll();
+    public List<Task> findAllTasksByEmpCode(int empCode) {
+        return taskRepository.findTasksByEmployeeOrGuest(empCode);
     }
+
+
 
     public Optional<Task> findTaskById(String id) {
         return taskRepository.findById(id);

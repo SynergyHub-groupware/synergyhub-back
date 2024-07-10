@@ -1,6 +1,7 @@
 package synergyhubback.attendance.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import synergyhubback.approval.dto.response.DocListResponse;
+import synergyhubback.approval.dto.response.DocumentResponse;
 import synergyhubback.attendance.domain.entity.DayOff;
 import synergyhubback.attendance.domain.entity.DefaultSchedule;
 import synergyhubback.attendance.dto.request.*;
@@ -254,8 +257,26 @@ public class AttendanceController {
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
     }
 
+    @Operation(summary = "오늘의 전체 근태 기록 조회", description = "오늘의 전체 근태 기록을 조회한다.")
+    @GetMapping("/today-all")
+    public ResponseEntity<ResponseMessage> getAttendanceForTodayAll(@RequestHeader("Authorization") String token) {
 
-    @Operation(summary = "오늘의 근태 기록 조회", description = "오늘의 근태 기록을 조회한다.")
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+
+        List<AttendancesResponse> attendancesForToday = attendanceService.getAllAttendancesForToday();
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("AllAttendanceToday", attendancesForToday); // 단수형으로 변경: attendances -> attendance
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "조회 성공", responseMap));
+    }
+
+
+    @Operation(summary = "오늘의 개인 근태 기록 조회", description = "오늘의 개인 근태 기록을 조회한다.")
     @GetMapping("/today")
     public ResponseEntity<ResponseMessage> getAttendanceForToday(@RequestHeader("Authorization") String token) {
 
@@ -275,33 +296,6 @@ public class AttendanceController {
     }
 
     /* ------------------------------------ 초과근무 ------------------------------------ */
-
-    // 지정 출퇴근시간 등록
-    @Operation(summary = "초과근무 등록", description = "초과근무를 등록한다.")
-    @PostMapping(value = "/registOverWork", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessage> registOverWork(@RequestBody OverWorkRequest request) {
-        try {
-            // Null 체크 추가
-            if (request.getOwStartTime() == null) {
-                throw new IllegalArgumentException("시작시간을 설정해야합니다.");
-            } else if (request.getOwEndTime() == null) {
-                throw new IllegalArgumentException("퇴근시간을 설정해야합니다.");
-            } else if (request.getEmployee() == null) {
-                throw new IllegalArgumentException("사원을 설정해야합니다.");
-            }
-
-            // 초과근무 등록
-            attendanceService.registOverWork(request);
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(new ResponseMessage(200, "초과근무 등록 성공", null));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage(500, "서버 오류: " + e.getMessage(), null));
-        }
-    }
 
     @Operation(summary = "초과근무 기록 조회", description = "초과근무 기록을 조회한다.")
     @GetMapping("/overwork")
@@ -415,5 +409,103 @@ public class AttendanceController {
                     .body(new ResponseMessage(500, "서버 오류: " + e.getMessage(), null));
         }
     }
+
+    // 연차 촉진 이메일 발송 서비스
+    @Operation(summary = "연차 촉진 이메일 발송", description = "연차 촉진 이메일을 발송한다.")
+    @PostMapping("/sendEmail")
+    public ResponseEntity<ResponseMessage> sendDayOffEmail(@RequestParam List<Integer> empCodes) throws MessagingException {
+        // 이메일 발송
+        for (Integer empCode : empCodes) {
+            attendanceService.sendDayOffEmail(empCode);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        ResponseMessage responseMessage = new ResponseMessage(200, "이메일 발송 성공", null);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+    // 예외근무 현황 조회
+    @GetMapping("/currentBT")
+    public ResponseEntity<ResponseMessage> findBTDocList(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<DocumentResponse> currentBT = attendanceService.findBTDocList(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("document", currentBT);
+        ResponseMessage responseMessage = new ResponseMessage(200, "예외근무 현황 조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+    // 초과근무 현황 조회
+    @GetMapping("/currentOW")
+    public ResponseEntity<ResponseMessage> findOWDocList(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<DocumentResponse> currentOW = attendanceService.findOWDocList(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("document", currentOW);
+        ResponseMessage responseMessage = new ResponseMessage(200, "초과근무 현황 조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+    // 휴가신청 현황 조회
+    @GetMapping("/currentDO")
+    public ResponseEntity<ResponseMessage> findDODocList(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<DocumentResponse> currentDO = attendanceService.findDODocList(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("document", currentDO);
+        ResponseMessage responseMessage = new ResponseMessage(200, "휴가신청 현황 조회 성공", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+    // 월간 휴가신청 승인현황 조회
+    @GetMapping("/monthDO")
+    public ResponseEntity<ResponseMessage> findDODoneDocList(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<DocumentResponse> monthDO = attendanceService.findDODoneDocList(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("document", monthDO);
+        ResponseMessage responseMessage = new ResponseMessage(200, "월간 휴가 승인 현황", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
 
 }

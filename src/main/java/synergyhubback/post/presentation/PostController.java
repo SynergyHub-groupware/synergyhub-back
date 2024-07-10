@@ -17,8 +17,10 @@ import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.attachment.AttachmentEntity;
 import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
-import synergyhubback.post.dto.request.CommontRequest;
-import synergyhubback.post.dto.request.PostRequest;
+import synergyhubback.post.dto.request.*;
+import synergyhubback.post.dto.response.CommonResponse;
+import synergyhubback.post.dto.response.PostResponse;
+import synergyhubback.post.dto.response.PostRoleResponse;
 import synergyhubback.post.service.PostService;
 
 import java.io.File;
@@ -41,12 +43,64 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/getRoll/{PostCode}/{Roll}")
+    public ResponseEntity<List<PostRollRequest>> getRoll(@PathVariable("PostCode") int LowBoardCode, @PathVariable("Roll") String roll) {
+        System.out.println(roll);
+        return ResponseEntity.ok(postService.getRollRequests(LowBoardCode, roll));
+    }
+
+    @PostMapping("/boardCreate")
+    public ResponseEntity<LowBoardEntity> boardCreate(@RequestBody BoardRequest boardRequest) {
+        System.out.println("boardRequest : " + boardRequest);
+
+        return ResponseEntity.ok(postService.boardCreate(boardRequest));
+    }
+    @PutMapping("/boardUpdate/{lowCode}")
+    public ResponseEntity<Integer> boardUpdate(@RequestBody BoardRequest boardRequest, @PathVariable("lowCode") int lowCode) {
+        System.out.println("boardRequest : " + boardRequest);
+        System.out.println("lowCode : " + lowCode);
+        return ResponseEntity.ok(postService.boardUpdate(boardRequest, lowCode));
+    }
+    @PutMapping("/boardDelete/{lowCode}")
+    public ResponseEntity<Integer> boardDelete(@PathVariable("lowCode") int lowCode) {
+        System.out.println("lowCode : " + lowCode);
+        return ResponseEntity.ok(postService.boardDelete(lowCode));
+    }
+    @GetMapping("/PostRole")
+    public ResponseEntity<List<PostRollRequest>> getPostRole() {
+        return ResponseEntity.ok(postService.getPostRole());
+    }
+
+    @PostMapping("/PostRoleUpdate/{lowBoard}")
+    public ResponseEntity<String> postRoleUpdate(@RequestBody List<PostRoleRequest> updatedRoles, @PathVariable("lowBoard") int lowCode) {
+        return ResponseEntity.ok(postService.updateRoles(updatedRoles, lowCode));
+    }
+
+    @PostMapping("/PostRoleCreate")
+    public ResponseEntity<String> postRoleCreate(@RequestBody List<PostRoleRequest> updatedRoles) {
+//        PostRoleRequest readPostRoleRequest = payload.get("readPostRoleRequest");
+//        PostRoleRequest writePostRoleRequest = payload.get("writePostRoleRequest");
+//        PostRoleRequest adminPostRoleRequest = payload.get("adminPostRoleRequest");
+//
+//        System.out.println("readPostRoleRequest : " + readPostRoleRequest);
+//        System.out.println("writePostRoleRequest : " + writePostRoleRequest);
+//        System.out.println("adminPostRoleRequest : " + adminPostRoleRequest);
+
+        try {
+            postService.createRoles(updatedRoles);
+            return ResponseEntity.ok("Roles created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while creating roles: " + e.getMessage());
+        }
+    }
     @GetMapping("/ReadyPost/{empCode}")
-    public ResponseEntity<List<PostRequest>> ReadyPost(@PathVariable int empCode) {
+    public ResponseEntity<List<PostRequest>> ReadyPost(@PathVariable("empCode") int empCode) {
+        System.out.println("임시저장 기동");
         return ResponseEntity.ok(postService.ReadyPost(empCode));
     }
     @PutMapping("/postDelete/{postCode}")
     public ResponseEntity<Integer> postDelete(@PathVariable String postCode) {
+        System.out.println("postCode : " + postCode);
         return ResponseEntity.ok(postService.postDelete(postCode));
     }
 
@@ -153,8 +207,16 @@ public class PostController {
     }
 
     @GetMapping("/commentList/{postCode}")
-    public ResponseEntity<List<CommentEntity>> getCommentList(@PathVariable String postCode) {
+    public ResponseEntity<List<CommonResponse>> getCommentList(@PathVariable String postCode) {
         return ResponseEntity.ok(postService.getCommentList(postCode));
+    }
+    @PutMapping("/commentEdit/{commCode}")
+    public ResponseEntity<Integer> commentEdit(@PathVariable String commCode, @RequestBody CommontRequest commontRequest) {
+        return ResponseEntity.ok(postService.commentEdit(commCode, commontRequest));
+    }
+    @PutMapping("/commentDelete/{commCode}")
+    public ResponseEntity<Integer> commentDelete(@PathVariable String commCode) {
+        return ResponseEntity.ok(postService.commentDelete(commCode));
     }
 
     @GetMapping("/downloadFile/{fileName}")
@@ -188,9 +250,9 @@ public class PostController {
 
 
     @GetMapping("/getDetail/{postCode}")
-    public ResponseEntity<PostEntity> callGETDetail(@PathVariable("postCode") String postCode) {
+    public ResponseEntity<PostResponse> callGETDetail(@PathVariable("postCode") String postCode) {
         System.out.println("callGETDetail stared");
-        PostEntity post = postService.getDetail(postCode);
+        PostResponse post = postService.getDetail(postCode);
         System.out.println(post);
         post.setPostCommSet(PostCommSet.fromValue(post.getPostCommSet().getValue())); // 이 부분 확인
         return ResponseEntity.ok(post);
@@ -222,11 +284,11 @@ public class PostController {
 
 
     @GetMapping("/list")
-    public ResponseEntity<List<PostEntity>> findPostList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize) {
+    public ResponseEntity<List<PostResponse>> findPostList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int pageSize) {
         System.out.println("getList stared");
         Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "PostCode");
         System.out.println(pageable);
-        List<PostEntity> posts = postService.getAllPostList(pageable);
+        List<PostResponse> posts = postService.getAllPostList(pageable);
         System.out.println(posts);
         return ResponseEntity.ok(posts);
     }
@@ -267,17 +329,25 @@ public class PostController {
                                         @RequestParam(value = "fixStatus", defaultValue = "N") char fixStatus,
                                         @RequestParam(value = "noticeStatus", defaultValue = "N") char noticeStatus,
                                         @RequestParam("psCode") int psCode,
+                                        @RequestParam("empCode") int empCode,
                                         Model model) {
         // 상품 정보 저장
         System.out.println("게시글 등록 메소드 작동시작");
         System.out.println(lowBoardCode);
         System.out.println(attachFile);
+        System.out.println(postName);
+        System.out.println(postCon);
+        System.out.println(postCommSet);
+        System.out.println(fixStatus);
+        System.out.println(noticeStatus);
+        System.out.println(psCode);
+        System.out.println(empCode);
         PostCommSet commSet = PostCommSet.fromValue(postCommSet);
         System.out.println(commSet);
 
         /* 상품 등록하기 */
         PostRequest newPost = new PostRequest();
-        String numericPart = postService.LastPost().getPostCode().substring(1); // "020"
+        String numericPart = postService.LastPost().getPostCode().substring(2); // "020"
         int lastNumber = Integer.parseInt(numericPart); // 20
         int nextNumber = lastNumber + 1;
 
@@ -289,8 +359,10 @@ public class PostController {
         newPost.setNoticeStatus(noticeStatus);
         newPost.setLowBoardCode(lowBoardCode);
         newPost.setPsCode(psCode);
+        newPost.setEmpCode(empCode);
         System.out.println(lowBoardCode);
 
+        System.out.println("newPost" + newPost);
         PostEntity post = postService.insertPost(newPost);
 
 

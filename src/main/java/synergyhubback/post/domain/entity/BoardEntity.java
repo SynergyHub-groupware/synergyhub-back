@@ -1,16 +1,16 @@
 package synergyhubback.post.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "board")
 @Getter
+@Setter
 public class BoardEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_code")
     private int BoardCode;
     @Column(name = "board_name")

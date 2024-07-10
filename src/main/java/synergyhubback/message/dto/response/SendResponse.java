@@ -7,6 +7,7 @@ import lombok.Setter;
 import synergyhubback.message.domain.entity.Message;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,8 +15,8 @@ import java.time.LocalDate;
 public class SendResponse {
 
     private String msgCode;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate sendDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime sendDate;
     private String msgTitle;
     private String msgCon;
     private String msgStatus;
