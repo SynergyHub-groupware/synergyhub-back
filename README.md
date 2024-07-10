@@ -59,11 +59,21 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 ![js](https://img.shields.io/badge/Notion-20232A?style=for-the-badge&logo=Notion&logoColor=#00000)
 ![js](https://img.shields.io/badge/Discord-20232A?style=for-the-badge&logo=Discord&logoColor=#5865F2)
 ![js](https://img.shields.io/badge/GitHub-20232A?style=for-the-badge&logo=GitHub&logoColor=#181717)
+![js](https://img.shields.io/badge/Figma-20232A?style=for-the-badge&logo=Figma&logoColor=#F24E1E)
 
-## [업무 흐름도](#flowchart)
-<div id="flowchart">
-  <img src="https://github.com/JH5256/Rest-API-Study/assets/157452524/67b536ed-017d-412f-ad2e-316c6ada749b" width="300px" height="500px" title="Alt Text"><img>
-</div>
+<br/>
+
+## 업무 분석 및 모델링
+
+### 업무 흐름도
+<img src="https://github.com/JH5256/Rest-API-Study/assets/157452524/67b536ed-017d-412f-ad2e-316c6ada749b" width="300px" height="500px" title="Alt Text"><img>
+
+### ERD Cloud
+
+### DA#5 Modeling
+
+### 이슈 관리
+<img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/12c6b057-3f46-4886-96c7-a4e1c2b354fa" width="600px" height="400px" title="Alt Text"><img>
 
 <br/>
 
