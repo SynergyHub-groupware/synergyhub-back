@@ -59,8 +59,7 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private Set<DetailByEmpRegist> empRegistDetails = new HashSet<>();
 
-
-    public Employee(int emp_code,  String emp_name, String emp_pass, String social_security_no, String email, LocalDate hire_date, String emp_status) {
+    public Employee(int emp_code, String emp_name, String emp_pass, String social_security_no, String email, LocalDate hire_date, String emp_status) {
         this.emp_code = emp_code;
         this.emp_name = emp_name;
         this.emp_pass = emp_pass;
@@ -68,6 +67,9 @@ public class Employee {
         this.email = email;
         this.hire_date = hire_date;
         this.emp_status = emp_status;
+    }
+
+    public Employee(int empCode, String empName, String email, String phone, String address, String accountNum, String empImg, Bank bank) {
     }
 
 
@@ -82,6 +84,27 @@ public class Employee {
                 hire_date,
                 emp_status
         );
+    }
+
+    public void update(String email, String phone, String address, String emp_pass, Bank bank, String account_num) {
+        if (email != null) {
+            this.email = email;
+        }
+        if (phone != null) {
+            this.phone = phone;
+        }
+        if (address != null) {
+            this.address = address;
+        }
+        if (emp_pass != null) {
+            this.emp_pass = emp_pass;
+        }
+        if (bank != null) {
+            this.bank = bank;
+        }
+        if (account_num != null) {
+            this.account_num = account_num;
+        }
     }
 
     public void setDepartment(Department department) {
@@ -104,10 +127,13 @@ public class Employee {
         empRegistDetails.add(detailByEmpRegist);
     }
 
-    public void resetPassword(String newEmpPass) {
-        this.emp_pass = newEmpPass;
+    public void resetPassword(String resetEmpPass) {
+        this.emp_pass = resetEmpPass;
     }
 
+    public void updatePassword(String newEmpPass) {
+        this.emp_pass = newEmpPass;
+    }
 
     // 이재현 로그인 관련 employee entity 로직 생성
     public void updateRefreshToken(String refreshToken) {

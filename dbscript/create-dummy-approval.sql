@@ -1,3 +1,5 @@
+use groupware;
+
 INSERT INTO LINE_SORT VALUES
 (1, '일반결재'), (2, '팀장전결'), (3, '부장전결'), (4, '인사관련'), (5, '경영지원'), (6, '채용관련');
 

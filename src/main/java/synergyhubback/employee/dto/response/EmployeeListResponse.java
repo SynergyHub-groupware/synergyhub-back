@@ -19,26 +19,8 @@
         private List<EmployeeResponse> employees;
 
         public static EmployeeListResponse getEmployeeList(List<Employee> employees) {
-
             List<EmployeeResponse> employeeResponses = employees.stream()
-                    .map(employee -> new EmployeeResponse(
-
-                            employee.getPosition().getPosition_code(),
-                            employee.getEmp_code(),
-                            employee.getPar_code(),
-                            employee.getEmp_name(),
-                            employee.getDepartment().getDept_code(),
-                            employee.getDepartment().getDept_title(),
-                            employee.getPosition().getPosition_name(),
-                            employee.getTitle().getTitle_name(),
-                            employee.getPhone(),
-                            employee.getHire_date(),
-                            employee.getEmp_status(),
-                            employee.getSocial_security_no(),
-                            employee.getEmp_img(),
-                            new ArrayList<>()
-
-                    ))
+                    .map(EmployeeResponse::fromEntity)
                     .collect(Collectors.toList());
             return new EmployeeListResponse(employeeResponses);
         }

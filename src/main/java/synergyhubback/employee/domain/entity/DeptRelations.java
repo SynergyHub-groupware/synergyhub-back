@@ -39,4 +39,12 @@ public class DeptRelations {
     public void setSubDepartment(Department subDepartment) {
         this.subDepartment = subDepartment;
     }
+
+    public String getPar_dept_code() {
+        return parentDepartment.getDept_code();
+    }
+
+    public String getSub_dept_code() {
+        return subDepartment.getDept_code();
+    }
 }

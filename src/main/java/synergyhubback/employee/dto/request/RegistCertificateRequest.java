@@ -3,6 +3,7 @@ package synergyhubback.employee.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,16 +11,22 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
-public class AppRegistRequest {
+@NoArgsConstructor
+public class RegistCertificateRequest {
 
-    private String aappCode;       // 발령 결재 코드
+    private int cer_code;
 
-    private String aappNo;       // 발령 번호
+    private String cer_name;
+
+    private String cer_score;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate aappDate;       // 발령 일
+    private LocalDate cer_date;
 
-    private String aappTitle;       // 발령 제목
+    private String cer_num;
 
-    public AppRegistRequest() {}
+    private String iss_organ;
+
+    private int emp_code;
+
 }

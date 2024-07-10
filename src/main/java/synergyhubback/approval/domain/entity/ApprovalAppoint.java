@@ -2,6 +2,7 @@ package synergyhubback.approval.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Entity
 @Table(name = "APPROVAL_APPOINT")
@@ -31,4 +33,5 @@ public class ApprovalAppoint {
         this.aappDate = aappDate;
         this.aappTitle = aappTitle;
     }
+
 }

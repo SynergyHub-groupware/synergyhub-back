@@ -13,7 +13,8 @@ public enum ExceptionCode {
     NOT_FOUND_PAR_DEPT_CODE(4010, "상위부서를 찾을 수 없습니다."),
     NOT_FOUND_SUB_DEPT_CODE(4011, "하위부서를 찾을 수 없습니다."),
     DEPT_RELATIONS_NOT_FOUND(4012, "부서 관계를 찾을 수 없습니다."),
-    NOT_FOUND_EMPLOYEE(4013, "직원을 찾을 수 없습니다.");
+    NOT_FOUND_EMPLOYEE(4013, "직원을 찾을 수 없습니다."),
+    NOT_FOUND_INFORMATION(4014, "해당 정보를 찾을 수 없습니다.");
 
 
     private final int code;
