@@ -55,7 +55,7 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET, "/messageimgs/**").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/employee/**").permitAll();
                     auth.requestMatchers("/emp/auth/login").permitAll();
-                    auth.anyRequest().permitAll();      // 테스트 중이므로 모든 사용자에게 페이지 열 수 있게 함
+                    auth.anyRequest().permitAll();
                 })
                 // 로그인 필터 이전 커스텀 로그인 필터 설정
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
