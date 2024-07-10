@@ -51,9 +51,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     /* 사원코드로 이름 조회 : 이다정 */
     @Query("SELECT e.emp_name FROM Employee e WHERE e.emp_code = :empCode")
     String findEmpNameById(int empCode);
-
-    @Query("SELECT e FROM Employee e WHERE e.emp_status = 'Y'")
-    List<Employee> findAllActiveEmployees();
-
-    List<Employee> findByDepartment(Department department);
 }

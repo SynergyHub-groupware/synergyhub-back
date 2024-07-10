@@ -24,7 +24,4 @@ public interface DeptRelationsRepository extends JpaRepository<DeptRelations, In
 
     DeptRelations findByParentDepartmentAndSubDepartment(Department parentDepartment, Department subDepartment);
 
-    Optional<DeptRelations> findBySubDepartment(Department department);
-
-    List<DeptRelations> findByParentDepartment(Department department);
 }

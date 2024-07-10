@@ -86,6 +86,28 @@ public class EmployeeController {
         return ResponseEntity.ok(myInfoResponse);
     }
 
+    /* 내 정보 수정 */
+    @PatchMapping("/updateMyInfo")
+    public ResponseEntity<EmployeeResponse> updateMyInfo(@RequestHeader("Authorization") String token,
+                                                         @RequestBody(required = false) EmployeeUpdateRequest employeeUpdateRequest) {
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        EmployeeResponse employeeResponse = employeeService.updateMyInfo(empCode, employeeUpdateRequest);
+
+        return ResponseEntity.ok(employeeResponse);
+    }
+
+    /* 사원 전체 조회 */
+    @GetMapping("/employeeAll")
+    public ResponseEntity<List<EmployeeResponse>> getEmployeeAll() {
+
+        List<EmployeeResponse> employeeResponses  = employeeService.getEmployeeAll();
+
+        return ResponseEntity.ok(employeeResponses );
+    }
+
     /* 인사기록카드 조회 하고 싶어요 */
     @GetMapping("/recordCard")
     public ResponseEntity<RecordCardResponse> getRecordCard(@RequestHeader("Authorization") String token) {
@@ -97,6 +119,43 @@ public class EmployeeController {
         RecordCardResponse recordCardResponse = employeeService.getRecordCard(empCode);
 
         return ResponseEntity.ok(recordCardResponse);
+    }
+
+    /* 인사기록카드 등록 */
+    @PostMapping("/registRecordCard")
+    public ResponseEntity<Void> registRecordCard(@RequestHeader("Authorization") String token,
+                                                 @RequestBody @Valid RegistRecordCardRequest registRecordCardRequest) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        System.out.println("Received emp_code from request: " + registRecordCardRequest.getEmp_code());
+        System.out.println("Received schoolInfos from request: " + registRecordCardRequest.getSchoolInfos());
+
+        // 직원 코드를 요청 객체에 추가
+        registRecordCardRequest.setEmp_code(empCode);
+
+        // 서비스 메서드 호출
+        employeeService.registRecordCard(registRecordCardRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /* 인사기록카드 수정 */
+    @PatchMapping("/updateRecordCard")
+    public ResponseEntity<Void> updateRecordCard(@RequestHeader("Authorization") String token,
+                                                 @RequestBody @Valid RegistRecordCardRequest registRecordCardRequest) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        registRecordCardRequest.setEmp_code(empCode);
+
+        employeeService.updateRecordCard(registRecordCardRequest);
+
+        return ResponseEntity.ok().build();
     }
 
     /* 팀원 인사기록 카드 조회 */
@@ -221,12 +280,28 @@ public class EmployeeController {
 
     /* 발령 등록 */
     @PostMapping("/appRegist")
-    public ResponseEntity<Void> registApp(@RequestBody @Valid AppRegistGroupRequest appRegistGroupRequest) {
+    public ResponseEntity<Void> registApp(@RequestBody @Valid AappRegistGroupRequest aappRegistGroupRequest) {
 
-        employeeService.registApp(appRegistGroupRequest);
+        employeeService.registApp(aappRegistGroupRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    /* 발령등록 리스트 조회 */
+    @GetMapping("/appRegistList")
+    public ResponseEntity<List<AappRegistListResponse>> getAppRegistList() {
+
+        List<AappRegistListResponse> appRegistList = employeeService.getAppRegistList();
+
+        return ResponseEntity.ok(appRegistList);
+    }
+
+    /* 발령등록 리스트 상세 조회 */
+    @GetMapping("/appRegistListDetail/{aappNo}")
+    public ResponseEntity<List<AappDetailRegistResponse>> getAappRegistListDetail(@PathVariable String aappNo) {
+
+        List<AappDetailRegistResponse> aappDetailRegistList = employeeService.getAappDetailRegistList(aappNo);
+
+        return ResponseEntity.ok(aappDetailRegistList);
+    }
 }
-
-

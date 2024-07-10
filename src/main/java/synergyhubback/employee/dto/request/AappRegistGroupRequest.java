@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class AppRegistGroupRequest {
+public class AappRegistGroupRequest {
 
+    private String aappCode;       // 발령 결재 코드
 
     private String aappNo;       // 발령 번호
 
@@ -20,21 +22,7 @@ public class AppRegistGroupRequest {
 
     private String aappTitle;       // 발령 제목
 
-    private int adetCode;      // 발령 결재 상세 코드
+    private List<AappDetailRegistRequest> appRegistDetails; // 발령 상세 정보 리스트
 
-    private String aappCode;       // 발령 결재 코드
-
-    private String adetBefore;     // 발령 전
-
-    private String adetAfter;      // 발령 후
-
-    private String adetType;       // 발령 종류
-
-    private String empCode;        // 사원 코드
-
-
-
-    public AppRegistGroupRequest() {
-
-    }
+    public AappRegistGroupRequest() {}
 }

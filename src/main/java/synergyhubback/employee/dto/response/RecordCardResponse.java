@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class RecordCardResponse {
 
     private int emp_code;
+    private int par_code;
     private String emp_name;
     private String emp_pass;
     private String social_security_no;
@@ -51,6 +52,7 @@ public class RecordCardResponse {
 
         return new RecordCardResponse(
                 employee.getEmp_code(),
+                employee.getPar_code(),
                 employee.getEmp_name(),
                 employee.getEmp_pass(),
                 employee.getSocial_security_no(),

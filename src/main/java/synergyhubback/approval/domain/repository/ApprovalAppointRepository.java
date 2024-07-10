@@ -12,4 +12,5 @@ public interface ApprovalAppointRepository extends JpaRepository<ApprovalAppoint
             "ORDER BY SUBSTRING(AAPP_CODE, 1, 4), CAST(SUBSTRING(AAPP_CODE, 5) AS UNSIGNED) DESC " +
             "LIMIT 1", nativeQuery = true)
     Optional<ApprovalAppoint> findTopOrderByAappCodeDesc();
+
 }

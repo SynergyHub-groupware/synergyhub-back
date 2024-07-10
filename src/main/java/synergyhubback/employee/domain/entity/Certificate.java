@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import synergyhubback.employee.dto.request.RegistCertificateRequest;
 
 import java.time.LocalDate;
 
@@ -41,5 +42,23 @@ public class Certificate {
         this.cer_num = cer_num;
         this.iss_organ = iss_organ;
         this.emp_code = emp_code;
+    }
+
+    public void updateCertificateInfo(RegistCertificateRequest certificateRequest) {
+        if (certificateRequest.getCer_name() != null) {
+            this.cer_name = certificateRequest.getCer_name();
+        }
+        if (certificateRequest.getCer_score() != null) {
+            this.cer_score = certificateRequest.getCer_score();
+        }
+        if (certificateRequest.getCer_date() != null) {
+            this.cer_date = certificateRequest.getCer_date();
+        }
+        if (certificateRequest.getCer_num() != null) {
+            this.cer_num = certificateRequest.getCer_num();
+        }
+        if (certificateRequest.getIss_organ() != null) {
+            this.iss_organ = certificateRequest.getIss_organ();
+        }
     }
 }
