@@ -697,4 +697,5 @@ public class EmployeeService {
         employee.profileImgRegist(filename); // 엔티티에 이미지 파일 이름 업데이트
         employeeRepository.save(employee);
     }
+
 }

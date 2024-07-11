@@ -31,16 +31,23 @@ import synergyhubback.employee.domain.entity.Employee;
 import synergyhubback.employee.domain.repository.DepartmentRepository;
 import synergyhubback.employee.domain.repository.DeptRelationsRepository;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
+import synergyhubback.employee.dto.response.EmployeeListResponse;
+import synergyhubback.message.domain.entity.Message;
+import synergyhubback.message.domain.repository.MessageRepository;
+import synergyhubback.message.dto.response.ReceiveResponse;
+import synergyhubback.message.service.MessageService;
+import synergyhubback.post.domain.entity.PostEntity;
+import synergyhubback.post.service.PostService;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static synergyhubback.employee.dto.response.EmployeeListResponse.getEmployeeList;
 
 @Slf4j
 @Service
@@ -61,7 +68,8 @@ public class AttendanceService {
     private final PersonalRepository personalRepository;
     private final ApprovalAttendanceRepository approvalAttendanceRepository;
     private final EmailService emailService;
-
+    private final PostService postService;
+    private final MessageRepository messageRepository;
 
     /* 이벤트 리스너 */
     @EventListener
@@ -1336,5 +1344,79 @@ public class AttendanceService {
         return resultList;
     }
 
+    // 오늘 날짜의 근무 상태가 휴가, 출장, 교육, 훈련, 재택인 근무일지
+    public List<AttendancesResponse> findAbsentee() {
+
+        LocalDate today = LocalDate.now();
+
+        List<AttendancesResponse> findAbsentee = attendanceRepository.findAbsentee(today);
+
+        return findAbsentee;
+    }
+
+
+    // [메인] 이번달 생일인 사원
+    public EmployeeListResponse findBirth() {
+
+        List<Employee> employees = employeeRepository.findAll();
+        System.out.println("모든 사원 목록 조회 완료");
+
+        // 현재 날짜에서 이번 달의 월과 일을 추출
+        LocalDate today = LocalDate.now();
+        int thisDayOfMonth = today.getMonthValue();
+        System.out.println("이번 달 : " + thisDayOfMonth);
+
+        // 이번 달 생일인 사원 필터링
+        List<Employee> birthdayEmployees = employees.stream()
+                .filter(employee -> {
+                    // 주민등록번호에서 월과 일 추출
+                    int month = getMonthFromSocialSecurityNo(employee.getSocial_security_no());
+                    int day = getDayFromSocialSecurityNo(employee.getSocial_security_no());
+                    System.out.println("월 : " + month);
+                    System.out.println("일 : " + day);
+
+                    // 생일이 이번 달인지 확인
+                    return month == thisDayOfMonth;
+                })
+                .collect(Collectors.toList());
+
+        // EmployeeListResponse로 변환하여 반환
+        return getEmployeeList(birthdayEmployees);
+
+    }
+
+    // 주민등록번호에서 월을 추출하는 메소드
+    private int getMonthFromSocialSecurityNo(String socialSecurityNo) {
+        if (socialSecurityNo != null && socialSecurityNo.length() >= 6) {
+            return Integer.parseInt(socialSecurityNo.substring(2, 4));
+        }
+        return -1; // 예외 처리 필요
+    }
+
+    // 주민등록번호에서 일을 추출하는 메소드
+    private int getDayFromSocialSecurityNo(String socialSecurityNo) {
+        if (socialSecurityNo != null && socialSecurityNo.length() >= 6) {
+            return Integer.parseInt(socialSecurityNo.substring(4, 6));
+        }
+        return -1; // 예외 처리 필요
+    }
+
+    // 공지사항 조회
+    public List<PostEntity> InboardList(int num) {
+
+        List<PostEntity> posts = postService.findNotice(num);
+        return posts;
+    }
+
+    // 쪽지 조회
+    public List<ReceiveResponse> getReceiveMessage(int empCode) {
+
+        List<Message> receiveList = messageRepository.findByEmpRev_EmpCodeAndRN(empCode);
+
+        return receiveList.stream()
+                .map(ReceiveResponse::getReceiveMessage)
+                .collect(Collectors.toList());
+    }
 }
+
 

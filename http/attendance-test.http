@@ -79,7 +79,7 @@ Authorization: Bearer eyJkYXRlIjoxNzE5ODk5MTU4Mzc2LCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 
 ### 개인 휴가보유 내역 조회
 GET http://localhost:8080/api/attendance/my-dayOffBalance
-Authorization: Bearer eyJkYXRlIjoxNzE5OTA5OTAxOTY5LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjA1MTQ3MDF9.5wwbAjiKbLGvk3j2gOt8ulx8yXRB74zS8LkDhYN1VKWAcbPMosWdpA39_GMQ4GJjMtCPzUNzwqZT7APMTr0dcg
+Authorization: Bearer eyJkYXRlIjoxNzIwNTk2MTkyMzYzLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEyMDA5OTJ9.pxL04BxX566hWWP4s4cFrXcVgB-wGT4Q0HIQ7V-CDZRch3xLbXFXRFhM2WbgWdzpu2yUjxoqCbpvzSsh5SSZng
 
 ### 휴가 등록
 POST http://localhost:8080/api/attendance/registDayOff
@@ -131,3 +131,21 @@ Authorization: Bearer eyJkYXRlIjoxNzIwNDM4MTgzOTc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 ### 월간 휴가승인 현황
 GET http://localhost:8080/api/attendance/monthDO
 Authorization: Bearer eyJkYXRlIjoxNzIwNDM4MTgzOTc0LCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEwNDI5ODN9.jDTS5aRx7ApJ06oqaKFUmnIgEFjyxVCoVbEKk5HkkPFU9AH6sZYqJN2h1GoC4d7IH-dtUo-sl3hE80ID3xzRBQ
+
+### 메인페이지 / 공지사항
+GET http://localhost:8080/api/attendance/notice
+
+### 메인페이지 / 부재자
+GET http://localhost:8080/api/attendance/absentee
+
+### 메인페이지 / 생일자
+GET http://localhost:8080/api/attendance/birth
+
+### 메인페이지 / 업무 수
+GET http://localhost:8080/api/attendance/tasks-b
+Authorization: Bearer eyJkYXRlIjoxNzIwNjE0MzcwODIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEyMTkxNzB9.adKKdy9PIO7FVCBTZbvyU_VnSMq16IP1AVyw0XfvYe34QBKOEJeCdTOhxAFpEehRx7OmU2kKjT72gXW0PaefKg
+
+### 메인페이지 / 쪽지 수
+GET http://localhost:8080/api/attendance/message-n
+Authorization: Bearer eyJkYXRlIjoxNzIwNjE0MzcwODIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEyMTkxNzB9.adKKdy9PIO7FVCBTZbvyU_VnSMq16IP1AVyw0XfvYe34QBKOEJeCdTOhxAFpEehRx7OmU2kKjT72gXW0PaefKg
+

@@ -51,4 +51,12 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Query("SELECT m.empSend.emp_name FROM Message m WHERE m.msgCode = :newMsgCode")
     String findEmpNameByMsgCode(String newMsgCode);
+
+    /* 박은비 추가 */
+    @Query("SELECT m FROM Message m " +
+            "WHERE m.empRev.emp_code = :empCode " +
+            "and m.revStor.storCode = 1 " +
+            "and m.msgStatus = 'N' " +
+            "and m.empSend.emp_code NOT IN (SELECT mb.blkName.emp_code FROM MessageBlock mb WHERE mb.blkId.emp_code = :empCode)")
+    List<Message> findByEmpRev_EmpCodeAndRN(int empCode);
 }
