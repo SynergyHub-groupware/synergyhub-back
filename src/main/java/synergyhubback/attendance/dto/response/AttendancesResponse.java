@@ -55,7 +55,6 @@ public class AttendancesResponse {
     private LocalTime owEndTime;
 
     public AttendancesResponse(Attendance attendance) {
-        this.atdCode = attendance.getAtdCode();
         this.empCode = attendance.getEmployee().getEmp_code();
         this.empTitle = attendance.getEmployee().getTitle().getTitle_name();
         this.empName = attendance.getEmployee().getEmp_name();

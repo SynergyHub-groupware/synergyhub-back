@@ -183,7 +183,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 자동 생성 */
-    @Scheduled(cron = "30 24 14 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 10 15 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -423,7 +423,6 @@ public class AttendanceService {
                 }
 
             } else {
-
                 System.out.println("@@@ 지정 날짜가 없는 근태 기록 등록 시작 @@@");
 
                 // 사원의 직책 정보 조회
