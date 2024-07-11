@@ -32,15 +32,15 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     List<PostSortEntity> getAllPostSortList();
 
     @Query("select p from PostEntity p where p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D'")
-    List<PostEntity> InboardList(Pageable pageable,@Param("lowCode") Integer lowCode);
+    List<PostResponse> InboardList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
     @Query("SELECT p FROM PostEntity p WHERE p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
     List<PostEntity> findNotice(@Param("lowCode") Integer lowCode);
 
     @Query("SELECT p FROM PostEntity p WHERE p.FixStatus = 'Y' AND p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
-    List<PostEntity> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
+    List<PostResponse> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
-    @Query("SELECT new synergyhubback.post.dto.response.PostResponse(p.PostCode, p.EmpCode.emp_code, p.PostName, p.PostDate, p.PostViewCnt,p.postCommSet) " +
+    @Query("SELECT new synergyhubback.post.dto.response.PostResponse(p.PostCode, p.EmpCode.emp_code, p.PostName, p.PostDate, p.PostViewCnt,p.postCommSet,p.PostCon) " +
             "FROM PostEntity p WHERE p.PostCode = :postCode")
     PostResponse getDetail(@Param("postCode") String postCode);
 
@@ -79,7 +79,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Query("SELECT p FROM PostEntity p WHERE p.FixStatus <> 'D' ORDER BY p.PostCode ")
     List<PostResponse> AllPostList(Pageable pageable);
 
-    @Query("SELECT p from PostEntity p where p.EmpCode.emp_code = :empCode ORDER BY p.PostCode DESC")
+    @Query("SELECT p from PostEntity p WHERE p.FixStatus = 'R' AND p.EmpCode.emp_code = :empCode ORDER BY p.PostCode DESC")
     List<PostRequest> ReadyPost(@Param("emp_code") int empCode);
 
     @Modifying
