@@ -84,7 +84,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM Employee e WHERE e.department.dept_code IN ('d13', 'd14', 'd15')")
     List<Employee> findByD13();
 
-
-
-
 }

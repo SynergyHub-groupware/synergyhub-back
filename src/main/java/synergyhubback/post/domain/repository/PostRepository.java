@@ -34,6 +34,9 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Query("select p from PostEntity p where p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D'")
     List<PostResponse> InboardList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
+    @Query("SELECT p FROM PostEntity p WHERE p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
+    List<PostEntity> findNotice(@Param("lowCode") Integer lowCode);
+
     @Query("SELECT p FROM PostEntity p WHERE p.FixStatus = 'Y' AND p.LowBoardCode.LowBoardCode = :lowCode AND p.FixStatus <> 'D' ORDER BY p.PostCode DESC")
     List<PostResponse> InboardPinList(Pageable pageable,@Param("lowCode") Integer lowCode);
 
