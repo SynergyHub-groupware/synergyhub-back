@@ -3,11 +3,15 @@ package synergyhubback.employee.presentation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.attendance.presentation.ResponseMessage;
 import synergyhubback.auth.util.TokenUtils;
 import synergyhubback.common.exception.NotFoundException;
@@ -15,6 +19,11 @@ import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 import synergyhubback.employee.service.EmployeeService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 
@@ -24,6 +33,7 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final Path profileImgRoot = Paths.get("C:/SynergyHub/ProfileImg/");
 
 
     /* 로그아웃 시 토큰 무효화 */
@@ -332,6 +342,39 @@ public class EmployeeController {
         EmployeeListResponse allInfo = employeeService.getAllInfo();
 
         return ResponseEntity.ok(allInfo);
+    }
+
+    /* 프로필 이미지 업로드 */
+    @PostMapping("/uploadProfileImg")
+    public ResponseEntity<Void> uploadProfileImg(@RequestParam("empCode") int empCode, @RequestParam("profileImg") MultipartFile profileImg) {
+        try {
+            System.out.println("Received empCode: " + empCode);  // 디버깅을 위한 출력
+            System.out.println("Received file: " + profileImg.getOriginalFilename());
+            employeeService.uploadProfileImg(empCode, profileImg);
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /* 프로필 이미지 검색 */
+    @GetMapping("/profileImg")
+    public ResponseEntity<Resource> getProfileImg(@RequestParam int empCode) {
+        try {
+            Path filePath = profileImgRoot.resolve(empCode + "profile.png");
+            Resource resource = new FileSystemResource(filePath);
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath));
+            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 //    @PatchMapping("/resetEmpPass/{emp_code}")

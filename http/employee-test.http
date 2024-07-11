@@ -231,4 +231,10 @@ Authorization: Bearer eyJkYXRlIjoxNzIwMDkyNDA1ODQwLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 ### 모든 사원 조회
 GET http://localhost:8080/employee/all
 
+### 프로필 사진 업로드
+POST http://localhost:8080/employee/uploadProfileImg
+
+### 프로필 이미지 조회
+GET http://localhost:8080/employee/profileImg?empCode=2024062
+
 
