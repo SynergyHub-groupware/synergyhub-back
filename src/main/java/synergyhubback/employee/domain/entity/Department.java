@@ -1,6 +1,7 @@
 package synergyhubback.employee.domain.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class Department {
 
     // 하위 부서 관계 설정
     @OneToMany(mappedBy = "parentDepartment", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<DeptRelations> subDepartments = new HashSet<>();
 
     // 상위 부서 관계 설정

@@ -112,11 +112,11 @@ public class PostService {
         return postRepository.getAllPostSortList();
     }
 
-    public List<PostEntity> InboardList(Pageable pageable, Integer lowBoardCode) {
+    public List<PostResponse> InboardList(Pageable pageable, Integer lowBoardCode) {
         return postRepository.InboardList(pageable, lowBoardCode);
     }
 
-    public List<PostEntity> InboardPinList(Pageable pageable, Integer lowBoardCode) {
+    public List<PostResponse> InboardPinList(Pageable pageable, Integer lowBoardCode) {
         return postRepository.InboardPinList(pageable, lowBoardCode);
     }
 
@@ -348,6 +348,14 @@ public class PostService {
 
     public List<PostRollRequest> getPostRole() {
         return postRoleRepository.findAllRole();
+    }
+
+    @Transactional
+    public void ViewCountUp(String postCode) {
+        System.out.println("조회수");
+        PostEntity postEntity = postRepository.findByPostCode(postCode);
+        postEntity.setPostViewCnt((postEntity.getPostViewCnt())+1);
+        postRepository.save(postEntity);
     }
 }
 //    @Transactional

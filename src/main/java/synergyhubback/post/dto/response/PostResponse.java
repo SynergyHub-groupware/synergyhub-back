@@ -24,13 +24,15 @@ public class PostResponse {
     private char NoticeStatus;
     private int EmpCode;
     private String EmpName;
-    public PostResponse(String postCode, int empCode, String postName, LocalDate postDate, int postViewCnt,PostCommSet postCommSet) {
+    public PostResponse(String postCode, int empCode, String postName, LocalDate postDate, int postViewCnt,PostCommSet postCommSet,String postCon) {
         this.PostCode = postCode;
         this.EmpCode = empCode;
         this.PostName = postName;
         this.PostDate = postDate;
         this.PostViewCnt = postViewCnt;
         this.postCommSet = postCommSet;
+        this.PostCon = postCon;
+
     }
 
 
@@ -43,7 +45,12 @@ public class PostResponse {
         this.postCommSet = postEntity.getPostCommSet();
         this.FixStatus = postEntity.getFixStatus();
         this.NoticeStatus = postEntity.getNoticeStatus();
-        this.EmpCode = postEntity.getEmpCode().getEmp_code();
-        this.EmpName = postEntity.getEmpCode().getEmp_name();
+        if (postEntity.getEmpCode() != null) {
+            this.EmpCode = postEntity.getEmpCode().getEmp_code();
+            this.EmpName = postEntity.getEmpCode().getEmp_name();
+        } else {
+            this.EmpCode = 0;
+            this.EmpName = null;
+        }
     }
 }
