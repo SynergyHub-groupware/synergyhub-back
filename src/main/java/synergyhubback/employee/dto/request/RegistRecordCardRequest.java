@@ -14,6 +14,11 @@ import java.util.List;
 public class RegistRecordCardRequest {
 
     private int emp_code;
+    private String emp_name;
+    private String social_security_no;
+    private String phone;
+    private String email;
+    private String address;
     private List<RegistSchoolInfoRequest> schoolInfos;
     private List<RegistCertificateRequest> certificates;
 

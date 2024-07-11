@@ -6,11 +6,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import synergyhubback.approval.domain.entity.AppointDetail;
 import synergyhubback.approval.domain.entity.ApprovalAppoint;
 import synergyhubback.approval.domain.repository.AppointDetailRepository;
 import synergyhubback.approval.domain.repository.ApprovalAppointRepository;
-import synergyhubback.attendance.dto.response.AttendancesResponse;
 import synergyhubback.auth.dto.LoginDto;
 import synergyhubback.common.address.service.EmailService;
 import synergyhubback.common.exception.NotFoundException;
@@ -19,6 +19,11 @@ import synergyhubback.employee.domain.repository.*;
 import synergyhubback.employee.dto.request.*;
 import synergyhubback.employee.dto.response.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -46,6 +51,7 @@ public class EmployeeService {
     private final AppointDetailRepository appointDetailRepository;
     private final ApprovalAppointRepository approvalAppointRepository;
     private final BankRepository bankRepository;
+    private final Path profileImgRoot = Paths.get("C:/SynergyHub/ProfileImg/");
 
     @Transactional(readOnly = true)
     public LoginDto findByEmpCode(int emp_code) {
@@ -668,5 +674,27 @@ public class EmployeeService {
         List<Employee> allList = employeeRepository.findAll();
 
         return getEmployeeList(allList);
+    }
+
+    public void uploadProfileImg(Integer empCode, MultipartFile profileImg) throws IOException {
+        if (!Files.exists(profileImgRoot)) {
+            Files.createDirectories(profileImgRoot);
+        }
+
+        String originalFilename = profileImg.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+
+        String filename = empCode + fileExtension;
+        Path filePath = profileImgRoot.resolve(filename);
+        Files.write(filePath, profileImg.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        Employee employee = employeeRepository.findById(empCode)
+                .orElseThrow(() -> new RuntimeException("해당 사원 코드를 가진 사원을 찾을 수 없습니다: " + empCode));
+
+        employee.profileImgRegist(filename); // 엔티티에 이미지 파일 이름 업데이트
+        employeeRepository.save(employee);
     }
 }

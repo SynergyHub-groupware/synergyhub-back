@@ -153,4 +153,8 @@ public class Employee {
     public void setEmpCode(int empCode) {
         this.emp_code = empCode;
     }
+
+    public void profileImgRegist(String emp_img) {
+        this.emp_img = emp_img;
+    }
 }
