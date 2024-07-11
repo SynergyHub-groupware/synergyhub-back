@@ -15,36 +15,14 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 
 ### 🏃 담당자 소개
 
-<table>
-  <tr>
-    <th>담당자</th>
-    <th>담당 기능</th>
-  </tr>
-  <tr>
-    <td>김대한</td>
-    <td>인사 (권한별 정보 조회, 조직도, 프로필), <br/> 발령</td>
-  </tr>
-  <tr>
-    <td>김정원</td>
-    <td>게시글(생성/수정/임시저장), 게시판(생성/수정/권한),<br/>첨부파일(저장/다운로드)</td>
-  </tr>
-  <tr>
-    <td>박은비</td>
-    <td>근태/휴가(개인별 기록/관리, 권한별 관리), 메일링,<br/>엑셀 다운로드, SSE 통신 기반 피드</td>
-  </tr>
-  <tr>
-    <td>박진영</td>
-    <td>일정, 업무, 캘린더</td>
-  </tr>
-  <tr>
-    <td>이다정</td>
-    <td>결재상신, 회수 및 수정, 임시저장, 결재승인&반려,<br/>서명관리, 개인보관함관리, 결재양식관리</td>
-  </tr>
-  <tr>
-    <td>이재현</td>
-    <td>사용자 로그인, 쪽지 (발송/조회/임시저장/삭제),<br/>회원 차단, 주소록</td>
-  </tr>
-</table>
+|담당자|담당 기능|
+|---|---|
+|[김대한](https://github.com/kimdh42)|인사 (권한별 정보 조회, 조직도, 프로필), <br/> 발령|
+|[김정원](https://github.com/won1999won)|게시글(생성/수정/임시저장), 게시판(생성/수정/권한),<br/>첨부파일(저장/다운로드)|
+|[박은비](https://github.com/SILVER-BE)|근태/휴가(개인별 기록/관리, 권한별 관리), 메일링,<br/>엑셀 다운로드, SSE 통신 기반 피드|
+|[박진영](https://github.com/jinyoung23456)|일정, 업무, 캘린더|
+|[이다정](https://github.com/LXXDJ)|결재상신, 회수 및 수정, 임시저장, 결재승인&반려,<br/>서명관리, 개인보관함관리, 결재양식관리|
+|[이재현](https://github.com/JH5256)|사용자 로그인, 쪽지 (발송/조회/임시저장/삭제),<br/>회원 차단, 주소록|
 
 ### ✏ 기술 스택 (플랫폼 & 언어)
 ![js](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
@@ -64,9 +42,13 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 
 <br/>
 
-## 업무 분석 및 모델링
+## 업무 분석 & 모델링
 
-### [URL 업무 흐름도](https://whimsical.com/thunderbolts-full-flow-chart-BGoMHJesjfduSsLoan1mQt)
+### [업무 흐름도 URL](https://whimsical.com/thunderbolts-full-flow-chart-BGoMHJesjfduSsLoan1mQt)
+
+### [이벤트 스토밍 URL](https://miro.com/app/board/uXjVKBGvnGA=/)
+
+### [Figma URL](https://www.figma.com/design/cvZT81QuXtLELMrXJPtmhW/%EA%B7%B8%EB%A3%B9%EC%9B%A8%EC%96%B4?node-id=0-1&t=dQYS44L1KbI9wgR2-0)
 
 ### DA#5 Modeling
 
@@ -88,20 +70,16 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 ### 피드
 > SSE통신을 이용한 알림 기능
 
-### 근태
+### 근태 / 휴가
 > Scheduled를 이용한 근태일지 자동 생성 기능
-
-### 휴가
+>
 > 메일링 서비스를 통한 연차 촉진 기능
-
-### 일정
-> 개인 이벤트 생성, 수정, 삭제
 >
-> 모달을 통한 데이터 관리 기능
+> Excel 파일 다운로드 기능
 
-### 업무
-> 업무 생성, 수정, 삭제
->
+### 일정 / 업무
+> 개인 이벤트, 업무 생성, 수정, 삭제
+> 
 > 모달을 통한 데이터 관리 기능
 
 ### 캘린더
@@ -109,3 +87,9 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 >
 > CRUD 모달 팝업 기능
 
+### 쪽지
+> 
+>
+
+### 회원 차단
+> 차단회원 쪽지 발송 및 조회 제한 기능
