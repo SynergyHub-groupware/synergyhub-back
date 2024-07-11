@@ -15,6 +15,7 @@ public class EmployeeUpdateRequest {
 
         private int emp_code;           // 사원코드
         private String emp_name;        // 사원이름
+        private String emp_img;
         private String emp_pass;        // 비밀번호
         private String new_emp_pass;    // 새 비밀번호
         private String email;           // 이메일

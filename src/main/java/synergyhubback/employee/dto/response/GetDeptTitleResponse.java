@@ -17,8 +17,8 @@ public class GetDeptTitleResponse {
 
     private String dept_title;
 
-    private List<String> subDeptTitles;
+    private List<String> subDeptCodes;
 
-    private List<String> parDeptTitles;
+    private List<String> parDeptCodes;
 
 }
