@@ -6,6 +6,7 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 ## 📄 프로젝트 소개
 <img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/06f7dacb-6e24-49b3-aa06-29a12f2817dd" width="200px" height="150px" title="Alt Text">
 <br/>
+
 - **SynergyHub** : 소통과 협업을 강화하다.
 - 팀원과 원활한 소통을 기반으로 시너지 효과를 극대화하는 그룹웨어를 제공합니다.
 
@@ -21,7 +22,7 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
   </tr>
   <tr>
     <td>김대한</td>
-    <td>인사, 발령</td>
+    <td>인사 (권한별 정보 조회, 조직도, 프로필), <br/> 발령</td>
   </tr>
   <tr>
     <td>김정원</td>
@@ -33,7 +34,7 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
   </tr>
   <tr>
     <td>박진영</td>
-    <td>일정, 업무</td>
+    <td>일정, 업무, 캘린더</td>
   </tr>
   <tr>
     <td>이다정</td>
@@ -65,10 +66,7 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 
 ## 업무 분석 및 모델링
 
-### 업무 흐름도
-<img src="https://github.com/JH5256/Rest-API-Study/assets/157452524/67b536ed-017d-412f-ad2e-316c6ada749b" width="300px" height="500px" title="Alt Text"><img>
-
-### ERD Cloud
+### [URL 업무 흐름도](https://whimsical.com/thunderbolts-full-flow-chart-BGoMHJesjfduSsLoan1mQt)
 
 ### DA#5 Modeling
 
@@ -81,3 +79,33 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 
 ### 로그인
 > JWT(JSON Web Tokens)를 이용한 유저 인증, 권한 관리 및 유저 식별
+
+### 게시판, 게시글
+> 게시판 : 권한 비교 및 등록
+> 
+> 게시글 : 관련 데이터 추가 및 수정, 삭제 기능 
+
+### 피드
+> SSE통신을 이용한 알림 기능
+
+### 근태
+> Scheduled를 이용한 근태일지 자동 생성 기능
+
+### 휴가
+> 메일링 서비스를 통한 연차 촉진 기능
+
+### 일정
+> 개인 이벤트 생성, 수정, 삭제
+>
+> 모달을 통한 데이터 관리 기능
+
+### 업무
+> 업무 생성, 수정, 삭제
+>
+> 모달을 통한 데이터 관리 기능
+
+### 캘린더
+> 이벤트 데이터를 받아 일정 표기
+>
+> CRUD 모달 팝업 기능
+
