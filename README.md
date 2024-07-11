@@ -51,9 +51,10 @@ Spring Framework + React.js SPA 기반의 그룹웨어 개발
 ### [Figma URL](https://www.figma.com/design/cvZT81QuXtLELMrXJPtmhW/%EA%B7%B8%EB%A3%B9%EC%9B%A8%EC%96%B4?node-id=0-1&t=dQYS44L1KbI9wgR2-0)
 
 ### DA#5 Modeling
+<img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/e0176d9c-42bf-4e26-977d-f454186997f5" width="600px" height="400px" title="Alt Text">
 
 ### 이슈 관리
-<img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/12c6b057-3f46-4886-96c7-a4e1c2b354fa" width="600px" height="400px" title="Alt Text"><img>
+<img src="https://github.com/SynergyHub-groupware/synergyhub-back/assets/157452524/12c6b057-3f46-4886-96c7-a4e1c2b354fa" width="600px" height="400px" title="Alt Text">
 
 <br/>
 
