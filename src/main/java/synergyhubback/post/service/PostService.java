@@ -115,7 +115,10 @@ public class PostService {
     public List<PostResponse> InboardList(Pageable pageable, Integer lowBoardCode) {
         return postRepository.InboardList(pageable, lowBoardCode);
     }
-
+    /* 은비 추가 */
+    public List<PostEntity> findNotice(Integer lowBoardCode) {
+        return postRepository.findNotice(lowBoardCode);
+    }
     public List<PostResponse> InboardPinList(Pageable pageable, Integer lowBoardCode) {
         return postRepository.InboardPinList(pageable, lowBoardCode);
     }
