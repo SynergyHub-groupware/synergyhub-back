@@ -43,6 +43,7 @@ public class AttendancesResponse {
     private String empName;   //사원명
     private String empTitle;
     private String empBirth;
+    private String empImg;
 
 
     private AttendanceStatus attendanceStatus;                            //근무상태코드
@@ -64,6 +65,7 @@ public class AttendancesResponse {
         this.startTime = attendance.getStartTime();
         this.endTime = attendance.getEndTime();
         this.attendanceStatus = attendance.getAttendanceStatus();
+        this.empImg = attendance.getEmployee().getEmp_img();
         if (attendance.getOverWork() != null) {
             this.owStartTime = attendance.getOverWork().getOwStartTime();
             this.owEndTime = attendance.getOverWork().getOwEndTime();

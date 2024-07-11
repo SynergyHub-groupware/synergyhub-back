@@ -43,7 +43,6 @@ public class Employee {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonManagedReference
     @JoinColumn(name = "dept_code", referencedColumnName = "dept_code")
     private Department department;
 
