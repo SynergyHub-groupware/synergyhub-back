@@ -3,6 +3,7 @@ package synergyhubback.attendance.presentation;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,13 @@ import synergyhubback.attendance.dto.request.*;
 import synergyhubback.attendance.dto.response.*;
 import synergyhubback.attendance.service.AttendanceService;
 import synergyhubback.auth.util.TokenUtils;
+import synergyhubback.calendar.dto.response.TaskResponse;
+import synergyhubback.calendar.service.TaskService;
+import synergyhubback.employee.dto.response.EmployeeListResponse;
 import synergyhubback.employee.service.EmployeeService;
+import synergyhubback.message.dto.response.ReceiveResponse;
+import synergyhubback.message.service.MessageService;
+import synergyhubback.post.domain.entity.PostEntity;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -26,23 +33,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/attendance")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
     private final EmployeeService employeeService;
+    private final TaskService taskService;
+    private final MessageService messageService;
 
     // 날짜 포맷을 상수로 정의
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    public AttendanceController(AttendanceService attendanceService, EmployeeService employeeService) {
-        this.attendanceService = attendanceService;
-        this.employeeService = employeeService;
-    }
 
     /* ------------------------------------ 근태일지 생성 ------------------------------------  */
 
@@ -507,5 +513,77 @@ public class AttendanceController {
                 .body(responseMessage);
     }
 
+    // 메인페이지를 위한 부재자 목록
+    @GetMapping("/absentee")
+    public ResponseEntity<ResponseMessage> findAbsentee() {
+
+        List<AttendancesResponse> absentee = attendanceService.findAbsentee();
+
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("absentee", absentee);
+        ResponseMessage responseMessage = new ResponseMessage(200, "부재자 현황", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+    // 메인페이지를 위한 이번 달 생일자 목록
+    @GetMapping("/birth")
+    public ResponseEntity<EmployeeListResponse> getAllInfo() {
+
+        EmployeeListResponse allInfo = attendanceService.findBirth();
+
+        return ResponseEntity.ok(allInfo);
+    }
+
+    // 메인페이지를 위한 공지사항 목록
+    @GetMapping("/notice")
+    public ResponseEntity<ResponseMessage> findNotice() {
+
+        List<PostEntity> posts = attendanceService.InboardList(1);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("posts", posts);
+        ResponseMessage responseMessage = new ResponseMessage(200, "공지사항 조회 완료", responseMap);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseMessage);
+    }
+
+    // 메인페이지를 위한 읽지 않은 쪽지 목록 : MSG_STATUS = N
+    @GetMapping("/message-n")
+    public ResponseEntity<List<ReceiveResponse>> getReceiveMessage(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<ReceiveResponse> receiveList = attendanceService.getReceiveMessage(empCode);
+
+        System.out.println("receiveList : controller : " + receiveList.size());
+
+        return new ResponseEntity<>(receiveList, HttpStatus.OK);
+    }
+
+    // 메인페이지를 위한 진행 중인 업무 목록 :
+    @GetMapping("/tasks-b")
+    public ResponseEntity<List<TaskResponse>> getAllTasks(@RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = TokenUtils.getToken(token);
+            String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+            int empCode = Integer.parseInt(tokenEmpCode);
+
+            List<TaskResponse> tasks = taskService.findAllTasksByEmpCode(empCode).stream().map(TaskResponse::from).collect(Collectors.toList());
+            return ResponseEntity.ok(tasks);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
 }

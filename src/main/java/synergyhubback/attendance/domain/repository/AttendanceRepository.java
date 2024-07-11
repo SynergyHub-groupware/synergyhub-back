@@ -37,18 +37,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     /* 오늘의 근태 기록 조회 : 전체 */
     List<Attendance> findByAtdDate(LocalDate currentDate);
 
-
-
-
-    /* 상세 근태 기록 조회 : 직급에 따라 조회할 수 있는 범위 제한 */
-
-    /* 나의 초과근무 기록 조회 */
-
-    /* 나의 외근 기록 조회 */
-
-    /* 나의 출장 기록 조회 */
-
-
-
+    /* 근무상태 : 휴가, 출장, 교육, 훈련, 재택 */
+    @Query("SELECT a FROM Attendance a WHERE a.atdDate = :date AND a.attendanceStatus.atsCode IN (5, 7, 9, 10, 11, 12, 13)")
+    List<AttendancesResponse> findAbsentee(@Param("date") LocalDate date);
 
 }

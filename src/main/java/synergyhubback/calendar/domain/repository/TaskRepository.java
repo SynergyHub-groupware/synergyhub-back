@@ -17,4 +17,8 @@ public interface TaskRepository extends JpaRepository<Task, String> {
 
     @Query("SELECT DISTINCT t FROM Task t LEFT JOIN t.guests g WHERE t.employee.emp_code = :empCode OR g.employee.emp_code = :empCode")
     List<Task> findTasksByEmployeeOrGuest(@Param("empCode") int empCode);
+
+    /* 박은비 추가 */
+    @Query("SELECT DISTINCT t FROM Task t LEFT JOIN t.guests g WHERE t.employee.emp_code = :empCode OR g.employee.emp_code = :empCode AND t.status = 'B'")
+    List<Task> findTasksByStatus(int empCode);
 }

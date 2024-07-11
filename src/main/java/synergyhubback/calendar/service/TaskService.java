@@ -71,6 +71,10 @@ public class TaskService {
         return taskRepository.findTasksByEmployeeOrGuest(empCode);
     }
 
+    public List<Task> findAllTasksByEmpCodeAndStatusB(int empCode) {
+        return taskRepository.findTasksByStatus(empCode);
+    }
+
 
 
     public Optional<Task> findTaskById(String id) {
