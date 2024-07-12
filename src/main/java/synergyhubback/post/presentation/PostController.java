@@ -350,11 +350,24 @@ public class PostController {
 
         /* 상품 등록하기 */
         PostRequest newPost = new PostRequest();
-        String numericPart = postService.LastPost().getPostCode().substring(2); // "020"
-        int lastNumber = Integer.parseInt(numericPart); // 20
-        int nextNumber = lastNumber + 1;
+        String lastPostCode = postService.LastPost() != null ? postService.LastPost().getPostCode() : null;
+        String nextPostCode;
 
-        newPost.setPostCode("PO" + nextNumber);
+        if (lastPostCode == null) {
+            // 첫 번째 게시글인 경우
+            nextPostCode = "PO01";
+        } else {
+            // 기존 게시글이 있는 경우
+            String numericPart = lastPostCode.substring(2); // "020"
+            int lastNumber = Integer.parseInt(numericPart); // 20
+            int nextNumber = lastNumber + 1;
+
+            // post_code 중복 확인
+
+            nextPostCode = String.format("%02d", nextNumber);
+        }
+
+        newPost.setPostCode("PO" + nextPostCode);
         newPost.setPostName(postName);
         newPost.setPostCon(postCon);
         newPost.setPostCommSet(commSet);
@@ -367,6 +380,17 @@ public class PostController {
 
         System.out.println("newPost" + newPost);
         PostEntity post = postService.insertPost(newPost);
+        PostRequest postDTO = new PostRequest();
+        postDTO.setPostCode(post.getPostCode());
+        postDTO.setPostName(post.getPostName());
+        postDTO.setPostCon(post.getPostCon());
+        postDTO.setPostCommSet(post.getPostCommSet());
+        postDTO.setFixStatus(post.getFixStatus());
+        postDTO.setNoticeStatus(post.getNoticeStatus());
+        postDTO.setLowBoardCode(post.getLowBoardCode().getLowBoardCode());
+        postDTO.setPsCode(post.getPsCode().getPsCode());
+        postDTO.setEmpCode(post.getEmpCode().getEmp_code());
+        postDTO.setPostDate(post.getPostDate());
 
 
         /* 경로 설정 */
@@ -426,7 +450,7 @@ public class PostController {
             /* 업로드 파일에 대한 정보를 담을 리스트 */
 
         }
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(postDTO);
 
 
     }
@@ -476,6 +500,17 @@ public class PostController {
         System.out.println("newPost" + newPost);
         PostEntity post = postService.insertPost(newPost);
 
+        PostRequest postDTO = new PostRequest();
+        postDTO.setPostCode(post.getPostCode());
+        postDTO.setPostName(post.getPostName());
+        postDTO.setPostCon(post.getPostCon());
+        postDTO.setPostCommSet(post.getPostCommSet());
+        postDTO.setFixStatus(post.getFixStatus());
+        postDTO.setNoticeStatus(post.getNoticeStatus());
+        postDTO.setLowBoardCode(post.getLowBoardCode().getLowBoardCode());
+        postDTO.setPsCode(post.getPsCode().getPsCode());
+        postDTO.setEmpCode(post.getEmpCode().getEmp_code());
+        postDTO.setPostDate(post.getPostDate());
 
         /* 경로 설정 */
         String fileUploadDir = POST_FILE_DIR;
@@ -534,7 +569,7 @@ public class PostController {
             /* 업로드 파일에 대한 정보를 담을 리스트 */
 
         }
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(postDTO);
 
 
     }
