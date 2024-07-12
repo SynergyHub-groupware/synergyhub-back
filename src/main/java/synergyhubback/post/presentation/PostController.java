@@ -253,7 +253,7 @@ public class PostController {
     @GetMapping("/getDetail/{postCode}")
     public ResponseEntity<PostResponse> callGETDetail(@PathVariable("postCode") String postCode) {
         System.out.println("callGETDetail stared");
-//                 postService.ViewCountUp(postCode);
+                 postService.ViewCountUp(postCode);
 
         PostResponse post = postService.getDetail(postCode);
         System.out.println(post);
