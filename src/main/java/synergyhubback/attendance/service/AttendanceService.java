@@ -183,7 +183,7 @@ public class AttendanceService {
     }
 
     /* 근무 일지 자동 생성 */
-    @Scheduled(cron = "30 10 15 * * *") // 매일 오전 4시 00분에 실행
+    @Scheduled(cron = "30 24 19 * * *") // 매일 오전 4시 00분에 실행
     @Transactional
     public void createDailyAttendanceRecord() {
 
@@ -1356,7 +1356,6 @@ public class AttendanceService {
 
     // [메인] 이번달 생일인 사원
     public EmployeeListResponse findBirth() {
-
         List<Employee> employees = employeeRepository.findAll();
         System.out.println("모든 사원 목록 조회 완료");
 
@@ -1365,7 +1364,7 @@ public class AttendanceService {
         int thisDayOfMonth = today.getMonthValue();
         System.out.println("이번 달 : " + thisDayOfMonth);
 
-        // 이번 달 생일인 사원 필터링
+        // 이번 달 생일인 사원 필터링 후 생일이 빠른 순으로 정렬
         List<Employee> birthdayEmployees = employees.stream()
                 .filter(employee -> {
                     // 주민등록번호에서 월과 일 추출
@@ -1377,11 +1376,16 @@ public class AttendanceService {
                     // 생일이 이번 달인지 확인
                     return month == thisDayOfMonth;
                 })
+                .sorted((e1, e2) -> {
+                    // 생일이 빠른 순으로 정렬
+                    int day1 = getDayFromSocialSecurityNo(e1.getSocial_security_no());
+                    int day2 = getDayFromSocialSecurityNo(e2.getSocial_security_no());
+                    return day1 - day2;
+                })
                 .collect(Collectors.toList());
 
         // EmployeeListResponse로 변환하여 반환
         return getEmployeeList(birthdayEmployees);
-
     }
 
     // 주민등록번호에서 월을 추출하는 메소드
