@@ -149,3 +149,9 @@ Authorization: Bearer eyJkYXRlIjoxNzIwNjE0MzcwODIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSF
 GET http://localhost:8080/api/attendance/message-n
 Authorization: Bearer eyJkYXRlIjoxNzIwNjE0MzcwODIxLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEyMTkxNzB9.adKKdy9PIO7FVCBTZbvyU_VnSMq16IP1AVyw0XfvYe34QBKOEJeCdTOhxAFpEehRx7OmU2kKjT72gXW0PaefKg
 
+### 연차촉진 대상자 조회
+GET http://localhost:8080/api/attendance/promotionCandidates
+
+### 이번 달 근태 조회
+GET http://localhost:8080/api/attendance/my-current-month
+Authorization: Bearer eyJkYXRlIjoxNzIwNzU3NzYxMTExLCJ0eXBlIjoiand0IiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImVtcF9jb2RlIjoyMDI0MDYyLCJleHAiOjE3MjEzNjI1NjF9.dT-gRr5QbnXEtR0-9_e5tSznu5cKNr2DRVtGP-807YuKB7o7cjuMDJKsj0XUhOEwpi7ovQ7xAw6cf2p9kWgBUg

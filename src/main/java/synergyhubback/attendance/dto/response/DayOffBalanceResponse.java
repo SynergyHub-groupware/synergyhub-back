@@ -35,4 +35,11 @@ public class DayOffBalanceResponse {
         this.dbInsertDate = dayOffBalance.getDbInsertDate();
     }
 
+    public DayOffBalanceResponse(Double granted, Double remaining, Double dbUsed, int employee, LocalDate dbInsertDate) {
+        this.granted = granted;
+        this.remaining = remaining;
+        this.dbUsed = dbUsed;
+        this.employee = employee;
+        this.dbInsertDate = dbInsertDate;
+    }
 }

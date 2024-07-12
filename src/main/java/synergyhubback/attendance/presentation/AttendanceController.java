@@ -263,6 +263,25 @@ public class AttendanceController {
                 .body(new ResponseMessage(200, "조회 성공", responseMap));
     }
 
+    @Operation(summary = "이번 달의 근태 기록 조회", description = "이번 달의 근태 목록을 조회한다.")
+    @GetMapping("/my-current-month")
+    public ResponseEntity<ResponseMessage> getForCurrentMonth(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = TokenUtils.getToken(token);
+        String tokenEmpCode = TokenUtils.getEmp_Code(jwtToken);
+        int empCode = Integer.parseInt(tokenEmpCode);
+
+        List<AttendancesResponse> attendancesForCurrentMonth = attendanceService.getMyAttendancesForCurrentMonth(empCode);
+        HttpHeaders headers = new HttpHeaders();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("monthAttendance", attendancesForCurrentMonth);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "조회 성공", responseMap));
+    }
+
     @Operation(summary = "오늘의 전체 근태 기록 조회", description = "오늘의 전체 근태 기록을 조회한다.")
     @GetMapping("/today-all")
     public ResponseEntity<ResponseMessage> getAttendanceForTodayAll(@RequestHeader("Authorization") String token) {
@@ -414,6 +433,16 @@ public class AttendanceController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage(500, "서버 오류: " + e.getMessage(), null));
         }
+    }
+
+    // 연차 촉진자 조회 서비스
+    @Operation(summary = "연차 촉진 대상자 조회", description = "연차 촉진 대상자를 조회한다.")
+    @GetMapping("/promotionCandidates")
+    public ResponseEntity<EmployeeListResponse> promotionCandidates() throws MessagingException {
+
+        EmployeeListResponse foundDayOff = attendanceService.findPromotionCandidates();
+
+        return ResponseEntity.ok(foundDayOff);
     }
 
     // 연차 촉진 이메일 발송 서비스

@@ -32,6 +32,7 @@ import synergyhubback.employee.domain.repository.DepartmentRepository;
 import synergyhubback.employee.domain.repository.DeptRelationsRepository;
 import synergyhubback.employee.domain.repository.EmployeeRepository;
 import synergyhubback.employee.dto.response.EmployeeListResponse;
+import synergyhubback.employee.dto.response.EmployeeResponse;
 import synergyhubback.message.domain.entity.Message;
 import synergyhubback.message.domain.repository.MessageRepository;
 import synergyhubback.message.dto.response.ReceiveResponse;
@@ -843,6 +844,19 @@ public class AttendanceService {
         return attendanceRepository.findByEmpCodeAndInDateRange(empCode, startDate, endDate);
     }
 
+    /* 개인 : 이번 달의 근태 기록 */
+    @Transactional(readOnly = true)
+    public List<AttendancesResponse> getMyAttendancesForCurrentMonth(int empCode) {
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.withDayOfMonth(1); // 이번 달의 첫 번째 날
+        LocalDate endDate = now.withDayOfMonth(now.lengthOfMonth()); // 이번 달의 마지막 날
+
+        System.out.println(startDate);
+        System.out.println(endDate);
+
+        return attendanceRepository.findByEmpCodeAndInDateRange(empCode, startDate, endDate);
+    }
+
     /* 전체 : 금주의 근태 기록 */
     @Transactional(readOnly = true)
     public List<AttendancesResponse> getAttendancesForCurrentWeek() {
@@ -1258,6 +1272,42 @@ public class AttendanceService {
                 }
             }
         }
+    }
+
+    // 연차 촉진 대상자 조회 메서드
+    public EmployeeListResponse findPromotionCandidates() {
+        List<EmployeeResponse> promotionCandidates = new ArrayList<>();
+
+        LocalDate currentDate = LocalDate.now();
+        Month currentMonth = currentDate.getMonth();
+        System.out.println("현월 : " + currentMonth);
+
+        // 모든 사원 목록 조회
+        List<Employee> employees = employeeRepository.findAll();
+
+        for (Employee employee : employees) {
+            // 연차 보유 갯수 조회
+            DayOffBalance foundDayOffBalance = dayOffBalanceRepository.findRecipient(employee.getEmp_code());
+
+            if (foundDayOffBalance != null) {
+                // 부여된 일자의 월 계산
+                Month insertDateMonth = foundDayOffBalance.getDbInsertDate().getMonth();
+                System.out.println("부여된 월 : " + insertDateMonth);
+                int resultMonth = 13 - insertDateMonth.getValue();
+                System.out.println("소진 기준 월 : " + resultMonth);
+
+                // 소진해야 할 연차 계산
+                int result = (int) ((foundDayOffBalance.getGranted() / resultMonth) * currentMonth.getValue()) + 1;
+                System.out.println("소진해야 할 연차 : " + result);
+
+                // 만약 소진해야 할 연차보다 사용 연차가 적은 경우에
+                if (result > foundDayOffBalance.getDbUsed()) {
+                    EmployeeResponse employeeResponse = EmployeeResponse.fromEntity(employee);
+                    promotionCandidates.add(employeeResponse);
+                }
+            }
+        }
+        return new EmployeeListResponse(promotionCandidates);
     }
 
     // 연차 촉진 이메일 발송 서비스 (개별)
