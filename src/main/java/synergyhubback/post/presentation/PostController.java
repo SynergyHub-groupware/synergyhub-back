@@ -502,7 +502,7 @@ public ResponseEntity<LowBoardResponse> callGETLowBoardListToCode(@PathVariable(
         newPost.setPostCommSet(commSet);
         newPost.setFixStatus(fixStatus);
         newPost.setNoticeStatus(noticeStatus);
-        newPost.setLowBoardCode(lowBoardCode);
+        newPost.setLowBoardCode(7);
         newPost.setPsCode(psCode);
         newPost.setEmpCode(empCode);
         System.out.println(lowBoardCode);
