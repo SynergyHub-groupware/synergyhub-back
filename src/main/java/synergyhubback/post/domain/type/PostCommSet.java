@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum PostCommSet {
-    ALLOW_NORMAL(0),
-    ALLOW_ANONYMOUS(1),
-    ALLOW_BOTH(2),
-    ALLOW_NONE(3);
+    ALLOW_NORMAL(1),
+    ALLOW_ANONYMOUS(2),
+    ALLOW_BOTH(3),
+    ALLOW_NONE(4);
 
     private final int value;
 
