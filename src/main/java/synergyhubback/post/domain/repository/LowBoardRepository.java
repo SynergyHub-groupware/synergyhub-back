@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import synergyhubback.post.domain.entity.LowBoardEntity;
+import synergyhubback.post.dto.response.LowBoardResponse;
+
+import java.util.List;
 
 @Repository
 public interface LowBoardRepository extends JpaRepository<LowBoardEntity, Long> {
@@ -29,4 +32,7 @@ public interface LowBoardRepository extends JpaRepository<LowBoardEntity, Long> 
 
     @Query("select lb.LowBoardCode from LowBoardEntity lb ORDER BY lb.LowBoardCode DESC LIMIT 1")
     int lastLowBoard();
+
+    @Query("select lb from LowBoardEntity lb where lb.LowBoardCode = :lowBoardCode")
+    LowBoardEntity callGETLowBoardListToCode(String lowBoardCode);
 }
