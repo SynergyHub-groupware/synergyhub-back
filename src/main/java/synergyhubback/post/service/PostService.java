@@ -16,6 +16,7 @@ import synergyhubback.post.domain.repository.*;
 import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.*;
 import synergyhubback.post.dto.response.CommonResponse;
+import synergyhubback.post.dto.response.LowBoardResponse;
 import synergyhubback.post.dto.response.PostResponse;
 import synergyhubback.common.address.domain.repository.AddressDeptRepository;
 import synergyhubback.common.address.domain.repository.AddressEmpRepository;
@@ -359,6 +360,10 @@ public class PostService {
         PostEntity postEntity = postRepository.findByPostCode(postCode);
         postEntity.setPostViewCnt((postEntity.getPostViewCnt())+1);
         postRepository.save(postEntity);
+    }
+
+    public LowBoardEntity callGETLowBoardListToCode(String lowBoardCode) {
+      return   lowBoardRepository.callGETLowBoardListToCode(lowBoardCode);
     }
 }
 //    @Transactional

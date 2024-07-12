@@ -19,6 +19,7 @@ import synergyhubback.post.domain.entity.*;
 import synergyhubback.post.domain.type.PostCommSet;
 import synergyhubback.post.dto.request.*;
 import synergyhubback.post.dto.response.CommonResponse;
+import synergyhubback.post.dto.response.LowBoardResponse;
 import synergyhubback.post.dto.response.PostResponse;
 import synergyhubback.post.dto.response.PostRoleResponse;
 import synergyhubback.post.service.PostService;
@@ -249,7 +250,16 @@ public class PostController {
         return ResponseEntity.ok(postService.updateComment(commCode, commCon));
     }
 
-
+@GetMapping("/callGETLowBoardListToCode/{lowBoardCode}")
+public ResponseEntity<LowBoardResponse> callGETLowBoardListToCode(@PathVariable("lowBoardCode") String lowBoardCode) {
+    System.out.println("callGETLowBoardListToCode stared");
+    LowBoardEntity lowBoardEntity= postService.callGETLowBoardListToCode(lowBoardCode);
+    LowBoardResponse lowBoardResponse = new LowBoardResponse();
+    lowBoardResponse.setBoardCode(lowBoardEntity.getBoardCode());
+    lowBoardResponse.setLowBoardName(lowBoardEntity.getLowBoardName());
+    lowBoardResponse.setLowBoardCode(lowBoardEntity.getLowBoardCode());
+    return ResponseEntity.ok(lowBoardResponse);
+}
     @GetMapping("/getDetail/{postCode}")
     public ResponseEntity<PostResponse> callGETDetail(@PathVariable("postCode") String postCode) {
         System.out.println("callGETDetail stared");
