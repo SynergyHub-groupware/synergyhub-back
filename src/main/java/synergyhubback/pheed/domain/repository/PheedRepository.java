@@ -13,7 +13,7 @@ import java.util.List;
 public interface PheedRepository extends JpaRepository<Pheed, Integer> {
 
 
-    @Query("SELECT p FROM Pheed p WHERE p.employee.emp_code = :empCode AND p.deStatus = 'N' ORDER BY p.pheedCode DESC")
+    @Query("SELECT p FROM Pheed p WHERE p.employee.emp_code = :empCode AND p.deStatus = 'N' ORDER BY p.creStatus DESC")
     List<Pheed> findByEmployeeEmpCode(@Param("empCode") int empCode);
 
     @Query("SELECT p FROM Pheed p WHERE p.employee.emp_code = :empCode")
