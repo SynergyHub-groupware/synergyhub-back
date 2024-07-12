@@ -263,8 +263,7 @@ public ResponseEntity<LowBoardResponse> callGETLowBoardListToCode(@PathVariable(
     @GetMapping("/getDetail/{postCode}")
     public ResponseEntity<PostResponse> callGETDetail(@PathVariable("postCode") String postCode) {
         System.out.println("callGETDetail stared");
-                 postService.ViewCountUp(postCode);
-
+        postService.ViewCountUp(postCode);
         PostResponse post = postService.getDetail(postCode);
         System.out.println(post);
         post.setPostCommSet(PostCommSet.fromValue(post.getPostCommSet().getValue())); // 이 부분 확인
