@@ -1,6 +1,5 @@
 
-
-INSERT INTO `POST`
+insert INTO `POST`
 (`POST_CODE`, `POST_NAME`, `POST_VIEW_CNT`, `POST_DATE`, `POST_CON`, `POST_COMM_SET`, `FIX_STATUS`, `NOTICE_STATUS`, `EMP_CODE`, `LOW_CODE`, `PS_CODE`)
 VALUES
     ('PO01', '프로젝트 계획서 작성', 100, '2023-01-01', '프로젝트 계획서 작성 방법에 대한 게시물입니다.', 1, 'N', 'N', 1, 1, 1),
@@ -31,7 +30,7 @@ VALUES
     (3, '자유게시판'),
     (4, '질문과 답변'),
     (5, '정보 공유');
-INSERT INTO `POST_ROLE`
+insert  INTO `POST_ROLE`
 (`PR_CODE`, `PR_WRITE_ROLE`, `LOW_CODE`, `EMP_CODE`, `PR_ADMIN`)
 VALUES
     (1, 'Y', 1, 1, 'Y'),
@@ -54,25 +53,41 @@ VALUES
     (18, 'N', 4, 18, 'N'),
     (19, 'Y', 5, 19, 'N'),
     (20, 'N', 5, 20, 'N');
-INSERT INTO `BOARD`
+replace  INTO `BOARD`
 (`BOARD_CODE`, `BOARD_NAME`)
 VALUES
     (0, '기본'),
     (1, '기본 게시판'),
     (3, '자유게시판'),
     (4,'전체 게시판');
-INSERT INTO `LOW_BOARD`
+insert INTO `LOW_BOARD`
 (`LOW_CODE`, `LOW_NAME`, `BOARD_CODE`)
 VALUES
-    (0, '임시저장', 0),
     (1, '시스템 사업부 게시판', 1),
     (2, '시스템팀 게시판', 1),
     (3, '자유게시판', 3),
     (5, '정보 공유', 3),
     (6, '문의 및 건의', 3),
+    (7, '임시저장', 5),
     (11, '홍보', 1),
     (12, '이벤트 참여 후기', 1),
     (13, '자유 토론', 4),
     (14, 'Q&A', 4),
     (15, '파일 공유', 3),
     (16, '문제 해결', 3);
+
+# SET FOREIGN_KEY_CHECKS = 0;
+# SET FOREIGN_KEY_CHECKS = 1;
+#
+# SHOW CREATE TABLE LOW_BOARD;
+#
+# -- Step 1: Drop the foreign key constraint
+# ALTER TABLE post_role DROP FOREIGN KEY `FKiamaelray8p7i2l4ij6qbhh05`;
+#
+# -- Step 2: Drop the unique key index
+# ALTER TABLE `post_role` DROP INDEX `UKmpd3gf9e86ue9f80a5j5qhc29`;
+#
+# -- Step 3: (Optional) Add the foreign key constraint back without unique key constraint
+# ALTER TABLE `post` ADD CONSTRAINT `FKy4ab5xp05q3d0lc7lsxwbxkx`
+#     FOREIGN KEY (`ps_code`) REFERENCES `post_sort` (`ps_code`);
+# ALTER TABLE `low_board` MODIFY COLUMN `low_code` INT NOT NULL AUTO_INCREMENT;
